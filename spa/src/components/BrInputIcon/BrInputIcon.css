@@ -4,106 +4,100 @@
   --input-medium: 40px;
   --input-large: 48px;
   position: relative;
-  margin-bottom: 16px;
+  margin-bottom: 24px; /* aumenta espaço p/ feedback */
 }
 
-.br-input input {
-  background-color: #ffffff;
-  border: 1px solid #864381;
-  border-radius: 4px;
-  color: #333333;
+.br-input label {
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 4px;
   display: block;
-  font-size: 16px;
-  font-weight: 400;
-  height: var(--input-size);
-  margin-top: 8px;
-  padding: 0 16px 0 48px;
-  width: 100%;
-  box-sizing: border-box;
+  font-size: 14px;
 }
 
 .br-input .input-group {
   position: relative;
+  display: flex;
+  align-items: center;
 }
 
-.br-input .input-icon {
-  align-items: center;
-  color: #666666;
-  display: flex;
+.br-input input {
+  width: 100%;
   height: var(--input-size);
-  left: 16px;
+  background-color: #fff;
+  border: 1px solid #864381;
+  border-radius: 4px;
+  color: #333;
+  font-size: 16px;
+  font-weight: 400;
+  box-sizing: border-box;
+  padding: 0 16px; /* padrão */
+  transition: all 0.2s ease-in-out;
+}
+
+/* sempre que houver .input-icon dentro do grupo,
+   aumenta o padding à esquerda do input */
+.br-input .input-group.has-icon input,
+.br-input .input-icon + input {
+  padding-left: 44px !important;
+}
+
+/* ícone fixo à esquerda */
+.br-input .input-icon {
   position: absolute;
-  top: 5px;
-  z-index: 3;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
+  font-size: 18px;
   pointer-events: none;
 }
 
-.br-input .input-icon + input {
-  padding-left: var(--input-padding-icon);
-}
-
-.br-input.small {
-  --input-size: var(--input-small);
-}
-
-.br-input.medium {
-  --input-size: var(--input-medium);
-}
-
-.br-input.large {
-  --input-size: var(--input-large);
-}
-
+/* estados */
 .br-input.success input {
   border-color: #28a745;
   border-width: 2px;
 }
-
 .br-input.danger input {
   border-color: #dc3545;
   border-width: 2px;
 }
-
 .br-input.warning input {
   border-color: #ffc107;
   border-width: 2px;
 }
-
 .br-input.info input {
   border-color: #17a2b8;
   border-width: 2px;
 }
 
+/* foco */
 .br-input input:focus {
   border-color: #864381 !important;
-  box-shadow: 0 0 0 2px rgba(19, 81, 180, 0.25);
+  box-shadow: 0 0 0 2px rgba(134, 67, 129, 0.25);
   outline: none;
 }
 
+/* feedback - sempre embaixo do campo */
 .br-input .feedback {
+  display: block;
   margin-top: 4px;
-  font-size: 14px;
+  font-size: 13px;
+  line-height: 1.2;
 }
 
 .br-input .feedback.success {
   color: #28a745;
 }
-
 .br-input .feedback.danger {
   color: #dc3545;
 }
-
 .br-input .feedback.warning {
   color: #ffc107;
 }
-
 .br-input .feedback.info {
   color: #17a2b8;
 }
-
-.br-input label {
-  font-weight: 500;
-  color: #333333;
-  margin-bottom: 4px;
-  display: block;
+.br-input .feedback.default {
+  color: #666;
 }

@@ -1,313 +1,156 @@
-.br-input {
-  --input-size: 40px;
-  --input-small: 32px;
-  --input-medium: 40px;
-  --input-large: 48px;
-  --input-padding-icon: 48px;
-  --input-padding-normal: 16px;
-  --border-radius: 4px;
-  --transition-time: 0.2s;
-  
-  position: relative;
-  margin-bottom: 24px;
-}
-
-.br-input input {
-  background-color: #ffffff;
-  border: 1px solid #d4d4d4;
-  border-radius: var(--border-radius);
-  color: #333333;
-  display: block;
-  font-size: 16px;
-  font-weight: 400;
-  height: var(--input-size);
-  margin-top: 8px;
-  padding: 0 var(--input-padding-normal) 0 var(--input-padding-icon);
-  width: 100%;
-  box-sizing: border-box;
-  transition: all var(--transition-time) ease;
-  font-family: inherit;
-}
-
-.br-input input:hover {
-  border-color: #a0a0a0;
-}
-
-.br-input input::placeholder {
-  color: #999;
-  opacity: 1;
-}
-
-.br-input .input-group {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.br-input .input-icon {
-  align-items: center;
-  color: #666666;
-  display: flex;
-  height: var(--input-size);
-  left: var(--input-padding-normal);
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 3;
-  pointer-events: none;
-  transition: color var(--transition-time) ease;
-}
-
-/* Quando não tem ícone */
-.br-input.no-icon input {
-  padding-left: var(--input-padding-normal);
-}
-
-/* Estados de tamanho */
-.br-input.small {
-  --input-size: var(--input-small);
-  font-size: 14px;
-}
-
-.br-input.medium {
-  --input-size: var(--input-medium);
-  font-size: 16px;
-}
-
-.br-input.large {
-  --input-size: var(--input-large);
-  font-size: 18px;
-}
-
-/* Estados de validação */
-.br-input.success input {
-  border-color: #28a745;
-  border-width: 2px;
-  padding-left: calc(var(--input-padding-icon) - 1px); /* Compensa border-width */
-}
-
-.br-input.danger input {
-  border-color: #dc3545;
-  border-width: 2px;
-  padding-left: calc(var(--input-padding-icon) - 1px);
-}
-
-.br-input.warning input {
-  border-color: #ffc107;
-  border-width: 2px;
-  padding-left: calc(var(--input-padding-icon) - 1px);
-}
-
-.br-input.info input {
-  border-color: #17a2b8;
-  border-width: 2px;
-  padding-left: calc(var(--input-padding-icon) - 1px);
-}
-
-/* Foco melhorado */
-.br-input input:focus {
-  border-color: #1351b4 !important;
-  box-shadow: 0 0 0 3px rgba(19, 81, 180, 0.15);
-  outline: none;
-}
-
-/* Feedback text */
-.br-input .feedback {
-  margin-top: 6px;
-  font-size: 14px;
-  line-height: 1.4;
-  display: block;
-}
-
-.br-input .feedback.success {
-  color: #28a745;
-}
-
-.br-input .feedback.danger {
-  color: #dc3545;
-}
-
-.br-input .feedback.warning {
-  color: #d39e00;
-}
-
-.br-input .feedback.info {
-  color: #17a2b8;
-}
-
-/* Label melhorado */
-.br-input label {
-  font-weight: 600;
-  color: #333333;
-  margin-bottom: 6px;
-  display: block;
-  line-height: 1.4;
-}
-
-.br-input label:after {
-  content: '*';
-  color: #dc3545;
-  margin-left: 4px;
-  opacity: 0;
-}
-
-.br-input.required label:after {
-  opacity: 1;
-}
-
-/* Estados de desabilitado */
-.br-input.disabled {
-  opacity: 0.6;
-}
-
-.br-input.disabled input {
-  background-color: #f8f9fa;
-  color: #6c757d;
-  cursor: not-allowed;
-  border-color: #e9ecef;
-}
-
-.br-input.disabled .input-icon {
-  color: #6c757d;
-}
-
-/* Estados de read-only */
-.br-input.read-only input {
-  background-color: #f8f9fa;
-  border-color: #e9ecef;
-  color: #495057;
-}
-
-/* Agrupamento de inputs (para quando estão lado a lado) */
-.br-input.compact {
-  margin-bottom: 16px;
-}
-
-/* Responsividade */
-@media (max-width: 768px) {
-  .br-input {
-    margin-bottom: 20px;
-  }
-  
-  .br-input input {
-    font-size: 16px; /* Prevent zoom on iOS */
-  }
-}
-
-/* High contrast mode support */
-@media (prefers-contrast: high) {
-  .br-input input {
-    border-width: 2px;
-  }
-  
-  .br-input.success input {
-    border-width: 3px;
-  }
-}
-
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-  .br-input input,
-  .br-input .input-icon {
-    transition: none;
-  }
-}
-
-/* Validação nativa do navegador */
-.br-input input:invalid:not(:focus):not(:placeholder-shown) {
-  border-color: #dc3545;
-}
-
-.br-input input:valid:not(:focus):not(:placeholder-shown) {
-  border-color: #28a745;
-}
-/* Register.css - Adicione estas regras */
-
+/* Container centralizado sem card */
 .register-container {
-  max-width: 1200px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 0;
 }
 
-.register-container h3 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  color: #2c3e50;
+/* Títulos */
+h1 {
+  font-size: 2rem;
+  font-weight: 300;
+  margin-bottom: 20px;
+  color: #333;
 }
 
-.register-container .br-divider {
-  margin: 1.5rem 0;
+h3 {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin-top: 30px;
+  margin-bottom: 15px;
+  color: #444;
 }
 
-/* Botões do formulário */
-.clear-button {
-  background-color: #6c757d;
-  color: white;
+/* Divider customizado */
+.custom-divider {
+  width: 100%;
+  height: 1px;
+  background-color: #ddd;
+  margin: 10px 0 20px 0;
   border: none;
-  padding: 12px 24px;
-  min-width: 120px;
 }
 
-.clear-button:hover:not(:disabled) {
-  background-color: #5a6268;
-  transform: translateY(-1px);
+/* Cards de alerta customizados */
+.alert-card {
+  padding: 16px 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 16px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.alert-card.success {
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+}
+
+.alert-card.error {
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+}
+
+.alert-card i {
+  font-size: 20px;
+}
+
+/* Inputs mais clean */
+.br-input input,
+.br-input-icon input {
+  border: 1px solid #ddd !important;
+  border-radius: 6px !important;
+  padding: 14px 16px !important;
+  font-size: 1rem;
+  color: #333;
+  height: 48px !important;
+}
+
+.br-input input:focus,
+.br-input-icon input:focus {
+  border-color: #864381 !important; /* Roxo */
+  box-shadow: 0 0 0 2px rgba(160, 32, 240, 0.15) !important;
+}
+
+/* Labels */
+.br-input label,
+.br-input-icon label {
+  font-weight: 400;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+  color: #555;
+}
+
+/* Botões */
+.clear-button {
+  background: transparent;
+  border: 1px solid #711E6C;
+  color: #711E6C;
+  border-radius: 20px;
+  padding: 12px 30px;
+  min-width: 150px;
+  font-size: 16px;
+  transition: all 0.3s;
+}
+
+.clear-button:hover {
+  background: #f5f0fa;
 }
 
 .register-button {
-  background-color: #1351b4;
-  color: white;
+  background: #711E6C;
   border: none;
-  padding: 12px 24px;
-  min-width: 120px;
+  border-radius: 20px;
+  padding: 12px 30px;
+  min-width: 150px;
+  font-size: 16px;
+  color: #fff;
+  transition: all 0.3s;
 }
 
-.register-button:hover:not(:disabled) {
-  background-color: #0d3a8a;
-  transform: translateY(-1px);
+.register-button:hover {
+  background: #370634;
+}
+/* corrige inputs com ícone (BrInputIcon) */
+.br-input-icon {
+  position: relative; /* wrapper */
 }
 
-.register-button:disabled {
-  background-color: #b3b3b3;
-  cursor: not-allowed;
-  transform: none;
+/* seletores para possíveis classes de ícone (fa, br-icon, i, etc) */
+.br-input-icon i,
+.br-input-icon .fa,
+.br-input-icon .fas,
+.br-input-icon .br-icon,
+.br-input-icon .input-icon {
+  position: absolute;
+  left: 12px;                /* distancia da borda esquerda */
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  pointer-events: none;      /* não bloqueia clique no input */
+  color: #666;
+  font-size: 1rem;
 }
 
-/* Animações suaves */
-.register-container form {
-  animation: fadeIn 0.5s ease-in;
+/* adiciona espaço à esquerda do input para não sobrepor o ícone */
+.br-input-icon input,
+.br-input-icon .form-control {
+  padding-left: 42px !important; /* ajuste esse valor se necessário */
+  box-sizing: border-box;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Mensagens de feedback */
-.br-message {
-  margin-bottom: 1.5rem;
-  border-radius: 4px;
-}
-
-/* Responsividade para mobile */
+/* ajustes responsivos (reduzir um pouco o padding em telas pequenas) */
 @media (max-width: 768px) {
-  .register-container {
-    padding: 10px;
+  .br-input-icon i,
+  .br-input-icon .fa,
+  .br-input-icon .br-icon {
+    left: 10px;
   }
-  
-  .register-container h3 {
-    font-size: 1.25rem;
-  }
-  
-  .clear-button,
-  .register-button {
-    width: 100%;
-    margin-bottom: 10px;
+  .br-input-icon input,
+  .br-input-icon .form-control {
+    padding-left: 36px !important;
   }
 }

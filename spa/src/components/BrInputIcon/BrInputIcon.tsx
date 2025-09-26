@@ -9,7 +9,7 @@ interface BrInputIconProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
   placeholder?: string;
-  icon?: string | React.ReactNode; // ✅ Flexível: string (classe CSS) ou ReactNode
+  icon?: string | React.ReactNode;
   size?: 'small' | 'medium' | 'large';
   status?: 'success' | 'danger' | 'warning' | 'info';
   feedbackText?: string;
@@ -34,30 +34,28 @@ const BrInputIcon: React.FC<BrInputIconProps> = ({
   disabled = false,
   required = false
 }) => {
-  // Construir classes CSS
   const containerClasses = [
     'br-input',
     size,
     status || '',
     disabled ? 'disabled' : '',
-    !icon ? 'no-icon' : '' // Classe para quando não tem ícone
-  ].filter(Boolean).join(' ');
-
-  // Determinar o padding do input baseado na presença do ícone
-  const inputStyle = icon ? {} : { paddingLeft: '16px' };
+    !icon ? 'no-icon' : ''
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <div className={containerClasses}>
       <label htmlFor={name}>{label}</label>
-      <div className="input-group">
+      <div className={`input-group ${icon ? 'has-icon' : ''}`}>
         {icon && (
-          <div className="input-icon">
+          <span className="input-icon">
             {typeof icon === 'string' ? (
               <i className={icon} aria-hidden="true"></i>
             ) : (
-              icon // Renderiza elemento React diretamente
+              icon
             )}
-          </div>
+          </span>
         )}
         <input
           id={name}
@@ -70,14 +68,13 @@ const BrInputIcon: React.FC<BrInputIconProps> = ({
           maxLength={maxLength}
           disabled={disabled}
           required={required}
-          style={inputStyle} // Aplica padding condicional
         />
       </div>
       {feedbackText && (
-        <span className={`feedback ${status || ''}`} role="alert">
-          {feedbackText}
-        </span>
-      )}
+  <span className={`feedback ${status || 'danger'}`} role="alert">
+    {feedbackText}
+  </span>
+)}
     </div>
   );
 };
