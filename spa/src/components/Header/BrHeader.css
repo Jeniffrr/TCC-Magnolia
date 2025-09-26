@@ -1,0 +1,152 @@
+/* src/components/BrHeader.css */
+
+/* Variáveis CSS para consistência */
+:root {
+  --header-bg-color: #ffffff;
+  --header-border-color: #e0e0e0;
+  --header-height: 90px;
+  --header-padding: 0 1rem;
+  --logo-height: 100px;
+  --primary-color: #864381;
+  --text-color: #333333;
+}
+
+/* Estilos do header */
+.br-header {
+  background-color: var(--header-bg-color);
+  border-bottom: 1px solid var(--header-border-color);
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  padding: var(--header-padding);
+  position: relative;
+  z-index: 1000;
+  box-sizing: border-box;
+  margin-bottom: 20px;
+}
+
+/* Container fluido */
+.br-header .container-fluid {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Conteúdo do header */
+.br-header .header-content {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Seção da logo */
+.br-header .logo-section {
+  display: flex;
+  align-items: center;
+}
+
+.br-header .logo-section a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+}
+
+.br-header .main-logo {
+  height: var(--logo-height);
+  width: auto;
+  object-fit: contain;
+}
+
+/* Seção do usuário */
+.br-header .user-section {
+  display: flex;
+  align-items: center;
+}
+
+/* Botão de login */
+.br-header .login-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: transparent;
+  border: 1px solid  #864381 !important;
+  color: #864381 !important;
+  padding: 1rem 1.5rem;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1.1rem;
+}
+
+.br-header .login-btn:hover {
+  background-color:  #864381 !important;
+  color: white !important;
+
+}
+
+.br-header .login-btn:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Informações do usuário */
+.br-header .user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.br-header .user-name {
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.br-header .user-avatar {
+  font-size: 1.5rem;
+  color: var(--primary-color);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .br-header {
+    --header-height: 56px;
+    --header-padding: 0 0.5rem;
+  }
+  
+  .br-header .user-name {
+    display: none; /* Esconde o nome em dispositivos móveis */
+  }
+  
+  .br-header .login-btn span {
+    display: none; /* Esconde o texto "Entrar" em dispositivos móveis */
+  }
+  
+  .br-header .login-btn {
+    padding: 0.5rem;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    justify-content: center;
+  }
+}
+
+/* Estados de acessibilidade */
+@media (prefers-reduced-motion: reduce) {
+  .br-header .login-btn {
+    transition: none;
+  }
+}
+
+/* Modo escuro (se suportado) */
+@media (prefers-color-scheme: dark) {
+  .br-header {
+    --header-bg-color: #1a1a1a;
+    --header-border-color: #333333;
+    --text-color: #ffffff;
+  }
+}
