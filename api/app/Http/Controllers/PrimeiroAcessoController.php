@@ -23,6 +23,7 @@ class PrimeiroAcessoController extends Controller {
             'email' => ['required', 'string', 'email', 'max:255', 'unique:usuarios'],
             'usuario_cpf' => ['required', 'string', 'max:14', 'unique:usuarios,cpf'],
             'senha' => ['required', 'string', 'min:8', 'confirmed'],
+            'consentimento_lgpd' => ['required', 'boolean', 'accepted'],
         ]);
         
          // Verifica se o usuário (email ou CPF) já está registrado em algum hospital
@@ -47,9 +48,9 @@ class PrimeiroAcessoController extends Controller {
                 'email' => $request->email,
                 'cpf' =>  $request->usuario_cpf,
                 'senha' => Hash::make($request->senha),
-                'tipo_usuario' => 'administrador', // Atribui o perfil de Admin
-                'hospital_id' => $hospital->id, // Vincula ao hospital recém-criado
-                'consentimento_lgpd_aceito' => true,
+                'tipo_usuario' => 'administrador',
+                'hospital_id' => $hospital->id,
+                'consentimento_lgpd_aceito' => $request->consentimento_lgpd,
                 'data_consentimento_lgpd' => now(),
             ]);
         });

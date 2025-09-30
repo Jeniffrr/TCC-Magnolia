@@ -1,119 +1,92 @@
 import React, { useState } from 'react';
-import axios from "../api/axios";
-import { isAxiosError } from "axios";
+import api from '../services/api'; // Sua instância configurada do Axios
 
-// Definindo os tipos para as props e o estado
-type LoginProps = object
-interface LoginState {
+// Definindo o tipo para os dados do usuário
+interface User {
+    id: number;
+    nome: string;
     email: string;
-    password: string;
+    // Adicione outros campos conforme necessário
 }
 
-// Componente para o desafio de 2FA
-type TwoFactorChallengeProps = object
-const TwoFactorChallenge: React.FC<TwoFactorChallengeProps> = () => {
-    const [code, setCode] = useState<string>('');
-    const [error, setError] = useState<string>('');
+const Login: React.FC = () => {
+    const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+    const [error, setError] = useState<string | null>(null);
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+    const [user, setUser] = useState<User | null>(null);
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError('');
+        setError(null);
+
         try {
-            await axios.post('http://localhost:8000/two-factor-challenge', {
-                code: code,
-            }, { withCredentials: true });
-            console.log("2FA successful!");
-            window.location.href = '/dashboard';
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (err) {
-            setError('Código de autenticação inválido.');
-        }
-    };
+            // 🎯 Requisição POST para o endpoint simples de login
+            const response = await api.post('/login', { email, password });
 
-    return (
-        <form onSubmit={handleSubmit}>
-            <h2>Autenticação de Dois Fatores</h2>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            <div>
-                <label>Código:</label>
-                <input
-                    type="text"
-                    value={code}
-                    onChange={(e) => setCode(e.target.value)}
-                    required
-                />
-            </div>
-            <button type="submit">Validar Código</button>
-        </form>
-    );
-};
-  
-// Componente principal de Login
-const Login: React.FC<LoginProps> = () => {
-    const [state, setState] = useState<LoginState>({
-        email: '',
-        password: '',
-    });
-    const [error, setError] = useState<string>('');
-    const [needsTwoFactor, setNeedsTwoFactor] = useState<boolean>(false);
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setState(prevState => ({ ...prevState, [name]: value }));
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError('');
-        try {
-            await axios.get('http://localhost:8000/sanctum/csrf-cookie', { withCredentials: true }); // Obtém o CSRF
+            const { token, user } = response.data;
             
-            await axios.post('http://localhost:8000/login', state, { withCredentials: true });
-            console.log("Login successful!");
-            window.location.href = '/dashboard';
-        } catch (err) {
-            if (isAxiosError(err) && err.response) {
-                if (err.response.status === 409) {
-                    setNeedsTwoFactor(true);
-                } else {
-                    setError('Falha no login. Verifique suas credenciais.');
-                }
-            } else {
-                setError('Erro de rede. Tente novamente.');
-            }
+            // 1. Salva o token para uso futuro (CRUD)
+            localStorage.setItem('auth_token', token);
+            
+            // 2. Atualiza o estado da aplicação
+            setUser(user);
+            setIsLoggedIn(true);
+
+            // 3. Simula o redirecionamento ou exibe a mensagem
+            console.log('Login bem-sucedido! Token salvo e usuário:', user.nome);
+            // Aqui você usaria o React Router para ir para a página de Administração
+            // navigate('/admin/dashboard'); 
+
+        } catch (err: unknown) {
+            // Lida com erros (401 Credenciais Inválidas)
+            const errorMessage = (err as { response?: { data?: { message?: string } } }).response?.data?.message || 'Erro de rede ou servidor.';
+            setError(errorMessage);
         }
     };
 
-    if (needsTwoFactor) {
-        return <TwoFactorChallenge />;
+    if (isLoggedIn && user) {
+        return (
+            <div style={{ padding: '20px', border: '1px solid green' }}>
+                <h2>✅ Login Aprovado!</h2>
+                <p>Bem-vindo, **{user.nome}**.</p>
+                <p>Seu token de acesso foi salvo no Local Storage.</p>
+                <p>Pronto para testar o CRUD!</p>
+            </div>
+        );
     }
 
     return (
-        <form onSubmit={handleSubmit}>
-            <h2>Login</h2>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            <div>
-                <label>Email:</label>
-                <input
-                    type="email"
-                    name="email"
-                    value={state.email}
-                    onChange={handleChange}
-                    required
-                />
-            </div>
-            <div>
-                <label>Senha:</label>
-                <input
-                    type="password"
-                    name="password"
-                    value={state.password}
-                    onChange={handleChange}
-                    required
-                />
-            </div>
-            <button type="submit">Entrar</button>
-        </form>
+        <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px', border: '1px solid #ccc', borderRadius: '8px' }}>
+            <h2>Login Provisório</h2>
+            <form onSubmit={handleLogin}>
+                {error && <p style={{ color: 'red', border: '1px solid red', padding: '10px' }}>{error}</p>}
+                
+                <div style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px' }}>Email:</label>
+                    <input 
+                        type="email" 
+                        value={email} 
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
+                    />
+                </div>
+                <div style={{ marginBottom: '20px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px' }}>Senha:</label>
+                    <input 
+                        type="password" 
+                        value={password} 
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
+                    />
+                </div>
+                <button type="submit" style={{ width: '100%', padding: '10px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+                    Entrar
+                </button>
+            </form>
+        </div>
     );
 };
 

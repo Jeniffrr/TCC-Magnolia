@@ -55,6 +55,11 @@ export const validationRules: ValidationRules = {
     if (formData && value !== formData.senha) return VALIDATION_MESSAGES.PASSWORDS_MISMATCH;
     return "";
   },
+  
+  consentimento_lgpd: (value: string | boolean) => {
+    if (!value) return 'É obrigatório aceitar os termos da LGPD';
+    return "";
+  },
 };
 
 export const applyCnpjMask = (value: string): string => {

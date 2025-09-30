@@ -8,6 +8,7 @@ export interface FormData {
   usuario_cpf: string;
   senha: string;
   senha_confirmation: string;
+  consentimento_lgpd: boolean;
 }
 
 export interface Errors {

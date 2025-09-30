@@ -15,13 +15,11 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check()) {
-            return response()->json(['message' => 'Não autenticado.'], 401);
-        }
-        if (auth()->user()->tipo_usuario !== 'administrador') {
-            return response()->json(['message' => 'Acesso não autorizado. Apenas administradores podem realizar esta ação.'], 403);
+        // Verifica se o usuário está logado e se o tipo é 'administrador'
+        if (! $request->user() || $request->user()->tipo_usuario !== 'administrador') {
+            return response()->json(['message' => 'Acesso negado. Apenas administradores podem realizar esta ação.'], 403);
         }
 
         return $next($request);
-}
+    }
 }

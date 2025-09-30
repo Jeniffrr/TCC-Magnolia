@@ -7,6 +7,8 @@ export default function Home() {
       <Link to="/login">Ir para Login</Link>
       <br />
       <Link to="/registrar">Ir para Registro</Link>
+      <br />
+      <Link to="/admin/usuarios">Gerenciar Usuários (Admin)</Link>
     </div>
   );
 }

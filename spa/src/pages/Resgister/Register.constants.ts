@@ -10,6 +10,7 @@ export const INITIAL_FORM_DATA: FormData = {
   usuario_cpf: "",
   senha: "",
   senha_confirmation: "",
+  consentimento_lgpd: false,
 };
 
 export const BREADCRUMB_ITEMS = [

@@ -3,17 +3,14 @@ import {
   BrButton,
   Container,
 } from "@govbr-ds/react-components";
-import Breadcrumb from "../../components/BreadCrumbs/BrBreadcrumbs";
+import Breadcrumb from "../../components/Breadcrumbs/Breadcrumbs";
 import BrHeader from "../../components/Header/BrHeader";
 import BrInputIcon from "../../components/BrInputIcon/BrInputIcon";
-import logo from "../../assets/images/Logo.png";
-
 import { useRegisterForm } from './Register.hooks';
 import { BREADCRUMB_ITEMS, API_ENDPOINTS, INITIAL_FORM_DATA } from './Register.constants';
 import type { ApiErrorResponse } from './Register.types';
 import { handleApiErrors } from './Register.utils';
 import { pageStyles, getFieldStatus, getFeedbackText } from './Register.styles';
-
 import "./Register.css";
 
 export const Register: React.FC = () => {
@@ -48,7 +45,10 @@ export const Register: React.FC = () => {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
           },
-          body: JSON.stringify(formData),
+          body: JSON.stringify({
+            ...formData,
+            data_consentimento_lgpd: formData.consentimento_lgpd ? new Date().toISOString() : null
+          }),
         });
 
         const responseData = await response.json() as ApiErrorResponse;
@@ -77,8 +77,8 @@ export const Register: React.FC = () => {
   };
 
   return (
-    <Container>
-      <BrHeader logoUrl={logo} />
+    <Container fluid>
+      <BrHeader />
       <div className="mb-3 mt-3">
         <Breadcrumb
           items={BREADCRUMB_ITEMS}
@@ -108,7 +108,7 @@ export const Register: React.FC = () => {
           <form onSubmit={handleSubmit} noValidate>
             {/* Dados do Hospital */}
             <h3 style={pageStyles.sectionTitle}>Dados do Hospital</h3>
-            <hr className="custom-divider" />
+            <hr  />
             
             <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
               <div style={{ flex: '2', minWidth: '800px' }}>
@@ -172,7 +172,7 @@ export const Register: React.FC = () => {
 
             {/* Dados do Usuário */}
             <h3 style={pageStyles.userSectionTitle}>Dados do Usuário</h3>
-            <hr className="custom-divider" />
+            <hr  />
             
               <div style={{ flex: '1', minWidth: '1000px' }}>
                 <BrInputIcon
@@ -253,6 +253,35 @@ export const Register: React.FC = () => {
               </div>
             </div>
             
+            {/* LGPD */}
+            <h3 style={pageStyles.userSectionTitle}>Consentimento LGPD</h3>
+            <hr  />
+            
+            <div style={{ marginBottom: '24px' }}>
+              <label style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  name="consentimento_lgpd"
+                  checked={formData.consentimento_lgpd || false}
+                  onChange={handleChange}
+                  style={{
+                    width: '18px',
+                    height: '18px',
+                    marginTop: '2px',
+                    accentColor: '#711E6C'
+                  }}
+                />
+                <span style={{ fontSize: '14px', lineHeight: '1.5', color: '#333' }}>
+                  Eu concordo com o tratamento dos meus dados pessoais de acordo com a Lei Geral de Proteção de Dados (LGPD). 
+                  Autorizo o uso das minhas informações para os fins relacionados ao funcionamento do sistema hospitalar.*
+                </span>
+              </label>
+              {errors.consentimento_lgpd && (
+                <div style={{ color: '#dc3545', fontSize: '12px', marginTop: '4px' }}>
+                  {errors.consentimento_lgpd}
+                </div>
+              )}
+            </div>
 
             {/* Botões */}
             <div style={pageStyles.buttonContainer}>

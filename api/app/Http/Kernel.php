@@ -122,13 +122,10 @@ class Kernel implements KernelContract
      *
      * @var array<string, class-string|string>
      */
-    protected $middlewareAliases = [];
-
-    /**
-     * All of the registered request duration handlers.
-     *
-     * @var array
-     */
+    protected $middlewareAliases = [
+        'can:access-admin-area' => \App\Http\Middleware\AdminMiddleware::class,
+    ];
+  
     protected $requestLifecycleDurationHandlers = [];
 
     /**

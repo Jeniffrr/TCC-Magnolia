@@ -22,6 +22,8 @@ return new class extends Migration
             $table->string('numero_registro')->nullable();
             $table->boolean('aceitou_termos')->default(false);
             $table->timestamp('consentimento_em')->nullable();
+            $table->boolean('consentimento_lgpd_aceito')->default(false);
+            $table->timestamp('data_consentimento_lgpd')->nullable();
             $table->foreignId('hospital_id')->nullable()->constrained('hospitais')->onDelete('cascade');
             $table->timestamps();
         });
