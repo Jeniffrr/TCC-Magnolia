@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('leitos', function (Blueprint $table) {
             $table->id();
-            $table->string('numero')->unique();
-            $table->enum('tipo', ['Enfermaria', 'Alojamento Conjunto', 'UTI Neonatal']);
+            $table->foreignId('hospital_id')->constrained('hospitais')->onDelete('cascade');
+            $table->string('numero');
+            $table->string('tipo');
             $table->integer('capacidade_maxima')->default(1);
             $table->timestamps();
         });

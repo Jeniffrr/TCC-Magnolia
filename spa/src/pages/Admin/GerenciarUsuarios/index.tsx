@@ -9,6 +9,8 @@ import UserList from "./components/UserList";
 import UserView from "./components/UserView";
 import UserCreate from "./components/UserCreate";
 import UserEdit from "./components/UserEdit";
+import Modal from "../../../components/Modal/Modal";
+import { useModal } from "../../../hooks/useModal";
 import { getCachedUsuarios, setCachedUsuarios, clearUsuariosCache } from "../../../utils/formDataCache";
 import "./styles.css";
 
@@ -19,6 +21,7 @@ const GerenciarUsuarios: React.FC = () => {
   const [lastPage, setLastPage] = useState<number>(1);
   const [error, setError] = useState<string | null>(null);
   const [mode, setMode] = useState<"list" | "new" | "view" | Usuario>("list");
+  const { modal, showAlert, showConfirm, closeModal } = useModal();
 
 
 
@@ -63,14 +66,20 @@ const GerenciarUsuarios: React.FC = () => {
   // Lógica para Desativar/Ativar
   const handleToggleStatus = async (userId: number) => {
     const usuario = usuarios.find((u) => u.id === userId);
-    if (
-      !usuario ||
-      !window.confirm(
-        `Tem certeza que deseja ${
-          usuario.is_active ? "DESATIVAR" : "ATIVAR"
-        } o usuário ${usuario.nome}?`
-      )
-    ) {
+    if (!usuario) {
+      return;
+    }
+
+    const confirmed = await showConfirm(
+      'Confirmar Alteração',
+      `Tem certeza que deseja ${
+        usuario.is_active ? "DESATIVAR" : "ATIVAR"
+      } o usuário ${usuario.nome}?`,
+      usuario.is_active ? 'Desativar' : 'Ativar',
+      'Cancelar'
+    );
+
+    if (!confirmed) {
       return;
     }
 
@@ -84,7 +93,8 @@ const GerenciarUsuarios: React.FC = () => {
         )
       );
     } catch (err: unknown) {
-      alert(
+      await showAlert(
+        'Erro',
         (err as { response?: { data?: { message?: string } } }).response?.data
           ?.message || "Falha ao alterar o status."
       );
@@ -93,18 +103,25 @@ const GerenciarUsuarios: React.FC = () => {
 
   // Lógica para Excluir
   const handleDelete = async (userId: number, userName: string) => {
-    if (
-      !window.confirm(`AVISO: Remover permanentemente o usuário ${userName}?`)
-    ) {
+    const confirmed = await showConfirm(
+      'Confirmar Exclusão',
+      `AVISO: Remover permanentemente o usuário ${userName}?`,
+      'Excluir',
+      'Cancelar'
+    );
+    
+    if (!confirmed) {
       return;
     }
+    
     try {
       await deleteUsuario(userId);
-      alert(`Usuário ${userName} excluído com sucesso.`);
+      await showAlert('Sucesso', `Usuário ${userName} excluído com sucesso.`);
       clearUsuariosCache(); // Limpa cache após exclusão
       fetchUsuarios(currentPage);
     } catch (err: unknown) {
-      alert(
+      await showAlert(
+        'Erro',
         (err as { response?: { data?: { message?: string } } }).response?.data
           ?.message || "Falha na exclusão."
       );
@@ -182,17 +199,29 @@ const GerenciarUsuarios: React.FC = () => {
 
   // SE ESTIVER NO MODO LISTAGEM
   return (
-    <UserList
-      usuarios={usuarios}
-      currentPage={currentPage}
-      lastPage={lastPage}
-      onNewUser={startNewUser}
-      onViewUser={handleViewUser}
-      onEditUser={startEditUser}
-      onToggleStatus={handleToggleStatus}
-      onDeleteUser={handleDelete}
-      onPageChange={handlePageChange}
-    />
+    <>
+      <UserList
+        usuarios={usuarios}
+        currentPage={currentPage}
+        lastPage={lastPage}
+        onNewUser={startNewUser}
+        onViewUser={handleViewUser}
+        onEditUser={startEditUser}
+        onToggleStatus={handleToggleStatus}
+        onDeleteUser={handleDelete}
+        onPageChange={handlePageChange}
+      />
+      <Modal
+        isOpen={modal.isOpen}
+        title={modal.title}
+        message={modal.message}
+        type={modal.type}
+        onConfirm={modal.onConfirm}
+        onCancel={closeModal}
+        confirmText={modal.confirmText}
+        cancelText={modal.cancelText}
+      />
+    </>
   );
 };
 

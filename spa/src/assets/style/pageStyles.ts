@@ -36,10 +36,11 @@ export const pageStyles: PageStyles = {
   primaryButton: {
     background: '#711E6C',
     border: 'none',
+    color: '#fff',
     borderRadius: '20px',
     padding: '12px 30px',
+    minWidth: '150px ',
     fontSize: '16px',
-    color: '#fff',
     textAlign: 'center',
     outline: 'none',
     marginBottom: '20px',
@@ -52,14 +53,12 @@ export const pageStyles: PageStyles = {
     padding: '12px 30px ',
     minWidth: '150px ',
     fontSize: '16px ',
-    transition: 'all 0.3s ',
-    cursor: 'pointer',
     textAlign: 'center',
     marginBottom: '20px ',
   },
   containerPadding: { 
     padding: '0 40px',
-    maxWidth: '1100px',
+    maxWidth: '1200px',
     margin: '0 auto'
   }
 };

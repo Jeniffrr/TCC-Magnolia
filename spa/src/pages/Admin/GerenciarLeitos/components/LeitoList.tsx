@@ -2,35 +2,33 @@ import React from 'react';
 import { BrButton, Container } from '@govbr-ds/react-components';
 import Breadcrumb from '../../../../components/Breadcrumbs/Breadcrumbs';
 import { pageStyles } from '../../../../assets/style/pageStyles';
-import type { Usuario } from '../../../../services/adminService';
+import type { Leito } from '../../../../services/leitoService';
 import AppLayout from '../../../../components/Layout/AppLayout';
-
-interface UserListProps {
-  usuarios: Usuario[];
-  currentPage: number;
-  lastPage: number;
-  onNewUser: () => void;
-  onViewUser: (user: Usuario) => void;
-  onEditUser: (user: Usuario) => void;
-  onToggleStatus: (userId: number) => void;
-  onDeleteUser: (userId: number, userName: string) => void;
-  onPageChange: (page: number) => void;
-}
 
 const BREADCRUMB_ITEMS = [
   { label: "", url: "/admin" },
-  { label: "Gerenciar Profissionais", active: true },
+  { label: "Gerenciar Leitos", active: true },
 ];
 
-const UserList: React.FC<UserListProps> = ({
-  usuarios,
+interface LeitoListProps {
+  leitos: Leito[];
+  currentPage: number;
+  lastPage: number;
+  onNewLeito: () => void;
+  onViewLeito: (leito: Leito) => void;
+  onEditLeito: (leito: Leito) => void;
+  onDeleteLeito: (leitoId: number, leitoNumero: string) => void;
+  onPageChange: (page: number) => void;
+}
+
+const LeitoList: React.FC<LeitoListProps> = ({
+  leitos,
   currentPage,
   lastPage,
-  onNewUser,
-  onViewUser,
-  onEditUser,
-  onToggleStatus,
-  onDeleteUser,
+  onNewLeito,
+  onViewLeito,
+  onEditLeito,
+  onDeleteLeito,
   onPageChange,
 }) => {
   return (
@@ -45,85 +43,62 @@ const UserList: React.FC<UserListProps> = ({
         </div>
         
         <h1 style={pageStyles.title}>
-          Gerenciar Usuarios
+          Gerenciar Leitos
         </h1>
         
         <div style={pageStyles.containerPadding}>
+          <div className="button">
             <BrButton
-              onClick={onNewUser}
+              onClick={onNewLeito}
               style={pageStyles.primaryButton}
-              icon="fas fa-user-plus"
+              icon="fas fa-bed"
             >
-              <span style={{ marginLeft: '8px' }}>Cadastrar Novo Profissional</span>
+              <span style={{ marginLeft: '8px' }}>Cadastrar Novo Leito</span>
             </BrButton>
+          </div>
 
           <div className="table-container">
             <table className="table">
               <thead>
                 <tr className="table-header-row">
-                  <th className="table-header">Nome</th>
-                  <th className="table-header">Função</th>
-                  <th className="table-header">Registro</th>
-                  <th className="table-header">Status</th>
+                  <th className="table-header">Leito</th>
+                  <th className="table-header">Tipo</th>
+                  <th className="table-header">Capacidade</th>
                   <th className="table-header">Ações</th>
                 </tr>
               </thead>
               <tbody>
-                {usuarios.map((user) => (
-                  <tr key={user.id} className="table-row">
+                {leitos.map((leito) => (
+                  <tr key={leito.id} className="table-row">
                     <td className="table-cell">
-                      <div className="user-name">{user.nome}</div>
-                      <div className="user-email">{user.email}</div>
+                      <div className="user-name">Leito {leito.numero}</div>
                     </td>
                     <td className="table-cell">
                       <span className="badge">
-                        {user.tipo_usuario.toUpperCase()}
+                        {leito.tipo.toUpperCase()}
                       </span>
                     </td>
                     <td className="table-cell">
-                      {user.tipo_registro} - {user.numero_registro}
-                      <br />
-                      <small className="small-text">{user.uf_registro}</small>
-                    </td>
-                    <td className="table-cell">
-                      <span
-                        className={`status-badge ${
-                          user.is_active ? "status-active" : "status-inactive"
-                        }`}
-                      >
-                        {user.is_active ? "ATIVO" : "INATIVO"}
-                      </span>
+                      {leito.capacidade_maxima} {leito.capacidade_maxima === 1 ? 'pessoa' : 'pessoas'}
                     </td>
                     <td className="table-cell">
                       <div className="action-buttons">
                         <BrButton
-                          onClick={() => onViewUser(user)}
+                          onClick={() => onViewLeito(leito)}
                           className="view-button"
-                          title="Visualizar usuário"
+                          title="Visualizar leito"
                           icon="fas fa-eye"
                         />
                         <BrButton
-                          onClick={() => onEditUser(user)}
+                          onClick={() => onEditLeito(leito)}
                           className="edit-button"
-                          title="Editar usuário"
+                          title="Editar leito"
                           icon="pencil-alt"
                         />
                         <BrButton
-                          onClick={() => onToggleStatus(user.id)}
-                          className={`toggle-button ${
-                            user.is_active ? "deactivate" : "activate"
-                          }`}
-                          title={
-                            user.is_active
-                              ? "Desativar usuário"
-                              : "Ativar usuário"
-                          }
-                          icon={user.is_active ? "fas fa-ban" : "fas fa-check"}
-                        />
-                        <BrButton
-                          onClick={() => onDeleteUser(user.id, user.nome)}
+                          onClick={() => onDeleteLeito(leito.id, leito.numero)}
                           className="delete-button"
-                          title="Excluir usuário"
+                          title="Excluir leito"
                           icon="trash"
                         />
                       </div>
@@ -157,4 +132,4 @@ const UserList: React.FC<UserListProps> = ({
   );
 };
 
-export default UserList;
+export default LeitoList;

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\PrimeiroAcessoController;
 use App\Http\Controllers\UsuarioController;
+use App\Http\Controllers\LeitoController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\TwoFactorController;
 use App\Models\Usuario;
@@ -87,5 +88,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/usuarios/{id}', [UsuarioController::class, 'update']); // Editar
         Route::delete('/usuarios/{id}', [UsuarioController::class, 'destroy']); // Apagar
         Route::patch('/usuarios/{id}/status', [UsuarioController::class, 'toggleStatus']); // Desativar/Ativar
+        
+        // CRUD Completo de Leitos
+        Route::get('/leitos', [LeitoController::class, 'index']); // Visualizar todos
+        Route::post('/leitos', [LeitoController::class, 'store']); // Cadastrar novo leito
+        Route::get('/leitos/{id}', [LeitoController::class, 'show']); // Visualizar um específico
+        Route::put('/leitos/{id}', [LeitoController::class, 'update']); // Editar
+        Route::delete('/leitos/{id}', [LeitoController::class, 'destroy']); // Apagar
     });
 });

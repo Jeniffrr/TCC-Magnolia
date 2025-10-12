@@ -2,21 +2,21 @@ import React from 'react';
 import { Container } from '@govbr-ds/react-components';
 import Breadcrumb from '../../../../components/Breadcrumbs/Breadcrumbs';
 import { pageStyles } from '../../../../assets/style/pageStyles';
-import UserForm from './UserForm';
-import type { Usuario } from '../../../../services/adminService';
+import LeitoForm from './LeitoForm';
+import type { Leito } from '../../../../services/leitoService';
 import AppLayout from '../../../../components/Layout/AppLayout';
 
-interface UserEditProps {
-  user: Usuario;
+interface LeitoEditProps {
+  leito: Leito;
   onSuccess: () => void;
   onCancel: () => void;
 }
 
-const UserEdit: React.FC<UserEditProps> = ({ user, onSuccess, onCancel }) => {
+const LeitoEdit: React.FC<LeitoEditProps> = ({ leito, onSuccess, onCancel }) => {
   const breadcrumbItems = [
-    { label: '', url: '/' },
-    { label: 'Gerenciar Profissionais', url: '/admin/usuarios' },
-    { label: 'Editar Profissional', active: true }
+    { label: '', url: '/admin' },
+    { label: 'Gerenciar Leitos', url: '/admin/leitos' },
+    { label: 'Editar Leito', active: true }
   ];
 
   return (
@@ -26,12 +26,11 @@ const UserEdit: React.FC<UserEditProps> = ({ user, onSuccess, onCancel }) => {
           <Breadcrumb items={breadcrumbItems} homeIcon={true} />
         </div>
         
-        <h1 style={pageStyles.title}>Editar Profissional</h1>
+        <h1 style={pageStyles.title}>Editar Leito</h1>
         
         <div style={pageStyles.containerPadding}>
-          
-          <UserForm
-            userToEdit={user}
+          <LeitoForm
+            leitoToEdit={leito}
             onSuccess={onSuccess}
             onCancel={onCancel}
           />
@@ -41,4 +40,4 @@ const UserEdit: React.FC<UserEditProps> = ({ user, onSuccess, onCancel }) => {
   );
 };
 
-export default UserEdit;
+export default LeitoEdit;

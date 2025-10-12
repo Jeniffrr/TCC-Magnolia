@@ -57,8 +57,9 @@
 .br-header .nav-section {
   flex: 1;
   display: flex;
-  justify-content: center;
-  margin: 0 2rem;
+  justify-content: flex-start;
+  margin: 0 6rem;
+  box-sizing: border-box;
 }
 
 .br-header .nav-links {
@@ -79,9 +80,12 @@
   gap: 0.5rem;
   text-decoration: none;
   color: var(--text-color);
-  font-weight: 500;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
+  font-family: inherit;
+  font-weight: auto;
+  font-size: 1.3rem;
+  padding: 2rem 1rem;
+  height: var(--header-height);
+  box-sizing: border-box;
   transition: all 0.2s ease;
 }
 

@@ -1,6 +1,6 @@
 import React from 'react';
-import { BrButton, Container } from '@govbr-ds/react-components';
-import BrHeader from '../../../../components/Header/BrHeader';
+import { BrButton } from '@govbr-ds/react-components';
+import AppLayout from '../../../../components/Layout/AppLayout';
 import Breadcrumb from '../../../../components/Breadcrumbs/Breadcrumbs';
 import { pageStyles } from '../../../../assets/style/pageStyles';
 import type { Usuario } from '../../../../services/adminService';
@@ -12,13 +12,13 @@ interface UserViewProps {
 
 const UserView: React.FC<UserViewProps> = ({ user, onBack }) => {
   const breadcrumbItems = [
-    { label: '', url: '/' },
+    { label: '', url: '/admin' },
     { label: 'Gerenciar Profissionais', url: '/admin/usuarios' },
     { label: 'Visualizar Profissional', active: true }
   ];
   return (
-    <Container fluid>
-      <BrHeader />
+    <AppLayout>
+      <div className="container-fluid">
       <div className="mb-3 mt-3">
         <Breadcrumb items={breadcrumbItems} homeIcon={true} />
       </div>
@@ -63,7 +63,8 @@ const UserView: React.FC<UserViewProps> = ({ user, onBack }) => {
           </div>
         </div>
       </div>
-    </Container>
+      </div>
+    </AppLayout>
   );
 };
 

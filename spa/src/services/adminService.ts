@@ -1,4 +1,4 @@
-import api from './api';
+import api from '../api/axios';
 
 export interface Usuario {
   id: number;
@@ -20,44 +20,44 @@ export interface PaginatedResponse {
 }
 
 export const getUsuarios = async (page: number = 1): Promise<PaginatedResponse> => {
-  const response = await api.get(`/usuarios?page=${page}`);
+  const response = await api.get(`/api/usuarios?page=${page}`);
   return response.data;
 };
 
 export const toggleUsuarioStatus = async (userId: number): Promise<void> => {
-  await api.patch(`/usuarios/${userId}/status`);
+  await api.patch(`/api/usuarios/${userId}/status`);
 };
 
 export const deleteUsuario = async (userId: number): Promise<void> => {
-  await api.delete(`/usuarios/${userId}`);
+  await api.delete(`/api/usuarios/${userId}`);
 };
 
 export const createUsuario = async (userData: Partial<Usuario>): Promise<Usuario> => {
-  const response = await api.post('/usuarios/cadastrar', userData);
+  const response = await api.post('/api/usuarios/cadastrar', userData);
   return response.data.usuario;
 };
 
 export const updateUsuario = async (userId: number, userData: Partial<Usuario>): Promise<Usuario> => {
-  const response = await api.put(`/usuarios/${userId}`, userData);
+  const response = await api.put(`/api/usuarios/${userId}`, userData);
   return response.data.usuario;
 };
 
 export const getUsuario = async (userId: number): Promise<Usuario> => {
-  const response = await api.get(`/usuarios/${userId}`);
+  const response = await api.get(`/api/usuarios/${userId}`);
   return response.data;
 };
 
 export const getTiposRegistro = async (): Promise<string[]> => {
-    const response = await api.get('/tipos-registro');
+    const response = await api.get('/api/tipos-registro');
     return response.data;
 };
 
 export const getUfs = async (): Promise<string[]> => {
-    const response = await api.get('/ufs');
+    const response = await api.get('/api/ufs');
     return response.data;
 };
 
 export const getTiposUsuario = async (): Promise<string[]> => {
-    const response = await api.get('/tipos-usuario');
+    const response = await api.get('/api/tipos-usuario');
     return response.data;
 };

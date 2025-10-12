@@ -80,7 +80,7 @@ class UsuarioController extends Controller
             ->where('tipo_usuario', '!=', Usuario::TIPO_ADMINISTRADOR)
             // 4. Adiciona ordenação e paginação para performance
             ->orderBy('nome', 'asc')
-            ->paginate(15);
+            ->paginate(10);
 
         return response()->json($usuarios, 200);
     }
