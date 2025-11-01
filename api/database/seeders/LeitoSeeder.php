@@ -9,11 +9,10 @@ class LeitoSeeder extends Seeder
 {
     public function run()
     {
-        $tipos = ['UTI', 'Enfermaria', 'Cirurgia', 'Pediatria', 'Maternidade', 'Emergencia', 'Cardiologia', 'Neurologia', 'Ortopedia', 'Oncologia'];
+        $tipos = ['UTI', 'Enfermaria', 'Maternidade', 'Emergencia'];
         $hospitais = [1, 2, 3, 4];
         
-        // Criar 100 leitos para teste de paginação
-        for ($i = 1; $i <= 100; $i++) {
+        for ($i = 1; $i <= 20; $i++) {
             Leito::firstOrCreate(
                 ['numero' => str_pad($i, 3, '0', STR_PAD_LEFT), 'hospital_id' => $hospitais[($i - 1) % 4]],
                 [

@@ -17,7 +17,6 @@ class OcorrenciaClinica extends Model
      */
     protected $fillable = [
         'atendimento_id',
-        'hospital_id',
         'descricao',
         'data_ocorrencia',
     ];

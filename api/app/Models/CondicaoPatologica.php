@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Scopes\HospitalScope;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class CondicaoPatologica extends Model
 {
@@ -15,7 +15,9 @@ class CondicaoPatologica extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = [
-        'nome',
-    ];
+    protected $fillable = ['nome'];
+
+    public function pacientes(): BelongsToMany {
+        return $this->belongsToMany(Paciente::class, 'paciente_condicao');
+    }
 }

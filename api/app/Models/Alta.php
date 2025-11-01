@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Scopes\HospitalScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Alta extends Model
 {
@@ -16,15 +17,22 @@ class Alta extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'paciente_id',
+        'internacao_id',
         'usuario_id',
-        'hospital_id',
         'data_hora',
-        'condicao_paciente',
-        'condicao_recem_nascido',
+        'resumo_alta',
         'orientacoes',
     ];
 
+    public function internacao(): BelongsTo
+    {
+        return $this->belongsTo(Internacao::class);
+    }
+    
+    public function profissional(): BelongsTo
+    {
+        return $this->belongsTo(Usuario::class, 'usuario_id');
+    }
     /**
      * The attributes that should be cast.
      *

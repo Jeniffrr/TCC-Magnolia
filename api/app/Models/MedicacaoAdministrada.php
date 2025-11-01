@@ -17,7 +17,6 @@ class MedicacaoAdministrada extends Model
      */
     protected $fillable = [
         'atendimento_id',
-        'hospital_id',
         'nome_medicacao',
         'dosagem',
         'frequencia',

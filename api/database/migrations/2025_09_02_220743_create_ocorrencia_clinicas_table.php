@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('ocorrencia_clinicas', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('atendimento_id')->constrained('atendimentos');
+            $table->foreignId('atendimento_id')->constrained('atendimentos')->onDelete('cascade');
             $table->text('descricao');
             $table->dateTime('data_ocorrencia');
             $table->timestamps();

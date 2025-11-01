@@ -11,13 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('internacaos', function (Blueprint $table) {
+        Schema::create('internacoes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('paciente_id')->constrained('pacientes');
-            $table->foreignId('leito_id')->constrained('leitos');
-            $table->foreignId('usuario_id')->constrained('usuarios');
+            $table->foreignId('leito_id')->nullable()->constrained('leitos'); // O leito que a paciente ocupa
             $table->dateTime('data_entrada');
-            $table->dateTime('data_saida')->nullable();
+            $table->dateTime('data_alta')->nullable(); // A data de alta fica aqui!
+            $table->text('motivo_internacao')->nullable();
+            $table->string('status')->default('ativa'); // Ex: 'ativa', 'finalizada', 'transferida'
+
             $table->timestamps();
         });
     }
@@ -27,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('internacaos');
+        Schema::dropIfExists('internacoes');
     }
 };

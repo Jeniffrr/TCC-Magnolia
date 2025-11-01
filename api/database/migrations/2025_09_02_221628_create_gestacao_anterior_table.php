@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('gestacao_anterior', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('paciente_id')->constrained('pacientes');
-            $table->integer('ano_parto')->nullable();
-            $table->string('tipo_parto')->nullable();
+            $table->foreignId('paciente_id')->constrained('pacientes')->onDelete('cascade');
+            $table->year('ano_parto');
+            $table->string('tipo_parto');
             $table->text('observacoes')->nullable();
             $table->timestamps();
         });

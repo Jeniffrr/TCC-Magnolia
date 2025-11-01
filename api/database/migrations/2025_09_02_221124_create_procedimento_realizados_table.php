@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('procedimento_realizados', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('atendimento_id')->constrained('atendimentos');
+            $table->foreignId('atendimento_id')->constrained('atendimentos')->onDelete('cascade');
             $table->string('nome_procedimento');
             $table->text('observacoes')->nullable();
             $table->timestamps();

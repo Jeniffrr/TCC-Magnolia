@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container } from '@govbr-ds/react-components';
-import BrHeader from '../../../../components/Header/BrHeader';
+import AppLayout from '../../../../components/Layout/AppLayout';
 import Breadcrumb from '../../../../components/Breadcrumbs/Breadcrumbs';
 import { pageStyles } from '../../../../assets/style/pageStyles';
 import UserForm from './UserForm';
@@ -18,8 +18,8 @@ const UserCreate: React.FC<UserCreateProps> = ({ onSuccess, onCancel }) => {
   ];
 
   return (
+    <AppLayout>
     <Container fluid>
-      <BrHeader />
       <div className="mb-3 mt-3">
         <Breadcrumb items={breadcrumbItems} homeIcon={true} />
       </div>
@@ -35,6 +35,7 @@ const UserCreate: React.FC<UserCreateProps> = ({ onSuccess, onCancel }) => {
         />
       </div>
     </Container>
+  </AppLayout>
   );
 };
 

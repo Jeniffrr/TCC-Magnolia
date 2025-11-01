@@ -17,7 +17,6 @@ class ProcedimentoRealizado extends Model
      */
     protected $fillable = [
         'atendimento_id',
-        'hospital_id',
         'nome_procedimento',
         'observacoes',
     ];

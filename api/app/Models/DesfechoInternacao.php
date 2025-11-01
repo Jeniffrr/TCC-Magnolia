@@ -5,8 +5,10 @@ namespace App\Models;
 use App\Models\Scopes\HospitalScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class EventoParto extends Model
+class DesfechoInternacao extends Model
 {
     use HasFactory;
 
@@ -15,7 +17,7 @@ class EventoParto extends Model
      *
      * @var string
      */
-    protected $table = 'evento_partos';
+    protected $table = 'desfechos_internacao';
 
     /**
      * The attributes that are mass assignable.
@@ -23,12 +25,14 @@ class EventoParto extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'paciente_id',
+        'internacao_id',
         'usuario_id',
-        'hospital_id',
         'data_hora_parto',
+        'tipo',
+        'data_hora_evento',
+        'semana_gestacional',
         'tipo_parto',
-        'condicao_recem_nascido',
+        'observacoes',
     ];
 
     /**
@@ -46,5 +50,16 @@ class EventoParto extends Model
     protected static function booted()
     {
         static::addGlobalScope(new HospitalScope);
+    }
+   public function internacao(): BelongsTo
+    {
+        return $this->belongsTo(Internacao::class);
+    }
+    
+    // Um desfecho PODE TER MUITOS recém-nascidos (para gêmeos, etc)
+    // Este relacionamento só fará sentido se o tipo for 'Parto'
+    public function recemNascidos(): HasMany
+    {
+        return $this->hasMany(RecemNascido::class);
     }
 }

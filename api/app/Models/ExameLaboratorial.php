@@ -17,7 +17,6 @@ class ExameLaboratorial extends Model
      */
     protected $fillable = [
         'atendimento_id',
-        'hospital_id',
         'nome',
         'resultado',
         'data_exame',

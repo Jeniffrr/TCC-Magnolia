@@ -13,22 +13,35 @@ return new class extends Migration
     {
         Schema::create('pacientes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('usuario_id')->constrained('usuarios'); // Chave Estrangeira
-            $table->foreignId('categoria_risco_id',['normal' , 'medio' , 'alto' , 'aborto']);
+            // Chaves estrangeiras para auditoria e organização
+            $table->foreignId('usuario_id')->constrained('usuarios');
+            $table->foreignId('hospital_id')->constrained('hospitais');
+
+            // Dados Pessoais  (Permanentes)
             $table->string('nome_completo');
-            $table->string('telefone')->nullable();
+            $table->string('cpf')->unique();
+            $table->string('nome_mae');
             $table->date('data_nascimento');
+            $table->string('telefone')->nullable();
+
+            // Endereço
             $table->string('rua')->nullable();
             $table->string('numero')->nullable();
             $table->string('bairro')->nullable();
             $table->string('cidade')->nullable();
             $table->string('estado')->nullable();
             $table->string('cep')->nullable();
+
+            // Histórico Médico Geral
             $table->text('alergias')->nullable();
+            $table->text('ocorrencias_clinicas')->nullable();
             $table->text('medicamentos_continuos')->nullable();
+
+            // Termos e Condições
             $table->boolean('consentimento_lgpd_aceito')->default(false);
             $table->dateTime('data_consentimento_lgpd')->nullable();
-            $table->timestamps();
+
+            $table->timestamps(); // created_at e updated_at
         });
     }
 

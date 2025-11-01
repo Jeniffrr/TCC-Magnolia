@@ -43,8 +43,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({
     if (isAuthenticated && user?.tipo_usuario !== 'administrador') {
       return [
         ...defaultLinks,
-        { label: 'Dashboard', href: '/dashboard' },
-        { label: 'Gerenciar Pacientes', href: '/pacientes' }
+        { label: 'Pagina Inicial', href: '/profissionais' },
+        { label: 'Gerenciar Pacientes', href: '/profissionais/pacientes' }
       ];
     }
     

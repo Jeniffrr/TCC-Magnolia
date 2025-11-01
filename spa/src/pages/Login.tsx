@@ -81,13 +81,13 @@ const Login: React.FC = () => {
           navigate("/admin");
           break;
         case "medico":
-          navigate("/dashboard");
+          navigate("/profissionais");
           break;
         case "enfermeiro":
-          navigate("/dashboard");
+          navigate("/profissionais");
           break;
         case "tecnico_enfermagem":
-          navigate("/dashboard");
+          navigate("/profissionais");
           break;
         default:
           navigate("/");

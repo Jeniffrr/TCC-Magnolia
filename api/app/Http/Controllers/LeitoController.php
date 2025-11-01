@@ -5,9 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Leito;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use App\Models\Internacao;
 
 class LeitoController extends Controller
-{
+{    
     public function store(Request $request): JsonResponse
     {
         $request->validate([
@@ -26,7 +27,7 @@ class LeitoController extends Controller
             'numero' => $request->numero,
             'tipo' => $request->tipo,
             'capacidade_maxima' => $request->capacidade_maxima,
-            'hospital_id' => 1,
+            'hospital_id' => $request->user()->hospital_id, 
         ]);
 
         return response()->json([
@@ -97,4 +98,9 @@ class LeitoController extends Controller
             'message' => "Leito '{$leito->numero}' removido com sucesso."
         ], 200);
     }
+
+    public function internacaoAtiva(): \Illuminate\Database\Eloquent\Relations\HasOne
+        {
+            return $this->hasOne(Internacao::class)->where('status', 'ativa');
+        }
 }
