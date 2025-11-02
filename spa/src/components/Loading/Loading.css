@@ -1,0 +1,80 @@
+.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #666;
+}
+
+.loading-icon {
+  color: #711E6C;
+}
+
+.loading-message {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Sizes */
+.loading-small {
+  padding: 10px;
+}
+
+.loading-small .loading-icon {
+  font-size: 14px;
+}
+
+.loading-small .loading-message {
+  font-size: 12px;
+}
+
+.loading-medium {
+  padding: 20px;
+}
+
+.loading-medium .loading-icon {
+  font-size: 18px;
+}
+
+.loading-large {
+  padding: 30px;
+}
+
+.loading-large .loading-icon {
+  font-size: 24px;
+}
+
+.loading-large .loading-message {
+  font-size: 16px;
+}
+
+/* Variants */
+.loading-pulse {
+  animation: pulse 0.8s ease-in-out infinite;
+}
+
+.loading-dots {
+  animation: dots 0.7s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+@keyframes dots {
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+
+.fa-spin {
+  animation-duration: 0.8s !important;
+}

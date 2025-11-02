@@ -11,6 +11,7 @@ import { BrButton } from '@govbr-ds/react-components';
 import BrInputIcon from '../../../../components/BrInputIcon/BrInputIcon';
 import { pageStyles, getFieldStatus, getFeedbackText } from '../../../../assets/style/pageStyles';
 import { getCachedFormData, setCachedFormData } from '../../../../utils/formDataCache';
+import { Loading } from '../../../../components/Loading/Loading';
 
 // Tradução de mensagens de erro
 const translateErrorMessage = (message: string): string => {
@@ -89,50 +90,51 @@ const UserForm: React.FC<UserFormProps> = ({ userToEdit, onSuccess, onCancel }) 
                 setTiposRegistro(cachedData.tiposRegistro);
                 setUfs(cachedData.ufs);
                 setTiposUsuario(cachedData.tiposUsuario);
-                setLoading(false);
-            } else {
-                setLoading(true);
-                try {
-                    const [tiposReg, ufList, tiposUser] = await Promise.all([
-                        getTiposRegistro(), 
-                        getUfs(), 
-                        getTiposUsuario()
-                    ]);
-                    
-                    // Salva no cache
-                    setCachedFormData({
-                        tiposRegistro: tiposReg,
-                        ufs: ufList,
-                        tiposUsuario: tiposUser
-                    });
-                    
-                    setTiposRegistro(tiposReg);
-                    setUfs(ufList);
-                    setTiposUsuario(tiposUser);
-                } catch {
-                    setError({ message: 'Erro ao carregar dados do formulário. Verifique sua conexão.' });
-                } finally {
-                    setLoading(false);
-                }
+                return;
             }
             
-            // Preenche dados para edição
-            if (isEditMode && userToEdit) {
-                setFormData({
-                    nome: userToEdit.nome,
-                    email: userToEdit.email,
-                    cpf: userToEdit.cpf,
-                    tipo_usuario: userToEdit.tipo_usuario,
-                    tipo_registro: userToEdit.tipo_registro,
-                    uf_registro: userToEdit.uf_registro,
-                    senha: '',
-                    senha_confirmation: '',
-                    numero_registro: userToEdit.numero_registro,
+            // Só mostra loading se não tem cache
+            setLoading(true);
+            try {
+                const [tiposReg, ufList, tiposUser] = await Promise.all([
+                    getTiposRegistro(), 
+                    getUfs(), 
+                    getTiposUsuario()
+                ]);
+                
+                // Salva no cache
+                setCachedFormData({
+                    tiposRegistro: tiposReg,
+                    ufs: ufList,
+                    tiposUsuario: tiposUser
                 });
+                
+                setTiposRegistro(tiposReg);
+                setUfs(ufList);
+                setTiposUsuario(tiposUser);
+            } catch {
+                setError({ message: 'Erro ao carregar dados do formulário. Verifique sua conexão.' });
+            } finally {
+                setLoading(false);
             }
         };
 
         loadFormData();
+        
+        // Preenche dados para edição
+        if (isEditMode && userToEdit) {
+            setFormData({
+                nome: userToEdit.nome,
+                email: userToEdit.email,
+                cpf: userToEdit.cpf,
+                tipo_usuario: userToEdit.tipo_usuario,
+                tipo_registro: userToEdit.tipo_registro,
+                uf_registro: userToEdit.uf_registro,
+                senha: '',
+                senha_confirmation: '',
+                numero_registro: userToEdit.numero_registro,
+            });
+        }
     }, [isEditMode, userToEdit]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -185,9 +187,14 @@ const UserForm: React.FC<UserFormProps> = ({ userToEdit, onSuccess, onCancel }) 
         }
     };
 
-    // Renderiza o formulário mesmo durante o loading, com valores padrão
-    const showLoading = loading && tiposRegistro.length === 0;
-    if (showLoading) return <p className="loading">Carregando formulário...</p>;
+    // Só mostra loading se não tem dados em cache
+    if (loading && tiposRegistro.length === 0) {
+        return (
+            <div style={{ padding: '40px', textAlign: 'center' }}>
+                <Loading message="Carregando formulário..." />
+            </div>
+        );
+    }
 
     return (
         <div className="register-container">

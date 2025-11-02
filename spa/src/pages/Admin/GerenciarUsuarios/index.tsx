@@ -11,19 +11,21 @@ import UserCreate from "./components/UserCreate";
 import UserEdit from "./components/UserEdit";
 import Modal from "../../../components/Modal/Modal";
 import { useModal } from "../../../hooks/useModal";
-import { getCachedUsuarios, setCachedUsuarios, clearUsuariosCache } from "../../../utils/formDataCache";
+import {
+  getCachedUsuarios,
+  setCachedUsuarios,
+  clearUsuariosCache,
+} from "../../../utils/formDataCache";
 import "./styles.css";
 
 const GerenciarUsuarios: React.FC = () => {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [lastPage, setLastPage] = useState<number>(1);
   const [error, setError] = useState<string | null>(null);
   const [mode, setMode] = useState<"list" | "new" | "view" | Usuario>("list");
   const { modal, showAlert, showConfirm, closeModal } = useModal();
-
-
 
   // Função que carrega os dados do backend com cache
   const fetchUsuarios = useCallback(async (page: number) => {
@@ -33,22 +35,22 @@ const GerenciarUsuarios: React.FC = () => {
       setUsuarios(cachedData.data);
       setCurrentPage(cachedData.current_page);
       setLastPage(cachedData.last_page);
-      setLoading(false);
       return;
     }
 
+    // Só mostra loading se não tem cache
     setLoading(true);
     setError(null);
     try {
       const data = await getUsuarios(page);
-      
+
       // Salva no cache
       setCachedUsuarios(page, {
         data: data.data,
         current_page: data.current_page,
-        last_page: data.last_page
+        last_page: data.last_page,
       });
-      
+
       setUsuarios(data.data);
       setCurrentPage(data.current_page);
       setLastPage(data.last_page);
@@ -71,12 +73,12 @@ const GerenciarUsuarios: React.FC = () => {
     }
 
     const confirmed = await showConfirm(
-      'Confirmar Alteração',
+      "Confirmar Alteração",
       `Tem certeza que deseja ${
         usuario.is_active ? "DESATIVAR" : "ATIVAR"
       } o usuário ${usuario.nome}?`,
-      usuario.is_active ? 'Desativar' : 'Ativar',
-      'Cancelar'
+      usuario.is_active ? "Desativar" : "Ativar",
+      "Cancelar"
     );
 
     if (!confirmed) {
@@ -94,7 +96,7 @@ const GerenciarUsuarios: React.FC = () => {
       );
     } catch (err: unknown) {
       await showAlert(
-        'Erro',
+        "Erro",
         (err as { response?: { data?: { message?: string } } }).response?.data
           ?.message || "Falha ao alterar o status."
       );
@@ -104,24 +106,24 @@ const GerenciarUsuarios: React.FC = () => {
   // Lógica para Excluir
   const handleDelete = async (userId: number, userName: string) => {
     const confirmed = await showConfirm(
-      'Confirmar Exclusão',
+      "Confirmar Exclusão",
       `AVISO: Remover permanentemente o usuário ${userName}?`,
-      'Excluir',
-      'Cancelar'
+      "Excluir",
+      "Cancelar"
     );
-    
+
     if (!confirmed) {
       return;
     }
-    
+
     try {
       await deleteUsuario(userId);
-      await showAlert('Sucesso', `Usuário ${userName} excluído com sucesso.`);
+      await showAlert("Sucesso", `Usuário ${userName} excluído com sucesso.`);
       clearUsuariosCache(); // Limpa cache após exclusão
       fetchUsuarios(currentPage);
     } catch (err: unknown) {
       await showAlert(
-        'Erro',
+        "Erro",
         (err as { response?: { data?: { message?: string } } }).response?.data
           ?.message || "Falha na exclusão."
       );
@@ -139,10 +141,10 @@ const GerenciarUsuarios: React.FC = () => {
   const startNewUser = () => setMode("new");
   const startEditUser = (user: Usuario) => setMode(user);
   const cancelForm = () => setMode("list");
-  
+
   // Estado para usuário sendo visualizado
   const [viewingUser, setViewingUser] = useState<Usuario | null>(null);
-  
+
   // Função para visualizar usuário
   const handleViewUser = (user: Usuario) => {
     setViewingUser(user);
@@ -153,8 +155,6 @@ const GerenciarUsuarios: React.FC = () => {
   const handlePageChange = (page: number) => {
     fetchUsuarios(page);
   };
-
-
 
   // Carregar usuários na montagem do componente
   useEffect(() => {
@@ -170,16 +170,6 @@ const GerenciarUsuarios: React.FC = () => {
     );
   }
 
-  // Renderização condicional
-  if (loading && mode === "list")
-    return (
-      <div className="loading-container">
-        <div className="loading-bar">
-          <div className="loading-progress"></div>
-        </div>
-        <p className="loading-text">Carregando usuários...</p>
-      </div>
-    );
   if (error && mode === "list") return <p className="error">Erro: {error}</p>;
 
   // SE ESTIVER NO MODO VISUALIZAÇÃO
@@ -194,7 +184,13 @@ const GerenciarUsuarios: React.FC = () => {
 
   // SE ESTIVER NO MODO EDIÇÃO
   if (typeof mode === "object") {
-    return <UserEdit user={mode} onSuccess={handleFormSuccess} onCancel={cancelForm} />;
+    return (
+      <UserEdit
+        user={mode}
+        onSuccess={handleFormSuccess}
+        onCancel={cancelForm}
+      />
+    );
   }
 
   // SE ESTIVER NO MODO LISTAGEM
@@ -210,6 +206,7 @@ const GerenciarUsuarios: React.FC = () => {
         onToggleStatus={handleToggleStatus}
         onDeleteUser={handleDelete}
         onPageChange={handlePageChange}
+        loading={loading}
       />
       <Modal
         isOpen={modal.isOpen}

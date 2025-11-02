@@ -1,4 +1,4 @@
-import type { FormData } from './Register.types';
+import type { FormData } from '../../../types/Register.types';
 
 export const INITIAL_FORM_DATA: FormData = {
   hospital_nome: "",
@@ -15,7 +15,7 @@ export const INITIAL_FORM_DATA: FormData = {
 
 export const BREADCRUMB_ITEMS = [
   { label: "", url: "/" },
-  { label: "Cadastrar", active: true },
+  { label: "Registrar", active: true },
 ];
 
 export const API_ENDPOINTS = {

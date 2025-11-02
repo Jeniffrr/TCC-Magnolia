@@ -6,12 +6,13 @@ import {
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumbs";
 import BrHeader from "../../components/Header/BrHeader";
 import BrInputIcon from "../../components/BrInputIcon/BrInputIcon";
-import { useRegisterForm } from './Register.hooks';
-import { BREADCRUMB_ITEMS, API_ENDPOINTS, INITIAL_FORM_DATA } from './Register.constants';
-import type { ApiErrorResponse } from './Register.types';
-import { handleApiErrors } from './Register.utils';
-import { pageStyles, getFieldStatus, getFeedbackText } from './Register.styles';
+import { useRegisterForm } from '../../hooks/Register.hooks';
+import { BREADCRUMB_ITEMS, API_ENDPOINTS, INITIAL_FORM_DATA } from './components/Register.constants';
+import type { ApiErrorResponse } from '../../types/Register.types';
+import { handleApiErrors } from '../../utils/Register.utils';
+import { pageStyles, getFieldStatus, getFeedbackText } from './components/Register.styles';
 import "./Register.css";
+import AppLayout from "../../components/Layout/AppLayout";
 
 export const Register: React.FC = () => {
   const {
@@ -77,8 +78,8 @@ export const Register: React.FC = () => {
   };
 
   return (
+    <AppLayout>
     <Container fluid>
-      <BrHeader />
       <div className="mb-3 mt-3">
         <Breadcrumb
           items={BREADCRUMB_ITEMS}
@@ -87,7 +88,7 @@ export const Register: React.FC = () => {
         />
       </div>
       
-      <h1 style={pageStyles.title}>Cadastrar</h1>
+      <h1 style={pageStyles.title}>Registrar-me</h1>
       
       <div style={pageStyles.containerPadding}>
         {showSuccess && (
@@ -305,5 +306,7 @@ export const Register: React.FC = () => {
         </div>
       </div>
     </Container>
+     </AppLayout>
   );
 };
+export default Register;

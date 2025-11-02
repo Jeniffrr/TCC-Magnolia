@@ -1,4 +1,4 @@
-import type { PageStyles } from './Register.types';
+import type { PageStyles } from '../../../types/Register.types';
 
 export const pageStyles: PageStyles = {
   title: { 

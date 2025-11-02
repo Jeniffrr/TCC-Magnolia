@@ -1,8 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import {
-  getLeitos,
-  deleteLeito,
-} from "../../../services/leitoService";
+import { getLeitos, deleteLeito } from "../../../services/leitoService";
 import type { Leito } from "../../../services/leitoService";
 import LeitoList from "./components/LeitoList";
 import LeitoView from "./components/LeitoView";
@@ -10,12 +7,16 @@ import LeitoCreate from "./components/LeitoCreate";
 import LeitoEdit from "./components/LeitoEdit";
 import Modal from "../../../components/Modal/Modal";
 import { useModal } from "../../../hooks/useModal";
-import { getCachedLeitos, setCachedLeitos, clearLeitosCache } from "../../../utils/formDataCache";
+import {
+  getCachedLeitos,
+  setCachedLeitos,
+  clearLeitosCache,
+} from "../../../utils/formDataCache";
 import "./styles.css";
 
 const GerenciarLeitos: React.FC = () => {
   const [leitos, setLeitos] = useState<Leito[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [lastPage, setLastPage] = useState<number>(1);
   const [error, setError] = useState<string | null>(null);
@@ -30,22 +31,22 @@ const GerenciarLeitos: React.FC = () => {
       setLeitos(cachedData.data);
       setCurrentPage(cachedData.current_page);
       setLastPage(cachedData.last_page);
-      setLoading(false);
       return;
     }
 
+    // Só mostra loading se não tem cache
     setLoading(true);
     setError(null);
     try {
       const data = await getLeitos(page);
-      
+
       // Salva no cache
       setCachedLeitos(page, {
         data: data.data,
         current_page: data.current_page,
-        last_page: data.last_page
+        last_page: data.last_page,
       });
-      
+
       setLeitos(data.data);
       setCurrentPage(data.current_page);
       setLastPage(data.last_page);
@@ -63,24 +64,24 @@ const GerenciarLeitos: React.FC = () => {
   // Lógica para Excluir
   const handleDelete = async (leitoId: number, leitoNumero: string) => {
     const confirmed = await showConfirm(
-      'Confirmar Exclusão',
+      "Confirmar Exclusão",
       `Deseja excluir permanentemente o leito ${leitoNumero}?`,
-      'Excluir',
-      'Cancelar'
+      "Excluir",
+      "Cancelar"
     );
-    
+
     if (!confirmed) {
       return;
     }
-    
+
     try {
       await deleteLeito(leitoId);
-      await showAlert('Sucesso', `Leito ${leitoNumero} excluído com sucesso.`);
+      await showAlert("Sucesso", `Leito ${leitoNumero} excluído com sucesso.`);
       clearLeitosCache(); // Limpa cache após exclusão
       fetchLeitos(currentPage);
     } catch (err: unknown) {
       await showAlert(
-        'Erro',
+        "Erro",
         (err as { response?: { data?: { message?: string } } }).response?.data
           ?.message || "Falha na exclusão."
       );
@@ -98,10 +99,10 @@ const GerenciarLeitos: React.FC = () => {
   const startNewLeito = () => setMode("new");
   const startEditLeito = (leito: Leito) => setMode(leito);
   const cancelForm = () => setMode("list");
-  
+
   // Estado para leito sendo visualizado
   const [viewingLeito, setViewingLeito] = useState<Leito | null>(null);
-  
+
   // Função para visualizar leito
   const handleViewLeito = (leito: Leito) => {
     setViewingLeito(leito);
@@ -127,16 +128,6 @@ const GerenciarLeitos: React.FC = () => {
     );
   }
 
-  // Renderização condicional
-  if (loading && mode === "list")
-    return (
-      <div className="loading-container">
-        <div className="loading-bar">
-          <div className="loading-progress"></div>
-        </div>
-        <p className="loading-text">Carregando leitos...</p>
-      </div>
-    );
   if (error && mode === "list") return <p className="error">Erro: {error}</p>;
 
   // SE ESTIVER NO MODO VISUALIZAÇÃO
@@ -151,7 +142,13 @@ const GerenciarLeitos: React.FC = () => {
 
   // SE ESTIVER NO MODO EDIÇÃO
   if (typeof mode === "object") {
-    return <LeitoEdit leito={mode} onSuccess={handleFormSuccess} onCancel={cancelForm} />;
+    return (
+      <LeitoEdit
+        leito={mode}
+        onSuccess={handleFormSuccess}
+        onCancel={cancelForm}
+      />
+    );
   }
 
   // SE ESTIVER NO MODO LISTAGEM
@@ -166,6 +163,7 @@ const GerenciarLeitos: React.FC = () => {
         onEditLeito={startEditLeito}
         onDeleteLeito={handleDelete}
         onPageChange={handlePageChange}
+        loading={loading}
       />
       <Modal
         isOpen={modal.isOpen}

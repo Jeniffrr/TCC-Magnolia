@@ -1,0 +1,314 @@
+/* Gerenciar Pacientes - Estilos */
+
+.table-container {
+    background-color: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-header-row {
+    background-color: #F6DFF8;
+}
+
+.table-header {
+    padding: 16px;
+    text-align: left;
+    font-weight: normal;
+    color: #000000;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table-row {
+    border-bottom: 1px solid #f1f3f4;
+    transition: background-color 0.2s ease;
+}
+
+.table-row:hover {
+    background-color: #fef6ff;
+}
+
+.table-cell {
+    padding: 16px;
+    vertical-align: top;
+}
+
+.user-name {
+    font-size: 18px;
+    font-weight: normal;
+    color: #000000;
+    margin-bottom: 4px;
+}
+
+.user-email {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.badge {
+    color: #000000;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.90rem;
+    font-weight: normal;
+    text-transform: uppercase;
+}
+
+.small-text {
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: normal;
+    text-transform: uppercase;
+    letter-spacing: 1.0px;
+}
+
+.status-active {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-inactive {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.view-button {
+    color: #711E6C;
+    background: transparent;
+    border: none;
+    padding: 12px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 50%;
+}
+
+.view-button:hover {
+    background-color: #e6b3e2;
+    transform: scale(1.1);
+}
+
+.edit-button {
+    color: #711E6C;
+    background: transparent;
+    border: none;
+    padding: 12px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 50%;
+}
+
+.edit-button:hover {
+    background-color: #e6b3e2;
+    transform: scale(1.1);
+}
+
+.delete-button {
+    color: #711E6C;
+    background: transparent;
+    border: none;
+    padding: 12px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 50%;
+}
+
+.delete-button:hover {
+    background-color: #e6b3e2;
+    transform: scale(1.1);
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.pagination-button {
+    background-color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #711E6C;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 8px;
+}
+
+.pagination-button:hover:not(:disabled) {
+    background-color: #711E6C;
+    color: white;
+}
+
+.pagination-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-info {
+    font-size: 1rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.loading, .error {
+    margin: 20px;
+    padding: 16px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.error {
+    color: #721c24;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+}
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    min-height: 200px;
+}
+
+.loading-bar {
+    width: 300px;
+    height: 6px;
+    background-color: #e0e0e0;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+.loading-progress {
+    height: 100%;
+    background: linear-gradient(90deg, #711E6C, #9d4edd, #711E6C);
+    background-size: 200% 100%;
+    animation: loading-animation 1.5s ease-in-out infinite;
+    border-radius: 3px;
+}
+
+.loading-text {
+    color: #711E6C;
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin: 0;
+}
+
+@keyframes loading-animation {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .table-container {
+        overflow-x: auto;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .pagination {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    /* Estilos para formulário de admissão */
+.form-input {
+  margin-top: 4px;
+  display: block;
+  width: 100%;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  padding: 8px 12px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #711E6C;
+  box-shadow: 0 0 0 2px rgba(113, 30, 108, 0.1);
+}
+
+.form-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 4px;
+}
+
+.form-textarea {
+  margin-top: 4px;
+  display: block;
+  width: 100%;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  padding: 8px 12px;
+  font-size: 14px;
+  resize: vertical;
+  transition: all 0.2s ease;
+}
+
+.form-textarea:focus {
+  outline: none;
+  border-color: #711E6C;
+  box-shadow: 0 0 0 2px rgba(113, 30, 108, 0.1);
+}
+
+.form-select {
+  margin-top: 4px;
+  display: block;
+  width: 100%;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  padding: 8px 12px;
+  font-size: 14px;
+  background-color: white;
+  transition: all 0.2s ease;
+}
+
+.form-select:focus {
+  outline: none;
+  border-color: #711E6C;
+  box-shadow: 0 0 0 2px rgba(113, 30, 108, 0.1);
+}
+}

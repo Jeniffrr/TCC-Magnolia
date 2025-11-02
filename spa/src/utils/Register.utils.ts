@@ -1,5 +1,5 @@
-import type { FormData, ValidationRules } from './Register.types';
-import { VALIDATION_MESSAGES } from './Register.constants';
+import type { FormData, ValidationRules } from '../types/Register.types';
+import { VALIDATION_MESSAGES } from '../pages/Resgister/components/Register.constants';
 
 export const validationRules: ValidationRules = {
   hospital_nome: (value: string) => {

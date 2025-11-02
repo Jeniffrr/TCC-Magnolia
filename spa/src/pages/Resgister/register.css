@@ -1,9 +1,8 @@
 body {
-    margin: 0; /* Isso é crucial para remover a margem padrão do navegador */
+    margin: 0; 
     padding: 0;
     box-sizing: border-box;
 }
-/* Títulos */
 h1 {
   font-size: 2rem;
   font-weight: 300;

@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
-import type { FormData, Errors } from './Register.types';
-import { INITIAL_FORM_DATA } from './Register.constants';
-import { validationRules, applyCnpjMask, applyCpfMask } from './Register.utils';
+import type { FormData, Errors } from '../types/Register.types';
+import { INITIAL_FORM_DATA } from '../pages/Resgister/components/Register.constants';
+import { validationRules, applyCnpjMask, applyCpfMask } from '../utils/Register.utils';
 
 export const useRegisterForm = () => {
   const [formData, setFormData] = useState<FormData>(INITIAL_FORM_DATA);
@@ -68,7 +68,9 @@ export const useRegisterForm = () => {
   const validateForm = useCallback((): Errors => {
     const newErrors: Errors = {};
     Object.keys(formData).forEach((key) => {
-      const error = validateField(key, formData[key as keyof FormData]);
+      const value = formData[key as keyof FormData];
+      const stringValue = typeof value === 'boolean' ? String(value) : value;
+      const error = validateField(key, stringValue);
       if (error) {
         newErrors[key] = error;
       }

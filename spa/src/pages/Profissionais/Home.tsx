@@ -1,7 +1,7 @@
 import React from "react";
 import AppLayout from "../../components/Layout/AppLayout";
 import { Container } from "@govbr-ds/react-components";
-import { pageStyles } from "../Resgister/Register.styles";
+import { pageStyles } from "../Resgister/components/Register.styles";
 
 const ProfissionaisHome: React.FC = () => {
   return (

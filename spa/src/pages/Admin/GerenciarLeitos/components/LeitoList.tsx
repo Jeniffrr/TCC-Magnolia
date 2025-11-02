@@ -4,6 +4,7 @@ import Breadcrumb from '../../../../components/Breadcrumbs/Breadcrumbs';
 import { pageStyles } from '../../../../assets/style/pageStyles';
 import type { Leito } from '../../../../services/leitoService';
 import AppLayout from '../../../../components/Layout/AppLayout';
+import { Loading } from '../../../../components/Loading/Loading';
 
 const BREADCRUMB_ITEMS = [
   { label: "", url: "/admin" },
@@ -14,6 +15,7 @@ interface LeitoListProps {
   leitos: Leito[];
   currentPage: number;
   lastPage: number;
+  loading?: boolean;
   onNewLeito: () => void;
   onViewLeito: (leito: Leito) => void;
   onEditLeito: (leito: Leito) => void;
@@ -25,6 +27,7 @@ const LeitoList: React.FC<LeitoListProps> = ({
   leitos,
   currentPage,
   lastPage,
+  loading = false,
   onNewLeito,
   onViewLeito,
   onEditLeito,
@@ -67,6 +70,16 @@ const LeitoList: React.FC<LeitoListProps> = ({
                   <th className="table-header">Ações</th>
                 </tr>
               </thead>
+              {loading && (
+                <tbody>
+                  <tr>
+                    <td colSpan={4} style={{ textAlign: 'center' }}>
+                      <Loading message="Carregando leitos..." />
+                    </td>
+                  </tr>
+                </tbody>
+              )}
+              {!loading && (
               <tbody>
                 {leitos.map((leito) => (
                   <tr key={leito.id} className="table-row">
@@ -106,6 +119,7 @@ const LeitoList: React.FC<LeitoListProps> = ({
                   </tr>
                 ))}
               </tbody>
+              )}
             </table>
           </div>
 

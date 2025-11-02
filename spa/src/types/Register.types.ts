@@ -31,3 +31,6 @@ export interface PageStyles {
   buttonContainer: React.CSSProperties;
   containerPadding: React.CSSProperties;
 }
+export interface RegisterProps {
+  onRegisterSuccess: () => void;
+}

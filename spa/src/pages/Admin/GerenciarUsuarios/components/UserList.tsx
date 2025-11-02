@@ -4,11 +4,13 @@ import Breadcrumb from '../../../../components/Breadcrumbs/Breadcrumbs';
 import { pageStyles } from '../../../../assets/style/pageStyles';
 import type { Usuario } from '../../../../services/adminService';
 import AppLayout from '../../../../components/Layout/AppLayout';
+import { Loading } from '../../../../components/Loading/Loading';
 
 interface UserListProps {
   usuarios: Usuario[];
   currentPage: number;
   lastPage: number;
+  loading?: boolean;
   onNewUser: () => void;
   onViewUser: (user: Usuario) => void;
   onEditUser: (user: Usuario) => void;
@@ -26,6 +28,7 @@ const UserList: React.FC<UserListProps> = ({
   usuarios,
   currentPage,
   lastPage,
+  loading = false,
   onNewUser,
   onViewUser,
   onEditUser,
@@ -68,6 +71,16 @@ const UserList: React.FC<UserListProps> = ({
                   <th className="table-header">Ações</th>
                 </tr>
               </thead>
+              {loading && (
+                <tbody>
+                  <tr>
+                    <td colSpan={5} style={{ textAlign: 'center' }}>
+                      <Loading message="Carregando usuários..." />
+                    </td>
+                  </tr>
+                </tbody>
+              )}
+              {!loading && (
               <tbody>
                 {usuarios.map((user) => (
                   <tr key={user.id} className="table-row">
@@ -131,6 +144,7 @@ const UserList: React.FC<UserListProps> = ({
                   </tr>
                 ))}
               </tbody>
+              )}
             </table>
           </div>
 
