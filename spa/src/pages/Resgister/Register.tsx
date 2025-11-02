@@ -4,7 +4,6 @@ import {
   Container,
 } from "@govbr-ds/react-components";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumbs";
-import BrHeader from "../../components/Header/BrHeader";
 import BrInputIcon from "../../components/BrInputIcon/BrInputIcon";
 import { useRegisterForm } from '../../hooks/Register.hooks';
 import { BREADCRUMB_ITEMS, API_ENDPOINTS, INITIAL_FORM_DATA } from './components/Register.constants';

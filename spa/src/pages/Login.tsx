@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import AppLayout from "../components/Layout/AppLayout";
+import Breadcrumb from "../components/Breadcrumbs/Breadcrumbs";
 
 type UserType =
   | "administrador"
@@ -39,6 +40,11 @@ const Login: React.FC = () => {
 
   const navigate = useNavigate();
 
+  const BREADCRUMB_ITEMS = [
+    { label: "", url: "/" },
+    { label: "Login", active: true },
+  ];
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -57,7 +63,7 @@ const Login: React.FC = () => {
     setIsLoading(true);
 
     try {
-      await api.get('/sanctum/csrf-cookie');
+      await api.get("/sanctum/csrf-cookie");
       const response = await api.post<LoginResponse>("/api/login", {
         email: email.trim(),
         password,
@@ -106,87 +112,93 @@ const Login: React.FC = () => {
 
   return (
     <AppLayout>
+      <div className="mb-3 mt-3">
+        <Breadcrumb
+          items={BREADCRUMB_ITEMS}
+          homeIcon={true}
+          className="custom-breadcrumb"
+        />
+      </div>
+      <div
+        style={{
+          maxWidth: "400px",
+          margin: "50px auto",
+          padding: "20px",
+          border: "1px solid #ccc",
+          borderRadius: "8px",
+        }}
+      >
+        <h2>Login</h2>
+        <form onSubmit={handleLogin}>
+          {error && (
+            <div
+              style={{
+                color: "red",
+                border: "1px solid red",
+                padding: "10px",
+                marginBottom: "15px",
+                borderRadius: "4px",
+              }}
+            >
+              {error}
+            </div>
+          )}
 
-    <div
-      style={{
-        maxWidth: "400px",
-        margin: "50px auto",
-        padding: "20px",
-        border: "1px solid #ccc",
-        borderRadius: "8px",
-      }}
-    >
-      <h2>Login</h2>
-      <form onSubmit={handleLogin}>
-        {error && (
-          <div
+          <div style={{ marginBottom: "15px" }}>
+            <label style={{ display: "block", marginBottom: "5px" }}>
+              Email:
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              disabled={isLoading}
+              style={{
+                width: "100%",
+                padding: "8px",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+              }}
+            />
+          </div>
+
+          <div style={{ marginBottom: "20px" }}>
+            <label style={{ display: "block", marginBottom: "5px" }}>
+              Senha:
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              disabled={isLoading}
+              style={{
+                width: "100%",
+                padding: "8px",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+              }}
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={isLoading}
             style={{
-              color: "red",
-              border: "1px solid red",
+              width: "100%",
               padding: "10px",
-              marginBottom: "15px",
-              borderRadius: "4px",
+              backgroundColor: isLoading ? "#999" : "#864381",
+              color: "white",
+              border: "none",
+              borderRadius: "10px",
+              cursor: isLoading ? "not-allowed" : "pointer",
             }}
           >
-            {error}
-          </div>
-        )}
-
-        <div style={{ marginBottom: "15px" }}>
-          <label style={{ display: "block", marginBottom: "5px" }}>
-            Email:
-          </label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            disabled={isLoading}
-            style={{
-              width: "100%",
-              padding: "8px",
-              border: "1px solid #ccc",
-              borderRadius: "4px",
-            }}
-          />
-        </div>
-
-        <div style={{ marginBottom: "20px" }}>
-          <label style={{ display: "block", marginBottom: "5px" }}>
-            Senha:
-          </label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            disabled={isLoading}
-            style={{
-              width: "100%",
-              padding: "8px",
-              border: "1px solid #ccc",
-              borderRadius: "4px",
-            }}
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={isLoading}
-          style={{
-            width: "100%",
-            padding: "10px",
-            backgroundColor: isLoading ? "#999" : "#864381",
-            color: "white",
-            border: "none",
-            borderRadius: "10px",
-            cursor: isLoading ? "not-allowed" : "pointer",
-          }}
-        >
-          {isLoading ? "Entrando..." : "Entrar"}
-        </button>
-      </form>
-    </div>
+            {isLoading ? "Entrando..." : "Entrar"}
+          </button>
+        </form>
+      </div>
     </AppLayout>
   );
 };
