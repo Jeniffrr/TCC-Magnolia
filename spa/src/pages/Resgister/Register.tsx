@@ -9,9 +9,9 @@ import { useRegisterForm } from '../../hooks/Register.hooks';
 import { BREADCRUMB_ITEMS, API_ENDPOINTS, INITIAL_FORM_DATA } from './components/Register.constants';
 import type { ApiErrorResponse } from '../../types/Register.types';
 import { handleApiErrors } from '../../utils/Register.utils';
-import { pageStyles, getFieldStatus, getFeedbackText } from './components/Register.styles';
 import "./Register.css";
 import AppLayout from "../../components/Layout/AppLayout";
+import { pageStyles, getFieldStatus, getFeedbackText } from "../../assets/style/pageStyles";
 
 export const Register: React.FC = () => {
   const {

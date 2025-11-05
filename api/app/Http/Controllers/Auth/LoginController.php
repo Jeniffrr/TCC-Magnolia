@@ -21,10 +21,18 @@ class LoginController extends Controller
             /** @var Usuario $user */
             $user = Auth::user();
 
-            // 2. Se a autenticação for bem-sucedida, GERA O TOKEN SANCTUM
+            // 2. Verifica se o usuário está ativo
+            if (!$user->is_active) {
+                Auth::logout();
+                return response()->json([
+                    'message' => 'Usuário desativado. Entre em contato com o administrador.'
+                ], 401);
+            }
+
+            // 3. Se a autenticação for bem-sucedida e usuário ativo, GERA O TOKEN SANCTUM
             $token = $user->createToken('auth-token')->plainTextToken;
 
-            // 3. Retorna o token e os dados do usuário
+            // 4. Retorna o token e os dados do usuário
             return response()->json([
                 'message' => 'Login bem-sucedido!',
                 'user' => $user,

@@ -47,6 +47,11 @@ class Paciente extends Model
     // Uma paciente PERTENCE A MUITAS condições patológicas
     public function condicoesPatologicas(): BelongsToMany
     {
-        return $this->belongsToMany(CondicaoPatologica::class, 'paciente_condicaos', 'paciente_id', 'condicao_id')->withTimestamps();
+        return $this->belongsToMany(
+            CondicaoPatologica::class, 
+            'paciente_condicaos', 
+            'paciente_id', 
+            'condicao_id'
+        )->withTimestamps();
     }
 }

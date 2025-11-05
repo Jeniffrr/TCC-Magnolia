@@ -8,8 +8,8 @@ import PacienteVer from './components/PacienteVer';
 const GerenciarPacientes: React.FC = () => {
   const navigate = useNavigate();
 
-  const handleVerPaciente = (internacaoId: number) => {
-    navigate(`${internacaoId}/atendimentos`);
+  const handleVerPaciente = (pacienteId: number) => {
+    navigate(`${pacienteId}/visualizar`);
   };
 
   const handleEditarPaciente = (pacienteId: number) => {
@@ -25,7 +25,7 @@ const GerenciarPacientes: React.FC = () => {
       <Route index element={<PacienteLista onVerPaciente={handleVerPaciente} onEditarPaciente={handleEditarPaciente} onNovaAdmissao={handleNovaAdmissao} />} />
       <Route path="novo" element={<PacienteAdmissao />} />
       <Route path=":id/editar" element={<PacienteEditar />} />
-      <Route path=":id/atendimentos" element={<PacienteVer />} />
+      <Route path=":id/visualizar" element={<PacienteVer />} />
     </Routes>
   );
 };

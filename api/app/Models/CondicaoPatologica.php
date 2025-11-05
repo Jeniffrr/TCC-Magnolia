@@ -18,6 +18,11 @@ class CondicaoPatologica extends Model
     protected $fillable = ['nome'];
 
     public function pacientes(): BelongsToMany {
-        return $this->belongsToMany(Paciente::class, 'paciente_condicao');
+        return $this->belongsToMany(
+            Paciente::class, 
+            'paciente_condicaos', 
+            'condicao_id', 
+            'paciente_id'
+        )->withTimestamps();
     }
 }

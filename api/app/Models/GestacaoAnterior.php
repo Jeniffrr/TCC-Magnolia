@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use App\Models\Scopes\HospitalScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class GestacaoAnterior extends Model
 {
@@ -30,10 +30,10 @@ class GestacaoAnterior extends Model
     ];
 
     /**
-     * Aplica o escopo global do hospital ao modelo.
+     * Uma gestação anterior pertence a uma paciente
      */
-    protected static function booted()
+    public function paciente(): BelongsTo
     {
-        static::addGlobalScope(new HospitalScope);
+        return $this->belongsTo(Paciente::class);
     }
 }

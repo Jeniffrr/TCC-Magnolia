@@ -24,13 +24,6 @@ export interface ValidationRules {
   [key: string]: (value: string, formData?: FormData) => string;
 }
 
-export interface PageStyles {
-  title: React.CSSProperties;
-  sectionTitle: React.CSSProperties;
-  userSectionTitle: React.CSSProperties;
-  buttonContainer: React.CSSProperties;
-  containerPadding: React.CSSProperties;
-}
 export interface RegisterProps {
   onRegisterSuccess: () => void;
 }

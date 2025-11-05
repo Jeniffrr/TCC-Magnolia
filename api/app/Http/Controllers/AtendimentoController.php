@@ -98,7 +98,7 @@ class AtendimentoController extends Controller
                 
                 // Cria o atendimento principal
                 $atendimento = $internacao->atendimentos()->create([
-                    'usuario_id' => Auth::id() ?? 1,
+                    'usuario_id' => Auth::id(),
                     'data_hora' => now(),
                     'categoria_risco_id' => $categoriaRiscoId, // <-- Risco recalculado
                     'pressao_sistolica' => $validatedData['pressao_sistolica'] ?? null,
@@ -164,17 +164,4 @@ class AtendimentoController extends Controller
         
         return response()->json($atendimento);
     }
-
-    /**
-     * O método update() é omitido intencionalmente.
-     * Registos médicos, uma vez salvos, não devem ser alterados.
-     * Uma correção deve ser feita através de um novo registo de "retificação".
-     */
-    // public function update(Request $request, Atendimento $atendimento) { ... }
-
-    /**
-     * O método destroy() é omitido intencionalmente.
-     * Registos de atendimento NUNCA devem ser excluídos.
-     */
-    // public function destroy(Atendimento $atendimento) { ... }
 }

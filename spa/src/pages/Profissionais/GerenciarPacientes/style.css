@@ -312,3 +312,308 @@
   box-shadow: 0 0 0 2px rgba(113, 30, 108, 0.1);
 }
 }
+
+/* Estilos para PacienteAdmissao */
+
+/* Layout geral */
+.admissao-flex-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.admissao-flex-row-margin {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+/* Campos de tamanhos */
+.admissao-field-small {
+  flex: 1;
+  min-width: 100px;
+}
+
+.admissao-field-medium {
+  flex: 1;
+  min-width: 150px;
+}
+
+.admissao-field-large {
+  flex: 1;
+  min-width: 200px;
+}
+
+.admissao-field-xlarge {
+  flex: 1;
+  min-width: 300px;
+}
+
+.admissao-field-xxlarge {
+  flex: 2;
+  min-width: 800px;
+}
+
+.admissao-field-relative {
+  flex: 1;
+  min-width: 150px;
+  position: relative;
+}
+
+/* Formulário */
+.admissao-form-container {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  fontSize: 14px;
+  resize: vertical;
+}
+
+.admissao-form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.admissao-form-input {
+  width: 95%;
+  padding: 13px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.admissao-form-select {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+/* Unidades de medida */
+.admissao-unit-label {
+  position: absolute;
+  right: 12px;
+  top: 38px;
+  font-size: 14px;
+  color: #666;
+  pointer-events: none;
+  background-color: white;
+  padding: 0 4px;
+}
+
+/* Checkbox */
+.admissao-checkbox {
+  width: 16px;
+  height: 16px;
+  accent-color: #711E6C;
+}
+
+.admissao-checkbox-large {
+  width: 18px;
+  height: 18px;
+  accent-color: #711E6C;
+}
+
+.admissao-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 4px;
+}
+
+.admissao-checkbox-label-large {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+/* Condições patológicas */
+.admissao-condicoes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Gestações anteriores */
+.admissao-gestacao-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.admissao-gestacao-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.admissao-gestacao-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.admissao-gestacao-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.admissao-remove-button {
+  background: #e20606ff;
+  border: none;
+  color: #fff;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.admissao-gestacao-field {
+  flex: 1;
+  min-width: 120px;
+}
+
+.admissao-gestacao-field-medium {
+  flex: 1;
+  min-width: 150px;
+}
+
+.admissao-gestacao-field-large {
+  flex: 2;
+  min-width: 200px;
+}
+
+.admissao-gestacao-label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.admissao-gestacao-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.admissao-gestacao-textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 13px;
+  resize: vertical;
+}
+
+.admissao-empty-state {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  font-style: italic;
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+}
+
+/* Validação */
+.admissao-error-text {
+  color: #dc3545;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* LGPD */
+.admissao-lgpd-text {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #333;
+}
+
+.admissao-lgpd-checkbox {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: #711E6C;
+}
+
+.admissao-lgpd-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+}
+
+/* Botões */
+.admissao-add-button {
+  padding: 8px 16px;
+  font-size: 12px;
+  background-color: #711E6C;
+}
+
+/* Movimentos fetais */
+.admissao-movimentos-container {
+  flex: 1;
+  min-width: 200px;
+  padding-bottom: 12px;
+}
+
+.admissao-movimentos-label {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* Campo desabilitado */
+.br-input:disabled {
+  background-color: #f5f5f5 !important;
+  color: #666 !important;
+}
+
+/* Estilos para PacienteVer */
+.paciente-info-card {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.paciente-info-row {
+  display: flex;
+  margin-bottom: 12px;
+  align-items: center;
+}
+
+.paciente-info-label {
+  font-weight: 600;
+  color: #495057;
+  min-width: 150px;
+  margin-right: 12px;
+}
+
+.paciente-info-value {
+  color: #212529;
+  flex: 1;
+}
