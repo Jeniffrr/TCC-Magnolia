@@ -1,6 +1,7 @@
 import React from 'react';
 import { Container } from '@govbr-ds/react-components';
 import BrHeader from '../Header/BrHeader';
+import Footer from '../Footer/Footer';
 
 interface PublicLayoutProps {
   children: React.ReactNode;
@@ -29,6 +30,7 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({
       <Container fluid>
         {children}
       </Container>
+      <Footer />
     </>
   );
 };

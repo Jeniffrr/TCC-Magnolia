@@ -286,10 +286,10 @@ export const Register: React.FC = () => {
             {/* Botões */}
             <div style={pageStyles.buttonContainer}>
               <BrButton 
-                type="button" 
-                className="clear-button" 
+                type="button"  
                 onClick={handleClear}
                 disabled={isSubmitting}
+                style={pageStyles.secundaryButton}
               >
                 Limpar
               </BrButton>

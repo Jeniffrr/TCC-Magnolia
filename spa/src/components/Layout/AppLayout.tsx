@@ -2,6 +2,7 @@ import React from 'react';
 import { Container } from '@govbr-ds/react-components';
 import BrHeader from '../Header/BrHeader';
 import { useAuth } from '../../hooks/useAuth';
+import Footer from '../Footer/Footer';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -44,7 +45,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
       return [
         ...defaultLinks,
         { label: 'Pagina Inicial', href: '/profissionais' },
-        { label: 'Gerenciar Pacientes', href: '/profissionais/pacientes' }
+        { label: 'Gerenciar Pacientes', href: '/profissionais/pacientes' },
       ];
     }
     
@@ -63,9 +64,10 @@ const AppLayout: React.FC<AppLayoutProps> = ({
           navLinks={getNavLinks()}
         />
       )}
-      <Container fluid>
+      <Container fluid style={{ maxWidth: '1400px', margin: '0 auto' }}>
         {children}
       </Container>
+      <Footer />
     </>
   );
 };
