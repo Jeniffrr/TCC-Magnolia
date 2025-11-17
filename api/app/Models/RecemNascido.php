@@ -11,7 +11,7 @@ class RecemNascido extends Model
     use HasFactory;
 
     protected $fillable = [
-        'evento_parto_id',
+        'desfecho_internacao_id',
         'nome_provisorio',
         'sexo',
         'data_hora_nascimento',

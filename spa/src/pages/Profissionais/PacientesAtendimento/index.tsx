@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../../api/axios';
+import api from '../../../api/axios';
 import { Container, BrButton } from '@govbr-ds/react-components';
-import AppLayout from '../../components/Layout/AppLayout';
-import { pageStyles } from '../../assets/style/pageStyles';
-import Loading from '../../components/Loading/Loading';
-import DarAlta from './PacientesAtendimento/components/DarAlta';
-import RegistrarDesfecho from './PacientesAtendimento/components/RegistrarDesfecho';
-import './PacientesAtendimento/style.css';
+import AppLayout from '../../../components/Layout/AppLayout';
+import Breadcrumb from '../../../components/Breadcrumbs/Breadcrumbs';
+import { pageStyles } from '../../../assets/style/pageStyles';
+import DarAlta from './components/DarAlta';
+import RegistrarDesfecho from './components/RegistrarDesfecho';
+import './style.css';
 
 interface Leito {
   id: number;
@@ -68,7 +68,12 @@ interface PacienteAtendimento {
   };
 }
 
-const ProfissionaisHome: React.FC = () => {
+const BREADCRUMB_ITEMS = [
+  { label: "", url: "/profissionais" },
+  { label: "Atendimento de Pacientes", active: true },
+];
+
+const PacientesAtendimento: React.FC = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'todos' | number>('todos');
   const [leitos, setLeitos] = useState<Leito[]>([]);
@@ -90,6 +95,7 @@ const ProfissionaisHome: React.FC = () => {
         api.get('/api/internacoes?status=ativa')
       ]);
       
+      // Leitos vêm paginados da API
       const leitosData = leitosRes.data.data || leitosRes.data;
       setLeitos(Array.isArray(leitosData) ? leitosData : []);
       
@@ -120,8 +126,26 @@ const ProfissionaisHome: React.FC = () => {
       });
       
       setPacientes(pacientesFormatados);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Erro ao carregar dados:', error);
+      
+      // Type guard para verificar se é um erro do axios
+      const isAxiosError = error && typeof error === 'object' && 'response' in error;
+      
+      if (isAxiosError) {
+        const axiosError = error as { response?: { status?: number; data?: unknown } };
+        console.error('Status do erro:', axiosError.response?.status);
+        console.error('Detalhes do erro:', axiosError.response?.data);
+        
+        // Se for erro de autenticação, redirecionar para login
+        if (axiosError.response?.status === 401) {
+          localStorage.removeItem('auth_token');
+          window.location.href = '/login';
+          return;
+        }
+      }
+      
+      // Definir dados vazios em caso de erro
       setLeitos([]);
       setPacientes([]);
     } finally {
@@ -137,48 +161,32 @@ const ProfissionaisHome: React.FC = () => {
     ? pacientes 
     : pacientes.filter(p => p.leito === leitos.find(l => l.id === activeTab)?.numero);
 
+  if (loading) return (
+    <AppLayout>
+      <Container fluid>
+        <div style={{ textAlign: 'center', padding: '60px 20px' }}>
+          <div className="loading">Carregando dados...</div>
+        </div>
+      </Container>
+    </AppLayout>
+  );
+
   return (
     <AppLayout>
       <Container fluid>
+        <div className="mb-3 mt-3">
+          <Breadcrumb
+            items={BREADCRUMB_ITEMS}
+            homeIcon={true}
+            className="custom-breadcrumb"
+          />
+        </div>
+        
+        <h1 style={pageStyles.title}>
+          Atendimento de Pacientes
+        </h1>
+        
         <div style={pageStyles.containerPadding}>
-          {/* Legenda de Classificação de Risco */}
-          <div style={{ marginBottom: '24px', padding: '16px', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-            <h3 style={{ margin: '0 0 12px 0', fontSize: '16px', fontWeight: '600', color: '#1f2937' }}>
-              <i className="fas fa-info-circle" style={{ marginRight: '8px' }}></i>
-              Classificação de Risco
-            </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '12px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{ width: '20px', height: '20px', borderRadius: '50%', backgroundColor: '#28a745', border: '2px solid rgba(0,0,0,0.1)' }}></div>
-                <div>
-                  <strong style={{ fontSize: '14px', color: '#1f2937' }}>Normal</strong>
-                  <p style={{ margin: 0, fontSize: '12px', color: '#6b7280' }}>Paciente sem riscos aparentes</p>
-                </div>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{ width: '20px', height: '20px', borderRadius: '50%', backgroundColor: '#ffc107', border: '2px solid rgba(0,0,0,0.1)' }}></div>
-                <div>
-                  <strong style={{ fontSize: '14px', color: '#1f2937' }}>Médio</strong>
-                  <p style={{ margin: 0, fontSize: '12px', color: '#6b7280' }}>Requer atenção e monitoramento</p>
-                </div>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{ width: '20px', height: '20px', borderRadius: '50%', backgroundColor: '#dc3545', border: '2px solid rgba(0,0,0,0.1)' }}></div>
-                <div>
-                  <strong style={{ fontSize: '14px', color: '#1f2937' }}>Alto</strong>
-                  <p style={{ margin: 0, fontSize: '12px', color: '#6b7280' }}>Risco elevado para mãe e/ou feto</p>
-                </div>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{ width: '20px', height: '20px', borderRadius: '50%', backgroundColor: '#6c757d', border: '2px solid rgba(0,0,0,0.1)' }}></div>
-                <div>
-                  <strong style={{ fontSize: '14px', color: '#1f2937' }}>Aborto</strong>
-                  <p style={{ margin: 0, fontSize: '12px', color: '#6b7280' }}>Internação devido a processo de abortamento</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* Tabs dos Leitos */}
           <div style={{ marginBottom: '0' }}>
             <button 
@@ -232,13 +240,7 @@ const ProfissionaisHome: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {loading ? (
-                  <tr>
-                    <td colSpan={5} style={{ textAlign: 'center', padding: '40px' }}>
-                      <Loading message="Carregando pacientes..." />
-                    </td>
-                  </tr>
-                ) : filteredPacientes.length === 0 ? (
+                {filteredPacientes.length === 0 ? (
                   <tr>
                     <td colSpan={5} style={{ textAlign: 'center', padding: '40px', color: '#6c757d', fontStyle: 'italic' }}>
                       Nenhum paciente internado encontrado
@@ -297,7 +299,7 @@ const ProfissionaisHome: React.FC = () => {
                               e.stopPropagation();
                               setShowDesfecho({internacao_id: paciente.internacao_id, nome: paciente.nome_completo});
                             }}
-                            className="edit-button"
+                            className="warning-button"
                             title="Registrar desfecho"
                             icon="fas fa-baby"
                           />
@@ -314,6 +316,7 @@ const ProfissionaisHome: React.FC = () => {
                       </td>
                     </tr>
 
+                    {/* Resumo expandido */}
                     {expandedPatient === paciente.id && (
                       <tr style={{ backgroundColor: '#fef6ff' }}>
                         <td colSpan={5} style={{ padding: '20px', borderBottom: '1px solid #dee2e6' }}>
@@ -355,6 +358,7 @@ const ProfissionaisHome: React.FC = () => {
             </table>
           </div>
 
+          {/* Modais */}
           {showDesfecho && (
             <RegistrarDesfecho 
               internacaoId={showDesfecho.internacao_id}
@@ -378,4 +382,4 @@ const ProfissionaisHome: React.FC = () => {
   );
 };
 
-export default ProfissionaisHome;
+export default PacientesAtendimento;

@@ -18,11 +18,11 @@
 }
 
 .table-header {
-    padding: 16px;
+    padding: 20px;
     text-align: left;
     font-weight: normal;
     color: #000000;
-    font-size: 0.9rem;
+    font-size: 1rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     border-bottom: 2px solid #dee2e6;
@@ -38,12 +38,13 @@
 }
 
 .table-cell {
-    padding: 16px;
+    padding: 20px;
     vertical-align: top;
+    font-size: 15px;
 }
 
 .user-name {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: normal;
     color: #000000;
     margin-bottom: 4px;

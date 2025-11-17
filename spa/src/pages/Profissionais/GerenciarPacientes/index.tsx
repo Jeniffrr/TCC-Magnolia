@@ -1,9 +1,9 @@
 import React from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
-import { PacienteLista } from './components/ListarPacientes';
-import PacienteAdmissao from './components/PacienteAdmissao';
-import PacienteEditar from './components/PacienteEditar';
-import PacienteVer from './components/PacienteVer';
+import { PacienteLista } from './components/PacienteList';
+import PacienteAdmissao from './components/PacienteCreate';
+import PacienteEditar from './components/PacienteUpdate';
+import PacienteVer from './components/PacienteView';
 
 const GerenciarPacientes: React.FC = () => {
   const navigate = useNavigate();

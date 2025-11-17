@@ -40,6 +40,12 @@ class Atendimento extends Model
         return $this->belongsTo(Usuario::class, 'usuario_id');
     }
 
+    // Alias para profissional
+    public function usuario(): BelongsTo
+    {
+        return $this->belongsTo(Usuario::class, 'usuario_id');
+    }
+
     // Um atendimento PERTENCE A UMA categoria de risco
     public function categoriaRisco(): BelongsTo
     {

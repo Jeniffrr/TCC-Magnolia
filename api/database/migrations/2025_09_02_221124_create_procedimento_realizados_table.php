@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('atendimento_id')->constrained('atendimentos')->onDelete('cascade');
             $table->string('nome_procedimento');
             $table->text('observacoes')->nullable();
+            $table->date('data_procedimento')->default(now());
             $table->timestamps();
         });
     }

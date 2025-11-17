@@ -2,13 +2,20 @@
 
 namespace App\Models;
 
-use App\Models\Scopes\HospitalScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class ProcedimentoRealizado extends Model
 {
     use HasFactory;
+    
+    /**
+     * Disable global scopes for this model
+     */
+    protected static function booted()
+    {
+        // Remove any global scopes that might be inherited
+    }
 
     /**
      * The attributes that are mass assignable.
@@ -22,10 +29,10 @@ class ProcedimentoRealizado extends Model
     ];
 
     /**
-     * Aplica o escopo global do hospital ao modelo.
+     * Relacionamento com atendimento
      */
-    protected static function booted()
+    public function atendimento()
     {
-        static::addGlobalScope(new HospitalScope);
+        return $this->belongsTo(Atendimento::class);
     }
 }

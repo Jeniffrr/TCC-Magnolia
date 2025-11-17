@@ -12,7 +12,11 @@ import AdminHome from "../pages/Admin/Home";
 import GerenciarUsuarios from "../pages/Admin/GerenciarUsuarios";
 import GerenciarLeitos from "../pages/Admin/GerenciarLeitos";
 import GerenciarPacientes from "../pages/Profissionais/GerenciarPacientes";
+import NovoAtendimento from "../pages/Profissionais/PacientesAtendimento/components/NovoAtendimento";
+import HistoricoCompleto from "../pages/Profissionais/PacientesAtendimento/HistoricoCompleto";
 import Home from "../pages/Home";
+import Privacidade from "../pages/Privacidade";
+import Termos from "../pages/Termos";
 
 const ProtectedRoute: React.FC<{
   children: React.ReactNode;
@@ -65,6 +69,23 @@ export const AppRoutes: React.FC = () => {
           }
         />
 
+        <Route
+          path="/profissionais/pacientes-atendimento/novo-atendimento/:pacienteId"
+          element={
+            <ProtectedRoute>
+              <NovoAtendimento />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profissionais/pacientes-atendimento/historico/:id"
+          element={
+            <ProtectedRoute>
+              <HistoricoCompleto />
+            </ProtectedRoute>
+          }
+        />
+
         {/* Rotas para admin */}
         <Route
           path="/admin"
@@ -92,6 +113,8 @@ export const AppRoutes: React.FC = () => {
         />
 
         <Route path="/" element={<Home />} />
+        <Route path="/privacidade" element={<Privacidade />} />
+        <Route path="/termos" element={<Termos />} />
       </Routes>
     </Router>
   );

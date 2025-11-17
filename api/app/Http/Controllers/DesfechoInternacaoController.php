@@ -7,9 +7,23 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 
 class DesfechoInternacaoController extends Controller
 {
+    private const TIPOS_DESFECHO = [
+        'Parto',
+        'Abortamento Completo',
+        'Abortamento Incompleto / Retido',
+        'Abortamento Terapêutico',
+        'Natimorto',
+        'Gravidez ectópica'
+    ];
+
+    private const TIPOS_PARTO = ['Normal', 'Cesariana', 'Fórceps', 'Vácuo'];
+
+    private const SEXOS = ['Masculino', 'Feminino', 'Indeterminado'];
     /**
      * Registra o desfecho clínico de uma internação (Parto, Aborto, etc).
      *
@@ -21,6 +35,8 @@ class DesfechoInternacaoController extends Controller
      */
     public function store(Request $request, Internacao $internacao): JsonResponse
     {
+        Log::info('Dados recebidos:', $request->all());
+        
         // 1. Verifica se a internação já não tem um desfecho registrado
         if ($internacao->desfecho) {
             return response()->json([
@@ -29,24 +45,27 @@ class DesfechoInternacaoController extends Controller
         }
         
         // 2. Validação dos dados
-        $validatedData = $request->validate([
-            'tipo' => 'required|in:Parto, Abortamento Completo, Abortamento Incompleto / Retido, Abortamento Terapêutico, Natimorto, Gravidez ectópica',
-            'data_hora_evento' => 'required|date',
-            'semana_gestacional' => 'required|integer|min:4|max:45',
-            'observacoes' => 'nullable|string',
-            
-            // Campos que só são obrigatórios se o tipo for 'Parto'
-            'tipo_parto' => 'nullable|required_if:tipo,Parto|string',
-            
-            // Dados do(s) recém-nascido(s)
-            'recem_nascidos' => 'nullable|required_if:tipo,Parto|array|min:1',
-            'recem_nascidos.*.sexo' => 'required|in:Masculino,Feminino,Indeterminado',
-            'recem_nascidos.*.peso' => 'required|numeric|min:0.1',
-            'recem_nascidos.*.altura' => 'required|integer|min:20',
-            'recem_nascidos.*.apgar_1_min' => 'required|integer|min:0|max:10',
-            'recem_nascidos.*.apgar_5_min' => 'required|integer|min:0|max:10',
-            'recem_nascidos.*.observacoes_iniciais' => 'nullable|string',
-        ]);
+        try {
+            $validatedData = $request->validate([
+                'tipo' => ['required', Rule::in(self::TIPOS_DESFECHO)],
+                'data_hora_evento' => 'required|date',
+                'semana_gestacional' => 'required|integer|min:4|max:45',
+                'observacoes' => 'nullable|string',
+                'tipo_parto' => ['nullable', 'required_if:tipo,Parto', Rule::in(self::TIPOS_PARTO)],
+                'recem_nascidos' => 'nullable|required_if:tipo,Parto|array|min:1',
+                'recem_nascidos.*.sexo' => ['required', Rule::in(self::SEXOS)],
+                'recem_nascidos.*.peso' => 'required|numeric|min:0.1',
+                'recem_nascidos.*.altura' => 'required|integer|min:20',
+                'recem_nascidos.*.apgar_1_min' => 'required|integer|min:0|max:10',
+                'recem_nascidos.*.apgar_5_min' => 'required|integer|min:0|max:10',
+                'recem_nascidos.*.observacoes_iniciais' => 'nullable|string',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Erro de validação:', ['errors' => $e->errors()]);
+            throw $e;
+        }
+
+        Log::info('Dados validados:', $validatedData);
 
         // 3. Executa a criação dentro de uma transação segura
         try {
@@ -54,7 +73,7 @@ class DesfechoInternacaoController extends Controller
                 
                 // 3.1. Cria o registro de Desfecho
                 $desfecho = $internacao->desfecho()->create([
-                    'usuario_id' => Auth::id() ?? 1,
+                    'usuario_id' => Auth::user()->id ?? 1,
                     'tipo' => $validatedData['tipo'],
                     'data_hora_evento' => $validatedData['data_hora_evento'],
                     'semana_gestacional' => $validatedData['semana_gestacional'],
@@ -89,7 +108,7 @@ class DesfechoInternacaoController extends Controller
             ], 201); // 201 Created
 
         } catch (\Exception $e) {
-            // 5. Retorna a resposta de erro
+            Log::error('Erro ao criar desfecho:', ['error' => $e->getMessage()]);
             return response()->json([
                 'message' => 'Ocorreu um erro ao registrar o desfecho.',
                 'error' => $e->getMessage()

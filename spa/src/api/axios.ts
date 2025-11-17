@@ -21,6 +21,19 @@ api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
+// Interceptor para lidar com respostas 401
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
 // Primeiro obter o CSRF token
 export const getCsrfToken = async () => {
     await api.get('/sanctum/csrf-cookie');

@@ -112,10 +112,8 @@ const PacienteAdmissao: React.FC = () => {
       try {
         const [leitosRes, condicoesRes] = await Promise.all([
           api.get("/api/leitos"),
-          api.get("/api/condicoes-patologicas"),
+          api.get("/api/condicoes-patologicas")
         ]);
-        console.log("Leitos response:", leitosRes.data);
-        console.log("Condições response:", condicoesRes.data);
         setLeitos(leitosRes.data.data || leitosRes.data || []);
         setCondicoes(condicoesRes.data || []);
       } catch {
@@ -182,7 +180,7 @@ const PacienteAdmissao: React.FC = () => {
       temperatura: Number(formData.temperatura) || null,
       frequencia_respiratoria: Number(formData.frequencia_respiratoria) || null,
       bcf: Number(formData.bcf) || null,
-      altura_uterina: Number(formData.altura_uterina) || null,
+      altura_uterina: Number(formData.altura_uterina) || null
     };
 
     try {

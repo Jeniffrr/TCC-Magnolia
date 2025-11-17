@@ -12,10 +12,30 @@ use App\Models\Leito;
 class InternacaoController extends Controller
 {
     /**
-     * Dashboard de Leitos
+     * Lista todas as internações com filtros
+     * GET /api/internacoes
+     */
+    public function index(Request $request): JsonResponse
+    {
+        $query = Internacao::with(['paciente', 'leito', 'atendimentos.categoriaRisco', 'desfecho.recemNascidos']);
+        
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        }
+        
+        if ($request->has('paciente_id')) {
+            $query->where('paciente_id', $request->paciente_id);
+        }
+        
+        $internacoes = $query->get();
+        return response()->json($internacoes);
+    }
+    
+    /**
+     * Dashboard de Leitos - Internações Ativas
      * GET /api/internacoes/ativas
      */
-    public function index(): JsonResponse
+    public function ativas(): JsonResponse
     {
         $leitosComPacientes = Leito::with([
             'internacaoAtiva.paciente',
@@ -23,6 +43,27 @@ class InternacaoController extends Controller
         ])->get();
         
         return response()->json($leitosComPacientes);
+    }
+    
+    /**
+     * Cria nova internação
+     * POST /api/internacoes
+     */
+    public function store(Request $request): JsonResponse
+    {
+        $validatedData = $request->validate([
+            'paciente_id' => 'required|exists:pacientes,id',
+            'leito_id' => 'required|exists:leitos,id',
+            'motivo_internacao' => 'required|string',
+            'data_entrada' => 'required|date'
+        ]);
+        
+        $internacao = Internacao::create([
+            ...$validatedData,
+            'status' => 'ativa'
+        ]);
+        
+        return response()->json($internacao->load(['paciente', 'leito']), 201);
     }
 
     /**
@@ -68,10 +109,10 @@ class InternacaoController extends Controller
             $alta = DB::transaction(function () use ($internacao, $validatedData) {
                 // 1. Cria o registro de alta
                 $alta = $internacao->alta()->create([
-                    'usuario_id' => Auth::id() ?? 1,
-                    'data_hora_alta' => now(),
+                    'usuario_id' => Auth::user()->id ?? 1,
+                    'data_hora' => now(),
                     'resumo_alta' => $validatedData['resumo_alta'] ?? null,
-                    'recomendacoes_pos_alta' => $validatedData['recomendacoes_pos_alta'] ?? null,
+                    'orientacoes' => $validatedData['recomendacoes_pos_alta'] ?? null,
                 ]);
 
                 // 2. Atualiza a internação (finaliza e libera o leito)
@@ -86,6 +127,38 @@ class InternacaoController extends Controller
         } catch (\Exception $e) {
             return response()->json(['message' => 'Erro ao processar a alta: ' . $e->getMessage()], 500);
         }
+    }
+    
+    /**
+     * Atualiza internação
+     * PUT /api/internacoes/{internacao}
+     */
+    public function update(Request $request, Internacao $internacao): JsonResponse
+    {
+        $validatedData = $request->validate([
+            'leito_id' => 'nullable|exists:leitos,id',
+            'motivo_internacao' => 'sometimes|string',
+            'status' => 'sometimes|in:ativa,finalizada,transferida'
+        ]);
+        
+        $internacao->update($validatedData);
+        
+        return response()->json($internacao->load(['paciente', 'leito']));
+    }
+    
+    /**
+     * Remove internação
+     * DELETE /api/internacoes/{internacao}
+     */
+    public function destroy(Internacao $internacao): JsonResponse
+    {
+        if ($internacao->status === 'ativa') {
+            return response()->json(['message' => 'Não é possível excluir internação ativa'], 422);
+        }
+        
+        $internacao->delete();
+        
+        return response()->json(['message' => 'Internação removida com sucesso']);
     }
 
 }

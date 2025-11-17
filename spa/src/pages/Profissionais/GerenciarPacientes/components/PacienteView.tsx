@@ -7,36 +7,27 @@ import { pageStyles } from '../../../../assets/style/pageStyles';
 import api from '../../../../api/axios';
 import '../style.css';
 
-interface Leito {
-  id: number;
-  numero: string;
-  setor: string;
-}
-
-interface CondicaoPatologica {
-  id: number;
-  nome: string;
-}
-
 interface Paciente {
   id: number;
   nome_completo: string;
   cpf: string;
-  nome_mae: string;
+  nome_mae?: string;
   data_nascimento: string;
-  telefone: string;
-  rua: string;
-  numero: string;
-  bairro: string;
-  cidade: string;
-  estado: string;
-  cep: string;
-  alergias: string;
-  medicamentos_continuos: string;
-  leito_id: number;
-  motivo_internacao: string;
-  condicoes_patologicas: CondicaoPatologica[];
-  leito?: Leito;
+  telefone?: string;
+  rua?: string;
+  numero?: string;
+  bairro?: string;
+  cidade?: string;
+  estado?: string;
+  cep?: string;
+  alergias?: string;
+  medicamentos_continuos?: string;
+  condicoes_patologicas?: Array<{ id: number; nome: string }>;
+  internacoes_ativas?: Array<{
+    id: number;
+    motivo_internacao?: string;
+    leito?: { numero: string; setor?: string };
+  }>;
 }
 
 const BREADCRUMB_ITEMS = [
@@ -87,16 +78,31 @@ const PacienteVer: React.FC = () => {
   useEffect(() => {
     const loadPacienteData = async () => {
       setIsLoading(true);
+      setApiError(null);
       try {
-        const listResponse = await api.get('/api/pacientes');
-        const pacienteFromList = listResponse.data.data?.find((p: { id: number }) => p.id === parseInt(id || '0'));
+        const token = localStorage.getItem('auth_token');
+        console.log('Token presente:', !!token);
+        console.log('Buscando paciente com ID:', id);
         
-        if (!pacienteFromList) {
-          throw new Error('Paciente não encontrado');
+        if (!token) {
+          throw new Error('Token de autenticação não encontrado');
         }
         
-        setPaciente(pacienteFromList);
-      } catch {
+        const response = await api.get('/api/pacientes');
+        console.log('Resposta da API:', response.data);
+        
+        const pacientesList = response.data.data || [];
+        const pacienteEncontrado = pacientesList.find((p: any) => p.id === parseInt(id || '0'));
+        
+        console.log('Paciente encontrado:', pacienteEncontrado);
+        
+        if (!pacienteEncontrado) {
+          throw new Error('Paciente não encontrado na lista');
+        }
+        
+        setPaciente(pacienteEncontrado);
+      } catch (error: any) {
+        console.error('Erro ao carregar paciente:', error);
         setApiError('Falha ao carregar dados do paciente.');
       } finally {
         setIsLoading(false);
@@ -240,13 +246,15 @@ const PacienteVer: React.FC = () => {
             <div className="paciente-info-row">
               <span className="paciente-info-label">Leito:</span>
               <span className="paciente-info-value">
-                {paciente.leito ? `${paciente.leito.numero} - ${paciente.leito.setor}` : 'Não informado'}
+                {paciente.internacoes_ativas?.[0]?.leito 
+                  ? `${paciente.internacoes_ativas[0].leito.numero}${paciente.internacoes_ativas[0].leito.setor ? ` - ${paciente.internacoes_ativas[0].leito.setor}` : ''}` 
+                  : 'Não informado'}
               </span>
             </div>
             
             <div className="paciente-info-row">
               <span className="paciente-info-label">Motivo da Internação:</span>
-              <span className="paciente-info-value">{paciente.motivo_internacao || '-'}</span>
+              <span className="paciente-info-value">{paciente.internacoes_ativas?.[0]?.motivo_internacao || '-'}</span>
             </div>
             
             <div className="paciente-info-row">

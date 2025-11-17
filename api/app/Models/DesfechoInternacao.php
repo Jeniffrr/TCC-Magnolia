@@ -45,11 +45,11 @@ class DesfechoInternacao extends Model
     ];
 
     /**
-     * Aplica o escopo global do hospital ao modelo.
+     * Disable global scopes for this model
      */
     protected static function booted()
     {
-        static::addGlobalScope(new HospitalScope);
+        // Remove any global scopes that might be inherited
     }
    public function internacao(): BelongsTo
     {

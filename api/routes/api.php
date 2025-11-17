@@ -13,7 +13,8 @@ use App\Http\Controllers\AtendimentoController;
 use App\Http\Controllers\InternacaoController;
 use App\Http\Controllers\CategoriaRiscoController;
 use App\Http\Controllers\DesfechoInternacaoController;
-use App\Http\Controllers\CondicaoPatologicaController; 
+use App\Http\Controllers\CondicaoPatologicaController;
+use App\Http\Controllers\DashboardController;
 use App\Models\Usuario;
 
 
@@ -76,6 +77,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/leitos/{id}', [LeitoController::class, 'show']); // Visualizar um específico
         Route::put('/leitos/{id}', [LeitoController::class, 'update']); // Editar
         Route::delete('/leitos/{id}', [LeitoController::class, 'destroy']); // Apagar
+        
+        // Dashboard administrativo
+        Route::get('/dashboard/estatisticas', [DashboardController::class, 'estatisticas']);
     });
 
     // Rotas protegidas para todos os profissionais (admin e não admin)
@@ -88,35 +92,36 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // --- Gestão de Internações e Atendimentos Clínicos ---
 
+        // CRUD completo de internações
+        Route::apiResource('internacoes', InternacaoController::class);
+        
         // Rota para o DASHBOARD PRINCIPAL (Painel de Leitos)
-        Route::get('/internacoes/ativas', [InternacaoController::class, 'index']) // <-- NOVA ROTA
+        Route::get('/internacoes/ativas', [InternacaoController::class, 'ativas'])
             ->name('internacoes.ativas');
 
         // Rota para registrar o DESFECHO CLÍNICO (Parto, Aborto, etc)
-        Route::post('/internacoes/{internacao}/desfecho', [DesfechoInternacaoController::class, 'store']) // <-- NOVA ROTA
+        Route::post('/internacoes/{internacao}/desfecho', [DesfechoInternacaoController::class, 'store'])
             ->name('internacoes.desfecho.store');
 
         // Ação específica para dar ALTA ADMINISTRATIVA a uma paciente
         Route::post('/internacoes/{internacao}/alta', [InternacaoController::class, 'darAlta'])
             ->name('internacoes.alta');
 
-        // Rota para buscar os detalhes de uma internação específica (paciente, leito, etc)
-        Route::get('/internacoes/{internacao}', [InternacaoController::class, 'show'])
-            ->name('internacoes.show');
+        // CRUD completo de atendimentos
+        Route::apiResource('atendimentos', AtendimentoController::class);
+        
+        // Buscar atendimentos de um paciente específico
+        Route::get('/pacientes/{paciente}/atendimentos', [AtendimentoController::class, 'byPaciente'])
+            ->name('pacientes.atendimentos');
 
         // --- Rotas de Evolução Clínica (Atendimentos) ---
-        // Rotas aninhadas: Atendimentos existem DENTRO de uma internação
         // Lista todos os atendimentos de uma internação
-        Route::get('/internacoes/{internacao}/atendimentos', [AtendimentoController::class, 'index'])
+        Route::get('/internacoes/{internacao}/atendimentos', [AtendimentoController::class, 'byInternacao'])
             ->name('internacoes.atendimentos.index');
 
         // Cria um novo atendimento (evolução) para uma internação
-        Route::post('/internacoes/{internacao}/atendimentos', [AtendimentoController::class, 'store'])
+        Route::post('/internacoes/{internacao}/atendimentos', [AtendimentoController::class, 'storeForInternacao'])
             ->name('internacoes.atendimentos.store');
-
-        // Rota para ver um atendimento específico (pelo ID do próprio atendimento)
-        Route::get('/atendimentos/{atendimento}', [AtendimentoController::class, 'show'])
-            ->name('atendimentos.show');
 
         // --- Recursos de Apoio (Para popular formulários no frontend) ---
         // Rota para listar as categorias de risco disponíveis
