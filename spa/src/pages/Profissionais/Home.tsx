@@ -299,7 +299,7 @@ const ProfissionaisHome: React.FC = () => {
                             }}
                             className="edit-button"
                             title="Registrar desfecho"
-                            icon="fas fa-baby"
+                            icon="fas fa-file-medical"
                           />
                           <BrButton
                             onClick={(e) => {

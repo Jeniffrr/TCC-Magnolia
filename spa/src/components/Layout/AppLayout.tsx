@@ -37,7 +37,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
         ...defaultLinks,
         { label: 'Pagina Incial', href: '/admin' },
         { label: 'Gerenciar Usuários', href: '/admin/usuarios' },
-        { label: 'Gerenciar Leitos', href: '/admin/leitos' }
+        { label: 'Gerenciar Leitos', href: '/admin/leitos' },
       ];
     }
     

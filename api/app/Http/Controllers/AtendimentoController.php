@@ -8,11 +8,13 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Traits\CalculaRiscoTrait;
+use app\Http\Traits\CalculaRiscoTrait;
+use App\Http\Traits\AuditoriaTrait;
 
 class AtendimentoController extends Controller
 {
-    use CalculaRiscoTrait; 
+    use CalculaRiscoTrait;
+    use AuditoriaTrait; 
 
     /**
      * Lista todos os atendimentos com filtros
@@ -48,7 +50,8 @@ class AtendimentoController extends Controller
                                        'categoriaRisco', 
                                        'examesLaboratoriais', 
                                        'medicamentosAdministrados', 
-                                       'procedimentosRealizados'
+                                       'procedimentosRealizados',
+                                       'ocorrenciasClinicas'
                                    ])
                                    ->latest('data_hora')
                                    ->get();
@@ -119,6 +122,7 @@ class AtendimentoController extends Controller
             'exames_laboratoriais' => 'nullable|array',
             'medicamentos_administrados' => 'nullable|array',
             'procedimentos_realizados' => 'nullable|array',
+            'ocorrencias_clinicas' => 'nullable|array',
         ]);
 
         try {
@@ -130,10 +134,14 @@ class AtendimentoController extends Controller
                 ], 401);
             }
             
+            // Calcular categoria de risco preservando Aborto se já definido
+            $categoriaAtual = $internacao->categoria_risco_id;
+            $novaCategoria = $this->calcularCategoriaRisco($validatedData, $categoriaAtual);
+            
             $atendimento = $internacao->atendimentos()->create([
                 'usuario_id' => $usuario->id,
                 'data_hora' => now(),
-                'categoria_risco_id' => 1,
+                'categoria_risco_id' => $novaCategoria,
                 'pressao_sistolica' => $validatedData['pressao_sistolica'] ?? null,
                 'pressao_diastolica' => $validatedData['pressao_diastolica'] ?? null,
                 'frequencia_cardiaca' => $validatedData['frequencia_cardiaca'] ?? null,
@@ -182,11 +190,26 @@ class AtendimentoController extends Controller
                 }
             }
             
+            if (!empty($validatedData['ocorrencias_clinicas']) && is_array($validatedData['ocorrencias_clinicas'])) {
+                foreach ($validatedData['ocorrencias_clinicas'] as $ocorrencia) {
+                    if (!empty($ocorrencia['descricao'])) {
+                        $atendimento->ocorrenciasClinicas()->create([
+                            'descricao' => $ocorrencia['descricao'],
+                            'data_ocorrencia' => $ocorrencia['data_ocorrencia'] ?? now(),
+                        ]);
+                    }
+                }
+            }
+            
+            // Registrar auditoria para criação de atendimento
+            $this->registrarAuditoria($internacao->paciente_id, 'criacao', 'atendimento');
+            
             // Recarregar o atendimento com os relacionamentos
             $atendimento->load([
                 'examesLaboratoriais', 
                 'medicamentosAdministrados', 
                 'procedimentosRealizados',
+                'ocorrenciasClinicas',
                 'usuario' => function($query) {
                     $query->withoutGlobalScopes();
                 }
@@ -216,7 +239,9 @@ class AtendimentoController extends Controller
             'usuario', 
             'categoriaRisco', 
             'examesLaboratoriais', 
-            'medicamentosAdministrados'
+            'medicamentosAdministrados',
+            'procedimentosRealizados',
+            'ocorrenciasClinicas'
         );
         
         return response()->json($atendimento);
@@ -429,5 +454,62 @@ class AtendimentoController extends Controller
         $procedimento->delete();
         
         return response()->json(['message' => 'Procedimento removido com sucesso']);
+    }
+
+    // ========== OCORRÊNCIAS CLÍNICAS ==========
+    
+    /**
+     * Lista ocorrências de um atendimento
+     * GET /api/atendimentos/{atendimento}/ocorrencias
+     */
+    public function getOcorrencias(Atendimento $atendimento): JsonResponse
+    {
+        return response()->json($atendimento->ocorrenciasClinicas()->orderBy('data_ocorrencia', 'desc')->get());
+    }
+
+    /**
+     * Adiciona ocorrência a um atendimento
+     * POST /api/atendimentos/{atendimento}/ocorrencias
+     */
+    public function storeOcorrencia(Request $request, Atendimento $atendimento): JsonResponse
+    {
+        $validatedData = $request->validate([
+            'descricao' => 'required|string|max:1000',
+            'data_ocorrencia' => 'required|date',
+        ]);
+
+        $ocorrencia = $atendimento->ocorrenciasClinicas()->create($validatedData);
+        
+        return response()->json($ocorrencia, 201);
+    }
+
+    /**
+     * Atualiza ocorrência de um atendimento
+     * PUT /api/atendimentos/{atendimento}/ocorrencias/{ocorrencia}
+     */
+    public function updateOcorrencia(Request $request, Atendimento $atendimento, $ocorrenciaId): JsonResponse
+    {
+        $ocorrencia = $atendimento->ocorrenciasClinicas()->findOrFail($ocorrenciaId);
+        
+        $validatedData = $request->validate([
+            'descricao' => 'sometimes|string|max:1000',
+            'data_ocorrencia' => 'sometimes|date',
+        ]);
+
+        $ocorrencia->update($validatedData);
+        
+        return response()->json($ocorrencia);
+    }
+
+    /**
+     * Remove ocorrência de um atendimento
+     * DELETE /api/atendimentos/{atendimento}/ocorrencias/{ocorrencia}
+     */
+    public function destroyOcorrencia(Atendimento $atendimento, $ocorrenciaId): JsonResponse
+    {
+        $ocorrencia = $atendimento->ocorrenciasClinicas()->findOrFail($ocorrenciaId);
+        $ocorrencia->delete();
+        
+        return response()->json(['message' => 'Ocorrência removida com sucesso']);
     }
 }

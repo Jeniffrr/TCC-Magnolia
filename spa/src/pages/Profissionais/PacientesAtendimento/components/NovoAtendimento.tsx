@@ -30,7 +30,11 @@ interface MedicamentoAdministrado {
 interface ProcedimentoRealizado {
   nome_procedimento: string;
   descricao: string;
-  data_procedimento: string;
+}
+
+interface OcorrenciaClinica {
+  descricao: string;
+  data_ocorrencia: string;
 }
 
 const NovoAtendimento: React.FC = () => {
@@ -50,7 +54,8 @@ const NovoAtendimento: React.FC = () => {
     altura_uterina: '',
     exames_laboratoriais: [] as ExameLaboratorial[],
     medicamentos_administrados: [] as MedicamentoAdministrado[],
-    procedimentos_realizados: [] as ProcedimentoRealizado[]
+    procedimentos_realizados: [] as ProcedimentoRealizado[],
+    ocorrencias_clinicas: [] as OcorrenciaClinica[]
   });
   const [loading, setLoading] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
@@ -132,7 +137,7 @@ const NovoAtendimento: React.FC = () => {
   const addProcedimento = () => {
     setFormData(prev => ({
       ...prev,
-      procedimentos_realizados: [...prev.procedimentos_realizados, { nome_procedimento: '', descricao: '', data_procedimento: new Date().toISOString().split('T')[0] }]
+      procedimentos_realizados: [...prev.procedimentos_realizados, { nome_procedimento: '', descricao: '' }]
     }));
   };
 
@@ -148,6 +153,29 @@ const NovoAtendimento: React.FC = () => {
       ...prev,
       procedimentos_realizados: prev.procedimentos_realizados.map((proc, i) => 
         i === index ? { ...proc, [field]: value } : proc
+      )
+    }));
+  };
+
+  const addOcorrencia = () => {
+    setFormData(prev => ({
+      ...prev,
+      ocorrencias_clinicas: [...prev.ocorrencias_clinicas, { descricao: '', data_ocorrencia: new Date().toISOString().split('T')[0] }]
+    }));
+  };
+
+  const removeOcorrencia = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      ocorrencias_clinicas: prev.ocorrencias_clinicas.filter((_, i) => i !== index)
+    }));
+  };
+
+  const updateOcorrencia = (index: number, field: keyof OcorrenciaClinica, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      ocorrencias_clinicas: prev.ocorrencias_clinicas.map((ocor, i) => 
+        i === index ? { ...ocor, [field]: value } : ocor
       )
     }));
   };
@@ -177,17 +205,10 @@ const NovoAtendimento: React.FC = () => {
         bcf: formData.bcf ? parseInt(formData.bcf) : undefined,
         movimentos_fetais_presentes: formData.movimentos_fetais_presentes,
         altura_uterina: formData.altura_uterina ? parseInt(formData.altura_uterina) : undefined,
-        // Tentar diferentes formatos
         exames_laboratoriais: formData.exames_laboratoriais.filter(e => e.nome.trim()),
         medicamentos_administrados: formData.medicamentos_administrados.filter(m => m.nome_medicacao.trim()),
-        procedimentos_realizados: formData.procedimentos_realizados.filter(p => p.nome_procedimento.trim()),
-        exames: formData.exames_laboratoriais.filter(e => e.nome.trim()),
-        medicamentos: formData.medicamentos_administrados.filter(m => m.nome_medicacao.trim()),
-        procedimentos: formData.procedimentos_realizados.filter(p => p.nome_procedimento.trim())
+        procedimentos_realizados: formData.procedimentos_realizados.filter(p => p.nome_procedimento.trim())
       };
-      
-
-      
       await atendimentosService.createForInternacao(internacao.id, atendimentoData);
       
       setShowSuccess(true);
@@ -567,15 +588,6 @@ const NovoAtendimento: React.FC = () => {
                           style={{ width: '95%', padding: '16px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px' }}
                         />
                       </div>
-                      <div style={{ flex: '1', minWidth: '150px' }}>
-                        <label style={{ display: 'block', marginBottom: '4px', fontSize: '13px', fontWeight: '500' }}>Data do Procedimento</label>
-                        <input
-                          type="date"
-                          value={procedimento.data_procedimento}
-                          onChange={(e) => updateProcedimento(index, 'data_procedimento', e.target.value)}
-                          style={{ width: '95%', padding: '16px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px' }}
-                        />
-                      </div>
                     </div>
                   </div>
                 ))}
@@ -583,6 +595,54 @@ const NovoAtendimento: React.FC = () => {
                 {formData.procedimentos_realizados.length === 0 && (
                   <div style={{ textAlign: 'center', padding: '20px', color: '#666', fontStyle: 'italic', border: '2px dashed #ddd', borderRadius: '8px' }}>
                     Nenhum procedimento cadastrado. Clique em "Adicionar Procedimento" para incluir.
+                  </div>
+                )}
+              </div>
+
+              {/* Ocorrências Clínicas */}
+              <h3 style={pageStyles.userSectionTitle}>Ocorrências Clínicas</h3>
+              <hr />
+
+              <div style={{ marginBottom: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                  <label className="admissao-form-label">Eventos e Intercorrências</label>
+                  <BrButton type="button" onClick={addOcorrencia} style={pageStyles.primaryButton}>Adicionar Ocorrência</BrButton>
+                </div>
+
+                {formData.ocorrencias_clinicas.map((ocorrencia, index) => (
+                  <div key={index} className="admissao-gestacao-card">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                      <h4 className="admissao-gestacao-title">Ocorrência {index + 1}</h4>
+                      <button type="button" onClick={() => removeOcorrencia(index)} className="admissao-remove-button">Remover</button>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                      <div style={{ flex: '2', minWidth: '300px' }}>
+                        <label style={{ display: 'block', marginBottom: '4px', fontSize: '13px', fontWeight: '500' }}>Descrição da Ocorrência</label>
+                        <textarea
+                          value={ocorrencia.descricao}
+                          onChange={(e) => updateOcorrencia(index, 'descricao', e.target.value)}
+                          placeholder="Ex: Sangramento vaginal, Contrações irregulares, Alteração na pressão arterial..."
+                          rows={3}
+                          style={{ width: '95%', padding: '12px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px', resize: 'vertical' }}
+                        />
+                      </div>
+                      <div style={{ flex: '1', minWidth: '150px' }}>
+                        <label style={{ display: 'block', marginBottom: '4px', fontSize: '13px', fontWeight: '500' }}>Data/Hora da Ocorrência</label>
+                        <input
+                          type="datetime-local"
+                          value={ocorrencia.data_ocorrencia}
+                          onChange={(e) => updateOcorrencia(index, 'data_ocorrencia', e.target.value)}
+                          style={{ width: '95%', padding: '16px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px' }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                {formData.ocorrencias_clinicas.length === 0 && (
+                  <div style={{ textAlign: 'center', padding: '20px', color: '#666', fontStyle: 'italic', border: '2px dashed #ddd', borderRadius: '8px' }}>
+                    Nenhuma ocorrência clínica registrada. Clique em "Adicionar Ocorrência" para incluir eventos importantes.
                   </div>
                 )}
               </div>

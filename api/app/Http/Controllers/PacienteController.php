@@ -11,10 +11,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
 use App\Http\Traits\CalculaRiscoTrait; // <-- Importa a lógica de risco
+use App\Http\Traits\AuditoriaTrait;
 
 class PacienteController extends Controller
 {
     use CalculaRiscoTrait; // <-- Usa a lógica de risco neste controller
+    use AuditoriaTrait;
 
     /**
      * Display a listing of the resource.
@@ -22,7 +24,9 @@ class PacienteController extends Controller
      */
     public function index(): JsonResponse
     {
-        $pacientes = Paciente::with('internacoesAtivas.leito')->latest()->paginate(15);
+        $pacientes = Paciente::whereHas('internacoes', function($query) {
+            $query->where('status', 'ativa');
+        })->with('internacoesAtivas.leito')->latest()->paginate(15);
         return response()->json($pacientes);
     }
 
@@ -184,6 +188,8 @@ class PacienteController extends Controller
     public function show(Paciente $paciente): JsonResponse
     {
         try {
+            $this->registrarAuditoria($paciente->id, 'visualizacao', 'dados_pessoais');
+            
             // Carrega relacionamentos necessários para edição
             $paciente->load('condicoesPatologicas', 'gestacoesAnteriores');
             return response()->json($paciente);
@@ -225,6 +231,8 @@ class PacienteController extends Controller
             ]);
 
             DB::transaction(function () use ($validatedData, $paciente) {
+                $this->registrarAuditoria($paciente->id, 'edicao', 'dados_pessoais');
+                
                 // Atualiza dados básicos da paciente
                 $paciente->update(Arr::except($validatedData, ['condicoes_patologicas', 'gestacoes_anteriores']));
 

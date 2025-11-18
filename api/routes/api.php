@@ -14,6 +14,8 @@ use App\Http\Controllers\InternacaoController;
 use App\Http\Controllers\CategoriaRiscoController;
 use App\Http\Controllers\DesfechoInternacaoController;
 use App\Http\Controllers\CondicaoPatologicaController;
+use App\Http\Controllers\OcorrenciaClinicaController;
+use App\Http\Controllers\LogAuditoriaController;
 use App\Http\Controllers\DashboardController;
 use App\Models\Usuario;
 
@@ -128,8 +130,28 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/categoria-riscos', [CategoriaRiscoController::class, 'index'])->name('categoria-riscos.index');
         
         // Rota para listar as condições patológicas (para o formulário de admissão)
-        Route::get('/condicoes-patologicas', [CondicaoPatologicaController::class, 'index']) // <-- NOVA ROTA
+        Route::get('/condicoes-patologicas', [CondicaoPatologicaController::class, 'index'])
             ->name('condicoes-patologicas.index');
+        
+        // --- Rotas de Ocorrências Clínicas ---
+        // CRUD completo de ocorrências clínicas
+        Route::apiResource('ocorrencias-clinicas', OcorrenciaClinicaController::class);
+        
+        // Buscar ocorrências de um atendimento específico
+        Route::get('/atendimentos/{atendimento}/ocorrencias', [AtendimentoController::class, 'getOcorrencias'])
+            ->name('atendimentos.ocorrencias');
+        
+        // Criar ocorrência para um atendimento específico
+        Route::post('/atendimentos/{atendimento}/ocorrencias', [AtendimentoController::class, 'storeOcorrencia'])
+            ->name('atendimentos.ocorrencias.store');
+            
+        // Atualizar ocorrência de um atendimento
+        Route::put('/atendimentos/{atendimento}/ocorrencias/{ocorrencia}', [AtendimentoController::class, 'updateOcorrencia'])
+            ->name('atendimentos.ocorrencias.update');
+            
+        // Remover ocorrência de um atendimento
+        Route::delete('/atendimentos/{atendimento}/ocorrencias/{ocorrencia}', [AtendimentoController::class, 'destroyOcorrencia'])
+            ->name('atendimentos.ocorrencias.destroy');
     });
 
     // Rotas compartilhadas (acessíveis por admin e não admin)

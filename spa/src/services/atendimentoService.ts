@@ -114,6 +114,29 @@ export const procedimentosService = {
     api.delete(`/api/atendimentos/${atendimentoId}/procedimentos/${procedimentoId}`)
 };
 
+// ========== OCORRÊNCIAS CLÍNICAS ==========
+export const ocorrenciasService = {
+  // Lista ocorrências de um atendimento
+  getByAtendimento: (atendimentoId: number) => 
+    api.get(`/api/atendimentos/${atendimentoId}/ocorrencias`),
+  
+  // Adiciona ocorrência a um atendimento
+  create: (atendimentoId: number, data: {
+    descricao: string;
+    data_ocorrencia: string;
+  }) => api.post(`/api/atendimentos/${atendimentoId}/ocorrencias`, { ...data, atendimento_id: atendimentoId }),
+  
+  // Atualiza ocorrência
+  update: (ocorrenciaId: number, data: {
+    descricao?: string;
+    data_ocorrencia?: string;
+  }) => api.put(`/api/ocorrencias-clinicas/${ocorrenciaId}`, data),
+  
+  // Remove ocorrência
+  delete: (ocorrenciaId: number) => 
+    api.delete(`/api/ocorrencias-clinicas/${ocorrenciaId}`)
+};
+
 // ========== ATENDIMENTOS ==========
 export const atendimentosService = {
   // Lista atendimentos de uma internação

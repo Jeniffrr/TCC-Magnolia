@@ -96,7 +96,7 @@ class Usuario extends Authenticatable
      */
     public function getAuthIdentifierName()
     {
-        return 'email';
+        return 'id';
     }
 
     /**
@@ -104,6 +104,14 @@ class Usuario extends Authenticatable
      */
     public function getAuthIdentifier()
     {
-        return $this->email;
+        return $this->id;
+    }
+    
+    /**
+     * Get the name of the field used for authentication (login)
+     */
+    public function username()
+    {
+        return 'email';
     }
 }

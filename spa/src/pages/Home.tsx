@@ -64,7 +64,7 @@ export default function Home() {
       </div>
 
       {/* About Section */}
-      <div style={{ padding: '80px 20px', background: 'linear-gradient(135deg, #f3e5f5 0%, #fef6ff 100%)' }}>
+      <div style={{ padding: '80px 20px ', background: 'linear-gradient(135deg, #f3e5f5 0%, #fef6ff 100%)', minHeight: 'calc(100vh - 400px)' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           <div style={{ background: 'white', padding: '50px', borderRadius: '20px', boxShadow: '0 8px 24px rgba(113, 30, 108, 0.15)' }}>
             <h2 style={{ fontSize: '32px', fontWeight: 'bold', color: '#711E6C', marginBottom: '30px', textAlign: 'center' }}>Desenvolvido para profissionais de saúde</h2>
