@@ -1,5 +1,6 @@
 import type { FormData, ValidationRules } from '../types/Register.types';
 import { VALIDATION_MESSAGES } from '../pages/Resgister/components/Register.constants';
+import { validateCpf, validateCnpj } from './masks';
 
 export const validationRules: ValidationRules = {
   hospital_nome: (value: string) => {
@@ -12,6 +13,7 @@ export const validationRules: ValidationRules = {
     if (!value) return VALIDATION_MESSAGES.REQUIRED('CNPJ');
     if (!/^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/.test(value))
       return "CNPJ deve estar no formato 00.000.000/0000-00";
+    if (!validateCnpj(value)) return "CNPJ inválido";
     return "";
   },
   
@@ -41,6 +43,7 @@ export const validationRules: ValidationRules = {
     if (!value) return VALIDATION_MESSAGES.REQUIRED('CPF');
     if (!/^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(value))
       return "CPF deve estar no formato 000.000.000-00";
+    if (!validateCpf(value)) return "CPF inválido";
     return "";
   },
   
