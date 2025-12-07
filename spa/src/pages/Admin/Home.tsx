@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Container } from '@govbr-ds/react-components';
 import AppLayout from '../../components/Layout/AppLayout';
 import { pageStyles } from '../../assets/style/pageStyles';
 import Loading from '../../components/Loading/Loading';
 import api from '../../api/axios';
+import './style.css';
 
 interface DashboardData {
   pacientes_por_risco: { nome: string; cor: string; total: number }[];
@@ -46,88 +47,84 @@ export default function Home() {
           ) : (
             <>
               {/* Cards de Resumo */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '30px' }}>
-                <div style={{ background: 'white', padding: '24px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', gap: '16px' }}>
-                  <div style={{ width: '60px', height: '60px', borderRadius: '50%', backgroundColor: '#711E6C', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '24px' }}>
+              <div className="dashboard-cards">
+                <div className="dashboard-card">
+                  <div className="dashboard-card-icon primary">
                     <i className="fas fa-users"></i>
                   </div>
                   <div>
-                    <h3 style={{ margin: 0, fontSize: '32px', fontWeight: 'bold', color: '#1f2937' }}>{data?.total_pacientes || 0}</h3>
-                    <p style={{ margin: 0, color: '#6b7280', fontSize: '14px' }}>Total de Pacientes</p>
+                    <h3 className="dashboard-card-value">{data?.total_pacientes || 0}</h3>
+                    <p className="dashboard-card-label">Total de Pacientes</p>
                   </div>
                 </div>
 
-                <div style={{ background: 'white', padding: '24px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', gap: '16px' }}>
-                  <div style={{ width: '60px', height: '60px', borderRadius: '50%', backgroundColor: '#9d4edd', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '24px' }}>
+                <div className="dashboard-card">
+                  <div className="dashboard-card-icon secondary">
                     <i className="fas fa-bed"></i>
                   </div>
                   <div>
-                    <h3 style={{ margin: 0, fontSize: '32px', fontWeight: 'bold', color: '#1f2937' }}>{data?.total_internacoes_ativas || 0}</h3>
-                    <p style={{ margin: 0, color: '#6b7280', fontSize: '14px' }}>Internações Ativas</p>
+                    <h3 className="dashboard-card-value">{data?.total_internacoes_ativas || 0}</h3>
+                    <p className="dashboard-card-label">Internações Ativas</p>
                   </div>
                 </div>
 
-                <div style={{ background: 'white', padding: '24px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', gap: '16px' }}>
-                  <div style={{ width: '60px', height: '60px', borderRadius: '50%', backgroundColor: '#28a745', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '24px' }}>
+                <div className="dashboard-card">
+                  <div className="dashboard-card-icon success">
                     <i className="fas fa-notes-medical"></i>
                   </div>
                   <div>
-                    <h3 style={{ margin: 0, fontSize: '32px', fontWeight: 'bold', color: '#1f2937' }}>{data?.total_atendimentos_mes || 0}</h3>
-                    <p style={{ margin: 0, color: '#6b7280', fontSize: '14px' }}>Atendimentos (Mês)</p>
+                    <h3 className="dashboard-card-value">{data?.total_atendimentos_mes || 0}</h3>
+                    <p className="dashboard-card-label">Atendimentos (Mês)</p>
                   </div>
                 </div>
               </div>
 
               {/* Gráficos */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '20px' }}>
+              <div className="dashboard-charts">
                 {/* Pacientes por Classificação de Risco */}
-                <div style={{ background: 'white', padding: '24px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-                  <h3 style={{ margin: '0 0 20px 0', fontSize: '18px', fontWeight: '600', color: '#1f2937' }}>
-                    <i className="fas fa-exclamation-triangle" style={{ marginRight: '8px', color: '#711E6C' }}></i>
+                <div className="dashboard-chart">
+                  <h3 className="dashboard-chart-title">
+                    <i className="fas fa-exclamation-triangle"></i>
                     Pacientes por Classificação de Risco
                   </h3>
                   <div>
                     {data?.pacientes_por_risco && data.pacientes_por_risco.length > 0 ? (
                       data.pacientes_por_risco.map(risco => (
-                        <div key={risco.nome} style={{ marginBottom: '16px' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                              <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: risco.cor }}></div>
-                              <span style={{ fontSize: '14px', color: '#374151' }}>{risco.nome}</span>
+                        <div key={risco.nome} className="risk-item">
+                          <div className="risk-item-header">
+                            <div className="risk-item-label">
+                              <div className="risk-item-dot" style={{ backgroundColor: risco.cor }}></div>
+                              <span className="risk-item-name">{risco.nome}</span>
                             </div>
-                            <span style={{ fontSize: '14px', fontWeight: '600', color: '#1f2937' }}>{risco.total}</span>
+                            <span className="risk-item-value">{risco.total}</span>
                           </div>
-                          <div style={{ width: '100%', height: '8px', backgroundColor: '#e5e7eb', borderRadius: '4px', overflow: 'hidden' }}>
-                            <div style={{ width: `${(risco.total / maxRisco) * 100}%`, height: '100%', backgroundColor: risco.cor, transition: 'width 0.3s' }}></div>
+                          <div className="risk-item-bar-container">
+                            <div className="risk-item-bar" style={{ width: `${(risco.total / maxRisco) * 100}%`, backgroundColor: risco.cor }}></div>
                           </div>
                         </div>
                       ))
                     ) : (
-                      <p style={{ textAlign: 'center', color: '#6b7280', padding: '20px', margin: 0 }}>
-                        Nenhum dado de risco disponível
-                      </p>
+                      <p className="empty-state">Nenhum dado de risco disponível</p>
                     )}
                   </div>
                 </div>
 
                 {/* Desfechos do Mês */}
-                <div style={{ background: 'white', padding: '24px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-                  <h3 style={{ margin: '0 0 20px 0', fontSize: '18px', fontWeight: '600', color: '#1f2937' }}>
-                    <i className="fas fa-clipboard-check" style={{ marginRight: '8px', color: '#711E6C' }}></i>
+                <div className="dashboard-chart">
+                  <h3 className="dashboard-chart-title">
+                    <i className="fas fa-clipboard-check"></i>
                     Desfechos Clínicos (Mês Atual)
                   </h3>
                   <div>
                     {data?.desfechos_mes && data.desfechos_mes.length > 0 ? (
                       data.desfechos_mes.map(desfecho => (
-                        <div key={desfecho.tipo} style={{ display: 'flex', justifyContent: 'space-between', padding: '12px', borderBottom: '1px solid #e5e7eb' }}>
-                          <span style={{ fontSize: '14px', color: '#374151' }}>{desfecho.tipo}</span>
-                          <span style={{ fontSize: '14px', fontWeight: '600', color: '#1f2937' }}>{desfecho.total}</span>
+                        <div key={desfecho.tipo} className="desfecho-item">
+                          <span className="desfecho-item-label">{desfecho.tipo}</span>
+                          <span className="desfecho-item-value">{desfecho.total}</span>
                         </div>
                       ))
                     ) : (
-                      <p style={{ textAlign: 'center', color: '#6b7280', padding: '20px', margin: 0 }}>
-                        Nenhum desfecho registrado neste mês
-                      </p>
+                      <p className="empty-state">Nenhum desfecho registrado neste mês</p>
                     )}
                   </div>
                 </div>

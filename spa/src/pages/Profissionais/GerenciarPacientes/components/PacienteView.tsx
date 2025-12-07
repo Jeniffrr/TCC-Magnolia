@@ -4,6 +4,8 @@ import { Container, BrButton } from '@govbr-ds/react-components';
 import Breadcrumb from '../../../../components/Breadcrumbs/Breadcrumbs';
 import AppLayout from '../../../../components/Layout/AppLayout';
 import { pageStyles } from '../../../../assets/style/pageStyles';
+import { Loading } from '../../../../components/Loading/Loading';
+import { applyCpfMask, applyPhoneMask, applyCepMask } from '../../../../utils/masks';
 import api from '../../../../api/axios';
 import '../style.css';
 
@@ -35,32 +37,6 @@ const BREADCRUMB_ITEMS = [
   { label: 'Gerenciar Pacientes', url: '/profissionais/pacientes' },
   { label: 'Visualizar Paciente', active: true },
 ];
-
-
-
-const applyCpfMask = (value: string) => {
-  return value
-    .replace(/\D/g, "")
-    .replace(/(\d{3})(\d)/, "$1.$2")
-    .replace(/(\d{3})(\d)/, "$1.$2")
-    .replace(/(\d{3})(\d{1,2})/, "$1-$2")
-    .replace(/(-\d{2})\d+?$/, "$1");
-};
-
-const applyPhoneMask = (value: string) => {
-  return value
-    .replace(/\D/g, "")
-    .replace(/(\d{2})(\d)/, "($1) $2")
-    .replace(/(\d{4,5})(\d{4})/, "$1-$2")
-    .replace(/(-\d{4})\d+?$/, "$1");
-};
-
-const applyCepMask = (value: string) => {
-  return value
-    .replace(/\D/g, "")
-    .replace(/(\d{5})(\d)/, "$1-$2")
-    .replace(/(-\d{3})\d+?$/, "$1");
-};
 
 const formatDate = (dateString: string) => {
   if (!dateString) return '-';
@@ -101,9 +77,16 @@ const PacienteVer: React.FC = () => {
         }
         
         setPaciente(pacienteEncontrado);
-      } catch (error: any) {
+      } catch (err: unknown) {
+        const error = err as { response?: { status?: number; data?: { message?: string } }; message?: string };
         console.error('Erro ao carregar paciente:', error);
-        setApiError('Falha ao carregar dados do paciente.');
+        if (error.response?.status === 404) {
+          setApiError('Paciente não encontrado');
+        } else if (error.response?.status === 401) {
+          setApiError('Sessão expirada. Faça login novamente');
+        } else {
+          setApiError(error.response?.data?.message || error.message || 'Erro ao carregar dados. Tente novamente');
+        }
       } finally {
         setIsLoading(false);
       }
@@ -118,34 +101,6 @@ const PacienteVer: React.FC = () => {
     navigate('/profissionais/pacientes');
   };
 
-  if (isLoading) {
-    return (
-      <AppLayout>
-        <Container fluid>
-          <div className="loading-container">
-            <div className="loading-bar">
-              <div className="loading-progress"></div>
-            </div>
-            <p className="loading-text">Carregando paciente...</p>
-          </div>
-        </Container>
-      </AppLayout>
-    );
-  }
-
-  if (apiError || !paciente) {
-    return (
-      <AppLayout>
-        <Container fluid>
-          <div className="alert-card error">
-            <i className="fas fa-exclamation-triangle"></i>
-            {apiError || 'Paciente não encontrado'}
-          </div>
-        </Container>
-      </AppLayout>
-    );
-  }
-
   return (
     <AppLayout>
       <Container fluid>
@@ -158,14 +113,30 @@ const PacienteVer: React.FC = () => {
         </div>
         
         <h1 style={pageStyles.title}>
-          {paciente.nome_completo}
+          {isLoading ? 'Carregando...' : paciente?.nome_completo || 'Paciente'}
         </h1>
         
         <div style={pageStyles.containerPadding}>
+          {apiError && (
+            <div className="alert-card error">
+              <i className="fas fa-exclamation-triangle"></i>
+              {apiError}
+            </div>
+          )}
+
+          {isLoading ? (
+            <Loading message="Carregando dados do paciente..." />
+          ) : !paciente ? (
+            <div className="alert-card error">
+              <i className="fas fa-exclamation-triangle"></i>
+              Paciente não encontrado
+            </div>
+          ) : (
+          <>
           {/* Dados Pessoais */}
           <div className="paciente-info-card">
             <h3 style={pageStyles.sectionTitle}>
-              <i className="fas fa-user" style={{ marginRight: '8px' }}></i>
+              <i className="fas fa-user section-icon"></i>
               Dados Pessoais
             </h3>
             <hr />
@@ -192,14 +163,14 @@ const PacienteVer: React.FC = () => {
             
             <div className="paciente-info-row">
               <span className="paciente-info-label">Telefone:</span>
-              <span className="paciente-info-value">{applyPhoneMask(paciente.telefone)}</span>
+              <span className="paciente-info-value">{paciente.telefone ? applyPhoneMask(paciente.telefone) : '-'}</span>
             </div>
           </div>
 
           {/* Endereço */}
           <div className="paciente-info-card">
             <h3 style={pageStyles.sectionTitle}>
-              <i className="fas fa-map-marker-alt" style={{ marginRight: '8px' }}></i>
+              <i className="fas fa-map-marker-alt section-icon"></i>
               Endereço
             </h3>
             <hr />
@@ -231,14 +202,14 @@ const PacienteVer: React.FC = () => {
             
             <div className="paciente-info-row">
               <span className="paciente-info-label">CEP:</span>
-              <span className="paciente-info-value">{applyCepMask(paciente.cep)}</span>
+              <span className="paciente-info-value">{paciente.cep ? applyCepMask(paciente.cep) : '-'}</span>
             </div>
           </div>
 
           {/* Informações Médicas */}
           <div className="paciente-info-card">
             <h3 style={pageStyles.sectionTitle}>
-              <i className="fas fa-heartbeat" style={{ marginRight: '8px' }}></i>
+              <i className="fas fa-heartbeat section-icon"></i>
               Informações Médicas
             </h3>
             <hr />
@@ -289,6 +260,8 @@ const PacienteVer: React.FC = () => {
             </BrButton>
             
           </div>
+          </>
+          )}
         </div>
       </Container>
     </AppLayout>

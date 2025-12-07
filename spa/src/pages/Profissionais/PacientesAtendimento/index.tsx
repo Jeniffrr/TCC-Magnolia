@@ -5,6 +5,7 @@ import { Container, BrButton } from '@govbr-ds/react-components';
 import AppLayout from '../../../components/Layout/AppLayout';
 import Breadcrumb from '../../../components/Breadcrumbs/Breadcrumbs';
 import { pageStyles } from '../../../assets/style/pageStyles';
+import { Loading } from '../../../components/Loading/Loading';
 import DarAlta from './components/DarAlta';
 import RegistrarDesfecho from './components/RegistrarDesfecho';
 import './style.css';
@@ -161,16 +162,6 @@ const PacientesAtendimento: React.FC = () => {
     ? pacientes 
     : pacientes.filter(p => p.leito === leitos.find(l => l.id === activeTab)?.numero);
 
-  if (loading) return (
-    <AppLayout>
-      <Container fluid>
-        <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-          <div className="loading">Carregando dados...</div>
-        </div>
-      </Container>
-    </AppLayout>
-  );
-
   return (
     <AppLayout>
       <Container fluid>
@@ -187,6 +178,10 @@ const PacientesAtendimento: React.FC = () => {
         </h1>
         
         <div style={pageStyles.containerPadding}>
+          {loading ? (
+            <Loading message="Carregando dados..." />
+          ) : (
+          <>
           {/* Tabs dos Leitos */}
           <div style={{ marginBottom: '0' }}>
             <button 
@@ -375,6 +370,8 @@ const PacientesAtendimento: React.FC = () => {
               onClose={() => setShowAlta(null)}
               onSuccess={fetchData}
             />
+          )}
+          </>
           )}
         </div>
       </Container>

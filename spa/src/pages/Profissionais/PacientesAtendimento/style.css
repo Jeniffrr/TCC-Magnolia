@@ -627,3 +627,320 @@
   color: #212529;
   flex: 1;
 }
+
+/* DarAlta Component */
+.dar-alta-modal {
+  max-width: 700px;
+}
+
+.dar-alta-header {
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 16px;
+}
+
+.dar-alta-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.dar-alta-icon {
+  margin-right: 8px;
+  color: #711E6C;
+}
+
+.dar-alta-error {
+  margin: 20px;
+  padding: 12px;
+  background-color: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  color: #991b1b;
+}
+
+.dar-alta-error i {
+  margin-right: 8px;
+}
+
+.dar-alta-form {
+  padding: 20px;
+}
+
+.dar-alta-field {
+  margin-bottom: 20px;
+}
+
+.dar-alta-field:last-of-type {
+  margin-bottom: 24px;
+}
+
+.dar-alta-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #374151;
+  font-size: 14px;
+}
+
+.dar-alta-textarea {
+  width: 95%;
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.dar-alta-textarea:focus {
+  outline: none;
+  border-color: #711E6C;
+  box-shadow: 0 0 0 3px rgba(113, 30, 108, 0.1);
+}
+
+.dar-alta-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+}
+
+/* RegistrarDesfecho Component */
+.modal-container.desfecho-modal {
+  max-width: 1000px !important;
+  width: 95% !important;
+}
+
+.desfecho-body {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.desfecho-error {
+  padding: 12px;
+  background-color: #fee2e2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.desfecho-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.desfecho-field label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.desfecho-field select,
+.desfecho-field input,
+.desfecho-field textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.desfecho-field input[type="number"],
+.desfecho-field input[type="datetime-local"] {
+  width: 90%;
+}
+
+.desfecho-field textarea {
+  width: 95%;
+  resize: vertical;
+}
+
+.desfecho-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.desfecho-section {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 16px;
+}
+
+.desfecho-section h4 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.desfecho-rn-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.desfecho-footer {
+  margin: 0 -24px -20px;
+  padding: 16px 24px 20px;
+  border-top: 1px solid #e2e8f0;
+}
+
+/* NovoAtendimento Component */
+.novo-atendimento-loading {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.vitals-grid {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.vital-field {
+  flex: 1;
+  min-width: 150px;
+  position: relative;
+}
+
+.vital-field-wide {
+  flex: 1;
+  min-width: 200px;
+  position: relative;
+}
+
+.unit-label {
+  position: absolute;
+  right: 12px;
+  top: 38px;
+  font-size: 14px;
+  color: #666;
+  pointer-events: none;
+  background-color: white;
+  padding: 0 4px;
+}
+
+.checkbox-field {
+  flex: 1;
+  min-width: 200px;
+  padding-bottom: 12px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.checkbox-input {
+  width: 18px;
+  height: 18px;
+  accent-color: #711E6C;
+}
+
+.checkbox-text {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.textarea-field {
+  flex: 1;
+  min-width: 300px;
+}
+
+.textarea-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.textarea-input {
+  width: 98%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  resize: vertical;
+}
+
+.section-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.card-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.card-fields {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.card-field {
+  flex: 1;
+  min-width: 150px;
+}
+
+.card-field-wide {
+  flex: 1;
+  min-width: 200px;
+}
+
+.card-field-full {
+  flex: 2;
+  min-width: 300px;
+}
+
+.card-field label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.card-field input,
+.card-field textarea {
+  width: 95%;
+  padding: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.card-field textarea {
+  padding: 12px;
+  resize: vertical;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  font-style: italic;
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+}

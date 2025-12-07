@@ -10,7 +10,7 @@ import {
   getFeedbackText,
 } from "../../../../assets/style/pageStyles";
 import api from "../../../../api/axios";
-import { applyCpfMask, applyPhoneMask, applyCepMask } from "../../../../utils/masks";
+import { applyCpfMask, applyPhoneMask, applyCepMask, validateCpf } from "../../../../utils/masks";
 import "../style.css";
 
 interface Leito {
@@ -135,6 +135,11 @@ const PacienteAdmissao: React.FC = () => {
 
     if (name === "cpf") {
       maskedValue = applyCpfMask(value);
+      if (maskedValue.replace(/\D/g, "").length === 11 && !validateCpf(maskedValue)) {
+        setValidationErrors(prev => ({ ...prev, cpf: "CPF inválido" }));
+      } else {
+        setValidationErrors(prev => ({ ...prev, cpf: "" }));
+      }
     } else if (name === "telefone") {
       maskedValue = applyPhoneMask(value);
     } else if (name === "cep") {
@@ -295,7 +300,7 @@ const PacienteAdmissao: React.FC = () => {
               <h3 style={pageStyles.sectionTitle}>Dados Pessoais</h3>
               <hr />
 
-              <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+              <div className="admissao-flex-row">
                 <div className="admissao-field-xxlarge">
                   <BrInputIcon
                     label="Nome Completo*"
@@ -310,7 +315,7 @@ const PacienteAdmissao: React.FC = () => {
                     )}
                   />
                 </div>
-                <div style={{ flex: "1", minWidth: "100px" }}>
+                <div className="admissao-field-small">
                   <BrInputIcon
                     label="CPF*"
                     name="cpf"
@@ -324,8 +329,8 @@ const PacienteAdmissao: React.FC = () => {
                 </div>
               </div>
 
-              <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-                <div style={{ flex: "1", minWidth: "300px" }}>
+              <div className="admissao-flex-row">
+                <div className="admissao-field-xlarge">
                   <label className="admissao-form-label">
                     Data de Nascimento*
                   </label>
@@ -342,7 +347,7 @@ const PacienteAdmissao: React.FC = () => {
                     </div>
                   )}
                 </div>
-                <div style={{ flex: "1", minWidth: "200px" }}>
+                <div className="admissao-field-large">
                   <BrInputIcon
                     label="Telefone"
                     name="telefone"
@@ -355,8 +360,8 @@ const PacienteAdmissao: React.FC = () => {
                   />
                 </div>
               </div>
-              <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-                <div style={{ flex: "1", minWidth: "300px" }}>
+              <div className="admissao-flex-row">
+                <div className="admissao-field-xlarge">
                   <BrInputIcon
                     label="Nome da Mãe*"
                     name="nome_mae"
@@ -374,8 +379,8 @@ const PacienteAdmissao: React.FC = () => {
               <h3 style={pageStyles.userSectionTitle}>Endereço</h3>
               <hr />
 
-              <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-                <div style={{ flex: "1", minWidth: "150px" }}>
+              <div className="admissao-flex-row">
+                <div className="admissao-field-medium">
                   <BrInputIcon
                     label="CEP"
                     name="cep"
@@ -387,7 +392,7 @@ const PacienteAdmissao: React.FC = () => {
                     feedbackText={getFeedbackText(validationErrors.cep)}
                   />
                 </div>
-                <div style={{ flex: "2", minWidth: "300px" }}>
+                <div className="admissao-field-xxlarge">
                   <BrInputIcon
                     label="Rua"
                     name="rua"
@@ -401,8 +406,8 @@ const PacienteAdmissao: React.FC = () => {
                 </div>
               </div>
 
-              <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-                <div style={{ flex: "1", minWidth: "100px" }}>
+              <div className="admissao-flex-row">
+                <div className="admissao-field-small">
                   <BrInputIcon
                     label="Número"
                     name="numero"
@@ -414,7 +419,7 @@ const PacienteAdmissao: React.FC = () => {
                     feedbackText={getFeedbackText(validationErrors.numero)}
                   />
                 </div>
-                <div style={{ flex: "1", minWidth: "800px" }}>
+                <div className="admissao-field-xxlarge">
                   <BrInputIcon
                     label="Bairro"
                     name="bairro"
@@ -428,8 +433,8 @@ const PacienteAdmissao: React.FC = () => {
                 </div>
               </div>
 
-              <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-                <div style={{ flex: "1", minWidth: "200px" }}>
+              <div className="admissao-flex-row">
+                <div className="admissao-field-large">
                   <BrInputIcon
                     label="Cidade"
                     name="cidade"
@@ -441,7 +446,7 @@ const PacienteAdmissao: React.FC = () => {
                     feedbackText={getFeedbackText(validationErrors.cidade)}
                   />
                 </div>
-                <div style={{ flex: "1", minWidth: "150px" }}>
+                <div className="admissao-field-medium">
                   <BrInputIcon
                     label="Estado"
                     name="estado"
@@ -459,23 +464,9 @@ const PacienteAdmissao: React.FC = () => {
               <h3 style={pageStyles.userSectionTitle}>Histórico Médico</h3>
               <hr />
 
-              <div
-                style={{
-                  display: "flex",
-                  gap: "16px",
-                  flexWrap: "wrap",
-                  marginBottom: "16px",
-                }}
-              >
-                <div style={{ flex: "1", minWidth: "300px" }}>
-                  <label
-                    style={{
-                      display: "block",
-                      marginBottom: "8px",
-                      fontSize: "14px",
-                      fontWeight: "600",
-                    }}
-                  >
+              <div className="admissao-flex-row-margin">
+                <div className="admissao-field-xlarge">
+                  <label className="admissao-form-label">
                     Alergias
                   </label>
                   <textarea
@@ -483,45 +474,18 @@ const PacienteAdmissao: React.FC = () => {
                     value={formData.alergias}
                     onChange={handleInputChange}
                     rows={4}
-                    style={{
-                      width: "98%",
-                      padding: "12px",
-                      border: "1px solid #ccc",
-                      borderRadius: "4px",
-                      fontSize: "14px",
-                      resize: "vertical",
-                    }}
+                    className="admissao-form-container"
                   />
                   {validationErrors.alergias && (
-                    <div
-                      style={{
-                        color: "#dc3545",
-                        fontSize: "12px",
-                        marginTop: "4px",
-                      }}
-                    >
+                    <div className="admissao-error-text">
                       {validationErrors.alergias}
                     </div>
                   )}
                 </div>
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  gap: "16px",
-                  flexWrap: "wrap",
-                  marginBottom: "16px",
-                }}
-              >
-                <div style={{ flex: "1", minWidth: "300px" }}>
-                  <label
-                    style={{
-                      display: "block",
-                      marginBottom: "8px",
-                      fontSize: "14px",
-                      fontWeight: "600",
-                    }}
-                  >
+              <div className="admissao-flex-row-margin">
+                <div className="admissao-field-xlarge">
+                  <label className="admissao-form-label">
                     Medicamentos de Uso Contínuo
                   </label>
                   <textarea
@@ -529,23 +493,10 @@ const PacienteAdmissao: React.FC = () => {
                     value={formData.medicamentos_continuos}
                     onChange={handleInputChange}
                     rows={4}
-                    style={{
-                      width: "98%",
-                      padding: "12px",
-                      border: "1px solid #ccc",
-                      borderRadius: "4px",
-                      fontSize: "14px",
-                      resize: "vertical",
-                    }}
+                    className="admissao-form-container"
                   />
                   {validationErrors.medicamentos_continuos && (
-                    <div
-                      style={{
-                        color: "#dc3545",
-                        fontSize: "12px",
-                        marginTop: "4px",
-                      }}
-                    >
+                    <div className="admissao-error-text">
                       {validationErrors.medicamentos_continuos}
                     </div>
                   )}
@@ -553,14 +504,7 @@ const PacienteAdmissao: React.FC = () => {
               </div>
 
               <div style={{ marginBottom: "16px" }}>
-                <label
-                  style={{
-                    display: "block",
-                    marginBottom: "12px",
-                    fontSize: "14px",
-                    fontWeight: "600",
-                  }}
-                >
+                <label className="admissao-form-label" style={{ marginBottom: "12px" }}>
                   Condições Patológicas
                 </label>
                 <div className="admissao-condicoes-grid">
@@ -592,13 +536,7 @@ const PacienteAdmissao: React.FC = () => {
                   ))}
                 </div>
                 {validationErrors.condicoes_patologicas && (
-                  <div
-                    style={{
-                      color: "#dc3545",
-                      fontSize: "12px",
-                      marginTop: "4px",
-                    }}
-                  >
+                  <div className="admissao-error-text">
                     {validationErrors.condicoes_patologicas}
                   </div>
                 )}
@@ -609,14 +547,7 @@ const PacienteAdmissao: React.FC = () => {
               <hr />
 
               <div style={{ marginBottom: "16px" }}>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: "12px",
-                  }}
-                >
+                <div className="admissao-gestacao-header">
                   <label className="admissao-form-label">
                     Histórico de Gestações
                   </label>
@@ -631,14 +562,7 @@ const PacienteAdmissao: React.FC = () => {
 
                 {formData.gestacoes_anteriores.map((gestacao, index) => (
                   <div key={index} className="admissao-gestacao-card">
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        marginBottom: "12px",
-                      }}
-                    >
+                    <div className="admissao-gestacao-card-header">
                       <h4 className="admissao-gestacao-title">
                         Gestação {index + 1}
                       </h4>
@@ -651,18 +575,9 @@ const PacienteAdmissao: React.FC = () => {
                       </button>
                     </div>
 
-                    <div
-                      style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}
-                    >
-                      <div style={{ flex: "1", minWidth: "120px" }}>
-                        <label
-                          style={{
-                            display: "block",
-                            marginBottom: "4px",
-                            fontSize: "13px",
-                            fontWeight: "500",
-                          }}
-                        >
+                    <div className="admissao-flex-row">
+                      <div className="admissao-gestacao-field">
+                        <label className="admissao-gestacao-label">
                           Ano do Parto
                         </label>
                         <input
@@ -672,25 +587,12 @@ const PacienteAdmissao: React.FC = () => {
                             updateGestacao(index, "ano_parto", e.target.value)
                           }
                           placeholder="Ex: 2020"
-                          style={{
-                            width: "95%",
-                            padding: "16px",
-                            border: "1px solid #ccc",
-                            borderRadius: "4px",
-                            fontSize: "13px",
-                          }}
+                          className="admissao-gestacao-input"
                         />
                       </div>
 
-                      <div style={{ flex: "1", minWidth: "150px" }}>
-                        <label
-                          style={{
-                            display: "block",
-                            marginBottom: "4px",
-                            fontSize: "13px",
-                            fontWeight: "500",
-                          }}
-                        >
+                      <div className="admissao-gestacao-field-medium">
+                        <label className="admissao-gestacao-label">
                           Tipo de Parto
                         </label>
                         <select
@@ -698,13 +600,7 @@ const PacienteAdmissao: React.FC = () => {
                           onChange={(e) =>
                             updateGestacao(index, "tipo_parto", e.target.value)
                           }
-                          style={{
-                            width: "95%",
-                            padding: "16px",
-                            border: "1px solid #ccc",
-                            borderRadius: "4px",
-                            fontSize: "13px",
-                          }}
+                          className="admissao-gestacao-input"
                         >
                           <option value="">Selecione...</option>
                           <option value="Normal">Normal</option>
@@ -715,15 +611,8 @@ const PacienteAdmissao: React.FC = () => {
                       </div>
                     </div>
                    
-                      <div style={{ flex: "1", minWidth: "300px" , marginTop:"16px"}}>
-                        <label
-                          style={{
-                            display: "block",
-                            marginBottom: "4px",
-                            fontSize: "13px",
-                            fontWeight: "600",
-                          }}
-                        >
+                      <div className="admissao-gestacao-field-large" style={{ marginTop:"16px"}}>
+                        <label className="admissao-gestacao-label" style={{ fontWeight: "600" }}>
                         Observações
                         </label>
                         <textarea
@@ -732,30 +621,14 @@ const PacienteAdmissao: React.FC = () => {
                             updateGestacao(index, "observacoes", e.target.value)
                           }
                           rows={2}
-                          style={{
-                            width: "95%",
-                            padding: "12px",
-                            border: "1px solid #ccc",
-                            borderRadius: "4px",
-                            fontSize: "14px",
-                            resize: "vertical",
-                          }}
+                          className="admissao-gestacao-textarea"
                         />
                       </div>
                     </div>
                 ))}
 
                 {formData.gestacoes_anteriores.length === 0 && (
-                  <div
-                    style={{
-                      textAlign: "center",
-                      padding: "20px",
-                      color: "#666",
-                      fontStyle: "italic",
-                      border: "2px dashed #ddd",
-                      borderRadius: "8px",
-                    }}
-                  >
+                  <div className="admissao-empty-state">
                     Nenhuma gestação anterior cadastrada. Clique em "Adicionar
                     Gestação" para incluir o histórico.
                   </div>
@@ -766,10 +639,8 @@ const PacienteAdmissao: React.FC = () => {
               <h3 style={pageStyles.userSectionTitle}>Sinais Vitais</h3>
               <hr />
 
-              <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-                <div
-                  style={{ flex: "1", minWidth: "150px", position: "relative" }}
-                >
+              <div className="admissao-flex-row">
+                <div className="admissao-field-relative">
                   <BrInputIcon
                     label="Pressão Sistólica"
                     name="pressao_sistolica"
@@ -782,24 +653,11 @@ const PacienteAdmissao: React.FC = () => {
                       validationErrors.pressao_sistolica
                     )}
                   />
-                  <span
-                    style={{
-                      position: "absolute",
-                      right: "12px",
-                      top: "38px",
-                      fontSize: "14px",
-                      color: "#666",
-                      pointerEvents: "none",
-                      backgroundColor: "white",
-                      padding: "0 4px",
-                    }}
-                  >
+                  <span className="admissao-unit-label">
                     mmHg
                   </span>
                 </div>
-                <div
-                  style={{ flex: "1", minWidth: "150px", position: "relative" }}
-                >
+                <div className="admissao-field-relative">
                   <BrInputIcon
                     label="Pressão Diastólica"
                     name="pressao_diastolica"
@@ -812,24 +670,11 @@ const PacienteAdmissao: React.FC = () => {
                       validationErrors.pressao_diastolica
                     )}
                   />
-                  <span
-                    style={{
-                      position: "absolute",
-                      right: "12px",
-                      top: "38px",
-                      fontSize: "14px",
-                      color: "#666",
-                      pointerEvents: "none",
-                      backgroundColor: "white",
-                      padding: "0 4px",
-                    }}
-                  >
+                  <span className="admissao-unit-label">
                     mmHg
                   </span>
                 </div>
-                <div
-                  style={{ flex: "1", minWidth: "150px", position: "relative" }}
-                >
+                <div className="admissao-field-relative">
                   <BrInputIcon
                     label="Frequência Cardíaca"
                     name="frequencia_cardiaca"
@@ -844,27 +689,14 @@ const PacienteAdmissao: React.FC = () => {
                       validationErrors.frequencia_cardiaca
                     )}
                   />
-                  <span
-                    style={{
-                      position: "absolute",
-                      right: "12px",
-                      top: "38px",
-                      fontSize: "14px",
-                      color: "#666",
-                      pointerEvents: "none",
-                      backgroundColor: "white",
-                      padding: "0 4px",
-                    }}
-                  >
+                  <span className="admissao-unit-label">
                     bpm
                   </span>
                 </div>
               </div>
 
-              <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-                <div
-                  style={{ flex: "1", minWidth: "200px", position: "relative" }}
-                >
+              <div className="admissao-flex-row">
+                <div className="admissao-field-relative" style={{ minWidth: "200px" }}>
                   <BrInputIcon
                     label="Temperatura"
                     name="temperatura"
@@ -875,24 +707,11 @@ const PacienteAdmissao: React.FC = () => {
                     status={getFieldStatus(validationErrors.temperatura)}
                     feedbackText={getFeedbackText(validationErrors.temperatura)}
                   />
-                  <span
-                    style={{
-                      position: "absolute",
-                      right: "12px",
-                      top: "38px",
-                      fontSize: "14px",
-                      color: "#666",
-                      pointerEvents: "none",
-                      backgroundColor: "white",
-                      padding: "0 4px",
-                    }}
-                  >
+                  <span className="admissao-unit-label">
                     °C
                   </span>
                 </div>
-                <div
-                  style={{ flex: "1", minWidth: "150px", position: "relative" }}
-                >
+                <div className="admissao-field-relative">
                   <BrInputIcon
                     label="Frequência Respiratória"
                     name="frequencia_respiratoria"
@@ -907,18 +726,7 @@ const PacienteAdmissao: React.FC = () => {
                       validationErrors.frequencia_respiratoria
                     )}
                   />
-                  <span
-                    style={{
-                      position: "absolute",
-                      right: "12px",
-                      top: "38px",
-                      fontSize: "14px",
-                      color: "#666",
-                      pointerEvents: "none",
-                      backgroundColor: "white",
-                      padding: "0 4px",
-                    }}
-                  >
+                  <span className="admissao-unit-label">
                     rpm
                   </span>
                 </div>
@@ -927,17 +735,8 @@ const PacienteAdmissao: React.FC = () => {
               {/* Avaliação Obstétrica */}
               <h3 style={pageStyles.userSectionTitle}>Avaliação Obstétrica</h3>
               <hr />
-              <div
-                style={{
-                  display: "flex",
-                  gap: "16px",
-                  flexWrap: "wrap",
-                  marginBottom: "16px",
-                }}
-              >
-                <div
-                  style={{ flex: "1", minWidth: "150px", position: "relative" }}
-                >
+              <div className="admissao-flex-row-margin">
+                <div className="admissao-field-relative">
                   <BrInputIcon
                     label="BCF"
                     name="bcf"
@@ -948,24 +747,11 @@ const PacienteAdmissao: React.FC = () => {
                     status={getFieldStatus(validationErrors.bcf)}
                     feedbackText={getFeedbackText(validationErrors.bcf)}
                   />
-                  <span
-                    style={{
-                      position: "absolute",
-                      right: "12px",
-                      top: "38px",
-                      fontSize: "14px",
-                      color: "#666",
-                      pointerEvents: "none",
-                      backgroundColor: "white",
-                      padding: "0 4px",
-                    }}
-                  >
+                  <span className="admissao-unit-label">
                     bpm
                   </span>
                 </div>
-                <div
-                  style={{ flex: "1", minWidth: "150px", position: "relative" }}
-                >
+                <div className="admissao-field-relative">
                   <BrInputIcon
                     label="Altura Uterina"
                     name="altura_uterina"
@@ -978,40 +764,15 @@ const PacienteAdmissao: React.FC = () => {
                       validationErrors.altura_uterina
                     )}
                   />
-                  <span
-                    style={{
-                      position: "absolute",
-                      right: "12px",
-                      top: "38px",
-                      fontSize: "14px",
-                      color: "#666",
-                      pointerEvents: "none",
-                      backgroundColor: "white",
-                      padding: "0 4px",
-                    }}
-                  >
+                  <span className="admissao-unit-label">
                     cm
                   </span>
                 </div>
               </div>
 
-              <div
-                style={{
-                  display: "flex",
-                  gap: "16px",
-                  flexWrap: "wrap",
-                  marginBottom: "16px",
-                }}
-              >
-                <div style={{ flex: "1", minWidth: "300px" }}>
-                  <label
-                    style={{
-                      display: "block",
-                      marginBottom: "8px",
-                      fontSize: "14px",
-                      fontWeight: "600",
-                    }}
-                  >
+              <div className="admissao-flex-row-margin">
+                <div className="admissao-field-xlarge">
+                  <label className="admissao-form-label">
                     Evolução Maternidade
                   </label>
                   <textarea
@@ -1019,45 +780,18 @@ const PacienteAdmissao: React.FC = () => {
                     value={formData.evolucao_maternidade}
                     onChange={handleInputChange}
                     rows={4}
-                    style={{
-                      width: "98%",
-                      padding: "12px",
-                      border: "1px solid #ccc",
-                      borderRadius: "4px",
-                      fontSize: "14px",
-                      resize: "vertical",
-                    }}
+                    className="admissao-form-container"
                   />
                   {validationErrors.evolucao_maternidade && (
-                    <div
-                      style={{
-                        color: "#dc3545",
-                        fontSize: "12px",
-                        marginTop: "4px",
-                      }}
-                    >
+                    <div className="admissao-error-text">
                       {validationErrors.evolucao_maternidade}
                     </div>
                   )}
                 </div>
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  gap: "16px",
-                  flexWrap: "wrap",
-                  marginBottom: "16px",
-                }}
-              >
-                <div style={{ flex: "1", minWidth: "300px" }}>
-                  <label
-                    style={{
-                      display: "block",
-                      marginBottom: "8px",
-                      fontSize: "14px",
-                      fontWeight: "600",
-                    }}
-                  >
+              <div className="admissao-flex-row-margin">
+                <div className="admissao-field-xlarge">
+                  <label className="admissao-form-label">
                     Avaliação Fetal
                   </label>
                   <textarea
@@ -1065,44 +799,18 @@ const PacienteAdmissao: React.FC = () => {
                     value={formData.avaliacao_fetal}
                     onChange={handleInputChange}
                     rows={4}
-                    style={{
-                      width: "98%",
-                      padding: "12px",
-                      border: "1px solid #ccc",
-                      borderRadius: "4px",
-                      fontSize: "14px",
-                      resize: "vertical",
-                    }}
+                    className="admissao-form-container"
                   />
                   {validationErrors.avaliacao_fetal && (
-                    <div
-                      style={{
-                        color: "#dc3545",
-                        fontSize: "12px",
-                        marginTop: "4px",
-                      }}
-                    >
+                    <div className="admissao-error-text">
                       {validationErrors.avaliacao_fetal}
                     </div>
                   )}
                 </div>
               </div>
 
-              <div
-                style={{
-                  flex: "1",
-                  minWidth: "200px",
-                  paddingBottom: "12px",
-                }}
-              >
-                <label
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "12px",
-                    cursor: "pointer",
-                  }}
-                >
+              <div className="admissao-movimentos-container">
+                <label className="admissao-checkbox-label-large">
                   <input
                     type="checkbox"
                     name="movimentos_fetais_presentes"
@@ -1113,24 +821,14 @@ const PacienteAdmissao: React.FC = () => {
                         movimentos_fetais_presentes: e.target.checked,
                       }))
                     }
-                    style={{
-                      width: "18px",
-                      height: "18px",
-                      accentColor: "#711E6C",
-                    }}
+                    className="admissao-checkbox-large"
                   />
-                  <span style={{ fontSize: "15px", fontWeight: "600" }}>
+                  <span className="admissao-movimentos-label">
                     Movimentos Fetais Presentes
                   </span>
                 </label>
                 {validationErrors.movimentos_fetais_presentes && (
-                  <div
-                    style={{
-                      color: "#dc3545",
-                      fontSize: "12px",
-                      marginTop: "4px",
-                    }}
-                  >
+                  <div className="admissao-error-text">
                     {validationErrors.movimentos_fetais_presentes}
                   </div>
                 )}
@@ -1139,36 +837,16 @@ const PacienteAdmissao: React.FC = () => {
               {/* Admissão */}
               <h3 style={pageStyles.userSectionTitle}>Dados da Admissão</h3>
               <hr />
-              <div
-                style={{
-                  display: "flex",
-                  gap: "16px",
-                  flexWrap: "wrap",
-                  marginBottom: "16px",
-                }}
-              >
-                <div style={{ flex: "1", minWidth: "200px" }}>
-                  <label
-                    style={{
-                      display: "block",
-                      marginBottom: "8px",
-                      fontSize: "14px",
-                      fontWeight: "600",
-                    }}
-                  >
+              <div className="admissao-flex-row-margin">
+                <div className="admissao-field-large">
+                  <label className="admissao-form-label">
                     Leito*
                   </label>
                   <select
                     name="leito_id"
                     value={formData.leito_id}
                     onChange={handleInputChange}
-                    style={{
-                      width: "100%",
-                      padding: "13px",
-                      border: "1px solid #ccc",
-                      borderRadius: "4px",
-                      fontSize: "14px",
-                    }}
+                    className="admissao-form-select"
                   >
                     <option value="">Selecione um leito...</option>
                     {leitos.length > 0 ? (
@@ -1182,29 +860,16 @@ const PacienteAdmissao: React.FC = () => {
                     )}
                   </select>
                   {validationErrors.leito_id && (
-                    <div
-                      style={{
-                        color: "#dc3545",
-                        fontSize: "12px",
-                        marginTop: "5px",
-                      }}
-                    >
+                    <div className="admissao-error-text">
                       {validationErrors.leito_id}
                     </div>
                   )}
                 </div>
               </div>
 
-              <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-                <div style={{ flex: "2", minWidth: "400px" }}>
-                  <label
-                    style={{
-                      display: "block",
-                      marginBottom: "8px",
-                      fontSize: "14px",
-                      fontWeight: "600",
-                    }}
-                  >
+              <div className="admissao-flex-row">
+                <div className="admissao-field-xxlarge">
+                  <label className="admissao-form-label">
                     Motivo da Internação*
                   </label>
                   <textarea
@@ -1212,23 +877,10 @@ const PacienteAdmissao: React.FC = () => {
                     value={formData.motivo_internacao}
                     onChange={handleInputChange}
                     rows={3}
-                    style={{
-                      width: "98%",
-                      padding: "12px",
-                      border: "1px solid #ccc",
-                      borderRadius: "4px",
-                      fontSize: "14px",
-                      resize: "vertical",
-                    }}
+                    className="admissao-form-container"
                   />
                   {validationErrors.motivo_internacao && (
-                    <div
-                      style={{
-                        color: "#dc3545",
-                        fontSize: "12px",
-                        marginTop: "4px",
-                      }}
-                    >
+                    <div className="admissao-error-text">
                       {validationErrors.motivo_internacao}
                     </div>
                   )}
@@ -1240,14 +892,7 @@ const PacienteAdmissao: React.FC = () => {
               <hr />
 
               <div style={{ marginBottom: "24px" }}>
-                <label
-                  style={{
-                    display: "flex",
-                    alignItems: "flex-start",
-                    gap: "12px",
-                    cursor: "pointer",
-                  }}
-                >
+                <label className="admissao-lgpd-label">
                   <input
                     type="checkbox"
                     name="consentimento_lgpd_aceito"
@@ -1258,20 +903,9 @@ const PacienteAdmissao: React.FC = () => {
                         consentimento_lgpd_aceito: e.target.checked,
                       }))
                     }
-                    style={{
-                      width: "18px",
-                      height: "18px",
-                      marginTop: "2px",
-                      accentColor: "#711E6C",
-                    }}
+                    className="admissao-lgpd-checkbox"
                   />
-                  <span
-                    style={{
-                      fontSize: "14px",
-                      lineHeight: "1.5",
-                      color: "#333",
-                    }}
-                  >
+                  <span className="admissao-lgpd-text">
                     Eu concordo com o tratamento dos dados pessoais da paciente
                     de acordo com a Lei Geral de Proteção de Dados (LGPD).
                     Autorizo o uso das informações para os fins relacionados ao
@@ -1279,13 +913,7 @@ const PacienteAdmissao: React.FC = () => {
                   </span>
                 </label>
                 {validationErrors.consentimento_lgpd_aceito && (
-                  <div
-                    style={{
-                      color: "#dc3545",
-                      fontSize: "12px",
-                      marginTop: "4px",
-                    }}
-                  >
+                  <div className="admissao-error-text">
                     {validationErrors.consentimento_lgpd_aceito}
                   </div>
                 )}

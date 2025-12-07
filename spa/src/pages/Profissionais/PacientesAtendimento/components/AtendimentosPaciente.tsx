@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-// import '../style.css';
+import { logger, performanceMonitor } from '../../../../utils/logger';
+import '../style.css';
 
 interface Paciente {
   id: number;
@@ -36,15 +37,34 @@ const AtendimentosPaciente: React.FC = () => {
       if (!id) return;
 
       try {
+        logger.info('Carregando dados do paciente', 'AtendimentosPaciente', { pacienteId: id });
+        performanceMonitor.start('carregarAtendimentos');
+        
         const [pacienteRes, atendimentosRes] = await Promise.all([
           axios.get(`/api/pacientes/${id}`),
           axios.get(`/api/pacientes/${id}/atendimentos`)
         ]);
         
+        performanceMonitor.end('carregarAtendimentos', 'AtendimentosPaciente');
+        
         setPaciente(pacienteRes.data);
         setAtendimentos(atendimentosRes.data);
-      } catch {
-        setError('Erro ao carregar dados do paciente e atendimentos');
+        
+        logger.info('Dados carregados com sucesso', 'AtendimentosPaciente', { 
+          pacienteId: id, 
+          atendimentosCount: atendimentosRes.data.length 
+        });
+      } catch (err: unknown) {
+        const error = err as { response?: { status?: number; data?: { message?: string } } };
+        logger.error('Erro ao carregar dados do paciente', err, 'AtendimentosPaciente');
+        
+        if (error.response?.status === 404) {
+          setError('Paciente não encontrado');
+        } else if (error.response?.status === 401) {
+          setError('Sessão expirada. Faça login novamente');
+        } else {
+          setError(error.response?.data?.message || 'Erro ao carregar dados. Tente novamente');
+        }
       } finally {
         setIsLoading(false);
       }
@@ -53,87 +73,69 @@ const AtendimentosPaciente: React.FC = () => {
     fetchData();
   }, [id]);
 
-  if (isLoading) return <div className="p-8">Carregando atendimentos...</div>;
-  if (error) return <div className="p-8 text-red-600">{error}</div>;
-  if (!paciente) return <div className="p-8">Paciente não encontrada</div>;
+  if (isLoading) return <div className="loading">Carregando atendimentos...</div>;
+  if (error) return <div className="loading" style={{ color: '#dc2626' }}>{error}</div>;
+  if (!paciente) return <div className="loading">Paciente não encontrada</div>;
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">Atendimentos da Paciente</h1>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-gray-50 p-4 rounded-lg">
+    <div className="historico-content">
+      <div className="patient-info">
+        <h3>Informações da Paciente</h3>
+        <div className="info-grid">
           <div>
-            <span className="font-medium text-gray-600">Nome:</span>
-            <p className="text-gray-900">{paciente.nome_completo}</p>
+            <strong>Nome:</strong> {paciente.nome_completo}
           </div>
           <div>
-            <span className="font-medium text-gray-600">CPF:</span>
-            <p className="text-gray-900">{paciente.cpf}</p>
+            <strong>CPF:</strong> {paciente.cpf}
           </div>
           <div>
-            <span className="font-medium text-gray-600">Data de Nascimento:</span>
-            <p className="text-gray-900">{new Date(paciente.data_nascimento).toLocaleDateString('pt-BR')}</p>
+            <strong>Data de Nascimento:</strong> {new Date(paciente.data_nascimento).toLocaleDateString('pt-BR')}
           </div>
         </div>
       </div>
 
-      <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-        <div className="px-6 py-4 bg-gray-50 border-b">
-          <h2 className="text-xl font-semibold text-gray-800">Histórico de Atendimentos</h2>
-        </div>
+      <div className="atendimentos-history">
+        <h3>Histórico de Atendimentos</h3>
         
         {atendimentos.length === 0 ? (
-          <div className="p-6 text-center text-gray-500">
+          <div className="no-data">
             Nenhum atendimento registrado para esta paciente.
           </div>
         ) : (
-          <div className="divide-y divide-gray-200">
+          <div className="atendimentos-list">
             {atendimentos.map((atendimento) => (
-              <div key={atendimento.id} className="p-6">
-                <div className="flex justify-between items-start mb-4">
+              <div key={atendimento.id} className="atendimento-card">
+                <div className="atendimento-header">
                   <div>
-                    <h3 className="text-lg font-medium text-gray-900">
+                    <div className="data">
                       Atendimento #{atendimento.id}
-                    </h3>
-                    <p className="text-sm text-gray-500">
-                      {new Date(atendimento.data_atendimento).toLocaleString('pt-BR')}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      Profissional: {atendimento.usuario.nome}
-                    </p>
+                    </div>
+                    <div className="profissional">
+                      {atendimento.data_atendimento ? new Date(atendimento.data_atendimento).toLocaleString('pt-BR') : 'Data não informada'} - Profissional: {atendimento.usuario?.nome || 'Não informado'}
+                    </div>
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                  <div className="bg-blue-50 p-3 rounded-lg">
-                    <span className="text-sm font-medium text-blue-800">Pressão Arterial</span>
-                    <p className="text-lg font-semibold text-blue-900">
-                      {atendimento.pressao_sistolica}/{atendimento.pressao_diastolica} mmHg
-                    </p>
+                <div className="vitals-grid">
+                  <div className="vital">
+                    <span>Pressão Arterial:</span> {atendimento.pressao_sistolica && atendimento.pressao_diastolica ? `${atendimento.pressao_sistolica}/${atendimento.pressao_diastolica} mmHg` : 'Não informado'}
                   </div>
-                  <div className="bg-green-50 p-3 rounded-lg">
-                    <span className="text-sm font-medium text-green-800">Frequência Cardíaca</span>
-                    <p className="text-lg font-semibold text-green-900">
-                      {atendimento.frequencia_cardiaca} bpm
-                    </p>
+                  <div className="vital">
+                    <span>Frequência Cardíaca:</span> {atendimento.frequencia_cardiaca ? `${atendimento.frequencia_cardiaca} bpm` : 'Não informado'}
                   </div>
-                  <div className="bg-yellow-50 p-3 rounded-lg">
-                    <span className="text-sm font-medium text-yellow-800">Temperatura</span>
-                    <p className="text-lg font-semibold text-yellow-900">
-                      {atendimento.temperatura}°C
-                    </p>
+                  <div className="vital">
+                    <span>Temperatura:</span> {atendimento.temperatura ? `${atendimento.temperatura}°C` : 'Não informado'}
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <span className="font-medium text-gray-600">Evolução Maternidade:</span>
-                    <p className="text-gray-900 mt-1">{atendimento.evolucao_maternidade}</p>
-                  </div>
-                  <div>
-                    <span className="font-medium text-gray-600">Avaliação Fetal:</span>
-                    <p className="text-gray-900 mt-1">{atendimento.avaliacao_fetal}</p>
-                  </div>
+                <div className="evolucao">
+                  <strong>Evolução Maternidade:</strong>
+                  <p>{atendimento.evolucao_maternidade || 'Não informado'}</p>
+                </div>
+                
+                <div className="avaliacao-fetal">
+                  <strong>Avaliação Fetal:</strong>
+                  <p>{atendimento.avaliacao_fetal || 'Não informado'}</p>
                 </div>
               </div>
             ))}

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { BrButton } from '@govbr-ds/react-components';
 import { pageStyles } from '../../../../assets/style/pageStyles';
 import api from '../../../../api/axios';
+import '../style.css';
 
 interface DarAltaProps {
   internacaoId: number;
@@ -29,14 +30,28 @@ const DarAlta: React.FC<DarAltaProps> = ({ internacaoId, pacienteNome, onClose, 
       return;
     }
 
+    if (!formData.resumo_alta?.trim() || !formData.recomendacoes_pos_alta?.trim()) {
+      setError('Todos os campos são obrigatórios');
+      setLoading(false);
+      return;
+    }
+
     try {
       await api.post(`/api/internacoes/${internacaoId}/alta`, formData);
       onSuccess();
       onClose();
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || 'Erro ao processar alta';
-      setError(errorMessage);
-      console.error('Erro ao dar alta:', error);
+    } catch (err: unknown) {
+      const error = err as { response?: { status?: number; data?: { message?: string } } };
+      if (error.response?.status === 404) {
+        setError('Internação não encontrada');
+      } else if (error.response?.status === 422) {
+        setError(error.response?.data?.message || 'Dados inválidos. Verifique os campos');
+      } else if (error.response?.status === 401) {
+        setError('Sessão expirada. Faça login novamente');
+      } else {
+        setError(error.response?.data?.message || 'Erro ao processar alta. Tente novamente');
+      }
+      console.error('Erro ao dar alta:', err);
     } finally {
       setLoading(false);
     }
@@ -44,50 +59,52 @@ const DarAlta: React.FC<DarAltaProps> = ({ internacaoId, pacienteNome, onClose, 
 
   return (
     <div className="modal-overlay">
-      <div className="modal-content" style={{ maxWidth: '700px' }}>
-        <div className="modal-header" style={{ borderBottom: '2px solid #e2e8f0', paddingBottom: '16px' }}>
-          <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '600', color: '#1f2937' }}>
-            <i className="fas fa-sign-out-alt" style={{ marginRight: '8px', color: '#711E6C' }}></i>
+      <div className="modal-content dar-alta-modal">
+        <div className="modal-header dar-alta-header">
+          <h2>
+            <i className="fas fa-sign-out-alt dar-alta-icon"></i>
             Dar Alta - {pacienteNome}
           </h2>
           <button className="close-btn" onClick={onClose}>×</button>
         </div>
 
         {error && (
-          <div style={{ margin: '20px', padding: '12px', backgroundColor: '#fee2e2', border: '1px solid #fecaca', borderRadius: '6px', color: '#991b1b' }}>
-            <i className="fas fa-exclamation-triangle" style={{ marginRight: '8px' }}></i>
+          <div className="dar-alta-error">
+            <i className="fas fa-exclamation-triangle"></i>
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} style={{ padding: '20px' }}>
-          <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
-              Resumo da Alta:
+        <form onSubmit={handleSubmit} className="dar-alta-form">
+          <div className="dar-alta-field">
+            <label className="dar-alta-label">
+              Resumo da Alta*:
             </label>
             <textarea 
               value={formData.resumo_alta}
               onChange={(e) => setFormData({...formData, resumo_alta: e.target.value})}
               rows={4}
               placeholder="Resumo do atendimento, procedimentos realizados, evolução clínica..."
-              style={{ width: '95%', padding: '10px', border: '1px solid #d1d5db', borderRadius: '6px', fontSize: '14px', fontFamily: 'inherit' }}
+              className="dar-alta-textarea"
+              required
             />
           </div>
 
-          <div style={{ marginBottom: '24px' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
-              Recomendações Pós-Alta:
+          <div className="dar-alta-field">
+            <label className="dar-alta-label">
+              Recomendações Pós-Alta*:
             </label>
             <textarea 
               value={formData.recomendacoes_pos_alta}
               onChange={(e) => setFormData({...formData, recomendacoes_pos_alta: e.target.value})}
               rows={4}
               placeholder="Orientações para cuidados domiciliares, medicamentos, retorno..."
-              style={{ width: '95%', padding: '10px', border: '1px solid #d1d5db', borderRadius: '6px', fontSize: '14px', fontFamily: 'inherit' }}
+              className="dar-alta-textarea"
+              required
             />
           </div>
 
-          <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', paddingTop: '16px', borderTop: '1px solid #e2e8f0' }}>
+          <div className="dar-alta-actions">
             <BrButton
               type="button"
               onClick={onClose}

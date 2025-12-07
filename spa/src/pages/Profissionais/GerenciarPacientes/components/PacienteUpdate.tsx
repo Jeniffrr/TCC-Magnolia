@@ -9,11 +9,13 @@ import {
   getFieldStatus,
   getFeedbackText,
 } from "../../../../assets/style/pageStyles";
+import { Loading } from "../../../../components/Loading/Loading";
 import api from "../../../../api/axios";
 import {
   applyCpfMask,
   applyPhoneMask,
   applyCepMask,
+  validateCpf,
 } from "../../../../utils/masks";
 import "../style.css";
 
@@ -145,11 +147,16 @@ const PacienteEditar: React.FC = () => {
 
         // Popula os dropdowns
         setCondicoes(condicoesRes.data || []);
-      } catch (err) {
+      } catch (err: unknown) {
+        const error = err as { response?: { status?: number; data?: { message?: string } }; message?: string };
         console.error("Erro ao carregar dados:", err);
-        setApiError(
-          "Ocorreu um erro ao buscar os dados da paciente. Tente recarregar a página."
-        );
+        if (error.response?.status === 404) {
+          setApiError("Paciente não encontrado");
+        } else if (error.response?.status === 401) {
+          setApiError("Sessão expirada. Faça login novamente");
+        } else {
+          setApiError(error.response?.data?.message || error.message || "Erro ao carregar dados. Tente recarregar a página");
+        }
       } finally {
         setIsLoading(false);
       }
@@ -168,6 +175,11 @@ const PacienteEditar: React.FC = () => {
 
     if (name === "cpf") {
       maskedValue = applyCpfMask(value);
+      if (maskedValue.replace(/\D/g, "").length === 11 && !validateCpf(maskedValue)) {
+        setValidationErrors(prev => ({ ...prev, cpf: "CPF inválido" }));
+      } else {
+        setValidationErrors(prev => ({ ...prev, cpf: "" }));
+      }
     } else if (name === "telefone") {
       maskedValue = applyPhoneMask(value);
     } else if (name === "cep") {
@@ -278,24 +290,6 @@ const PacienteEditar: React.FC = () => {
     }
   };
 
-  // Estilo simples para os novos campos
-  const formElementStyle: React.CSSProperties = {
-    width: "100%",
-    padding: "13px",
-    border: "1px solid #ccc",
-    borderRadius: "4px",
-    fontSize: "14px",
-    backgroundColor: "#fff",
-    color: "#333",
-  };
-
-  const formLabelStyle: React.CSSProperties = {
-    display: "block",
-    marginBottom: "8px",
-    fontSize: "14px",
-    fontWeight: "600",
-  };
-
   return (
     <AppLayout>
       <Container fluid>
@@ -308,15 +302,14 @@ const PacienteEditar: React.FC = () => {
         </div>
 
         <h1 style={pageStyles.title}>
-          Editando: {formData.nome_completo || "Paciente"}
+          Editando: {isLoading ? 'Carregando...' : formData.nome_completo || "Paciente"}
         </h1>
 
-        {isLoading ? (
-          <div style={{ textAlign: "center", padding: "40px" }}>
-            Carregando dados do paciente...
-          </div>
-        ) : (
-          <div style={pageStyles.containerPadding}>
+        <div style={pageStyles.containerPadding}>
+          {isLoading ? (
+            <Loading message="Carregando dados do paciente..." />
+          ) : (
+            <>
             {apiError && (
               <div className="alert-card error">
                 <i className="fas fa-exclamation-triangle"></i>
@@ -329,8 +322,8 @@ const PacienteEditar: React.FC = () => {
                 <h3 style={pageStyles.sectionTitle}>Dados Pessoais</h3>
                 <hr />
 
-                <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-                  <div style={{ flex: "2", minWidth: "800px" }}>
+                <div className="admissao-flex-row">
+                  <div className="admissao-field-xxlarge">
                     <BrInputIcon
                       label="Nome Completo*"
                       name="nome_completo"
@@ -344,7 +337,7 @@ const PacienteEditar: React.FC = () => {
                       )}
                     />
                   </div>
-                  <div style={{ flex: "1", minWidth: "100px" }} >
+                  <div className="admissao-field-small">
                     <BrInputIcon
                       label="CPF*"
                       name="cpf"
@@ -359,24 +352,20 @@ const PacienteEditar: React.FC = () => {
                   </div>
                 </div>
 
-                <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-                  <div style={{ flex: "1", minWidth: "300px" }}>
-                    <label style={formLabelStyle}>Data de Nascimento*</label>
+                <div className="admissao-flex-row">
+                  <div className="admissao-field-xlarge">
+                    <label className="admissao-form-label">Data de Nascimento*</label>
                     <input
                       name="data_nascimento"
                       type="date"
                       value={formData.data_nascimento}
                       onChange={handleInputChange}
                       disabled={true}
-                      style={{
-                        ...formElementStyle,
-                        width: "95%",
-                        backgroundColor: "#ffffff",
-                        color: "#666",
-                      }}
+                      className="admissao-form-input"
+                      style={{ backgroundColor: "#ffffff", color: "#666" }}
                     />
                   </div>
-                  <div style={{ flex: "1", minWidth: "200px" }}>
+                  <div className="admissao-field-large">
                     <BrInputIcon
                       label="Telefone"
                       name="telefone"
@@ -390,8 +379,8 @@ const PacienteEditar: React.FC = () => {
                   </div>
                 </div>
 
-                <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-                  <div style={{ flex: "1", minWidth: "300px" }}>
+                <div className="admissao-flex-row">
+                  <div className="admissao-field-xlarge">
                     <BrInputIcon
                       label="Nome da Mãe*"
                       name="nome_mae"
@@ -408,8 +397,8 @@ const PacienteEditar: React.FC = () => {
                 <h3 style={pageStyles.sectionTitle}>Endereço</h3>
                 <hr />
 
-                <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-                  <div style={{ flex: "1", minWidth: "150px" }}>
+                <div className="admissao-flex-row">
+                  <div className="admissao-field-medium">
                     <BrInputIcon
                       label="CEP"
                       name="cep"
@@ -421,7 +410,7 @@ const PacienteEditar: React.FC = () => {
                       feedbackText={getFeedbackText(validationErrors.cep)}
                     />
                   </div>
-                  <div style={{ flex: "2", minWidth: "300px" }}>
+                  <div className="admissao-field-xxlarge">
                     <BrInputIcon
                       label="Rua"
                       name="rua"
@@ -435,8 +424,8 @@ const PacienteEditar: React.FC = () => {
                   </div>
                 </div>
 
-                <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-                  <div style={{ flex: "1", minWidth: "100px" }}>
+                <div className="admissao-flex-row">
+                  <div className="admissao-field-small">
                     <BrInputIcon
                       label="Número"
                       name="numero"
@@ -448,7 +437,7 @@ const PacienteEditar: React.FC = () => {
                       feedbackText={getFeedbackText(validationErrors.numero)}
                     />
                   </div>
-                  <div style={{ flex: "1", minWidth: "800px" }}>
+                  <div className="admissao-field-xxlarge">
                     <BrInputIcon
                       label="Bairro"
                       name="bairro"
@@ -462,8 +451,8 @@ const PacienteEditar: React.FC = () => {
                   </div>
                 </div>
 
-                <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-                  <div style={{ flex: "1", minWidth: "200px" }}>
+                <div className="admissao-flex-row">
+                  <div className="admissao-field-large">
                     <BrInputIcon
                       label="Cidade"
                       name="cidade"
@@ -475,7 +464,7 @@ const PacienteEditar: React.FC = () => {
                       feedbackText={getFeedbackText(validationErrors.cidade)}
                     />
                   </div>
-                  <div style={{ flex: "1", minWidth: "150px" }}>
+                  <div className="admissao-field-medium">
                     <BrInputIcon
                       label="Estado"
                       name="estado"
@@ -493,14 +482,7 @@ const PacienteEditar: React.FC = () => {
                 <hr />
 
                 <div style={{ marginBottom: "16px" }}>
-                  <label
-                    style={{
-                      display: "block",
-                      marginBottom: "12px",
-                      fontSize: "14px",
-                      fontWeight: "600",
-                    }}
-                  >
+                  <label className="admissao-form-label" style={{ marginBottom: "12px" }}>
                     Condições Patológicas
                   </label>
                   <div className="admissao-condicoes-grid">
@@ -532,48 +514,28 @@ const PacienteEditar: React.FC = () => {
                     ))}
                   </div>
                   {validationErrors.condicoes_patologicas && (
-                    <div
-                      style={{
-                        color: "#dc3545",
-                        fontSize: "12px",
-                        marginTop: "4px",
-                      }}
-                    >
+                    <div className="admissao-error-text">
                       {validationErrors.condicoes_patologicas}
                     </div>
                   )}
                 </div>
 
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "16px",
-                    flexWrap: "wrap",
-                    marginBottom: "16px",
-                  }}
-                >
-                  <div style={{ flex: "1", minWidth: "300px" }}>
-                    <label style={formLabelStyle}>Alergias</label>
+                <div className="admissao-flex-row-margin">
+                  <div className="admissao-field-xlarge">
+                    <label className="admissao-form-label">Alergias</label>
                     <textarea
                       name="alergias"
                       value={formData.alergias}
                       onChange={handleInputChange}
                       rows={4}
-                      style={{ ...formElementStyle, resize: "vertical" }}
+                      className="admissao-form-container"
                     />
                   </div>
                 </div>
 
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "16px",
-                    flexWrap: "wrap",
-                    marginBottom: "16px",
-                  }}
-                >
-                  <div style={{ flex: "1", minWidth: "300px" }}>
-                    <label style={formLabelStyle}>
+                <div className="admissao-flex-row-margin">
+                  <div className="admissao-field-xlarge">
+                    <label className="admissao-form-label">
                       Medicamentos de Uso Contínuo
                     </label>
                     <textarea
@@ -581,7 +543,7 @@ const PacienteEditar: React.FC = () => {
                       value={formData.medicamentos_continuos}
                       onChange={handleInputChange}
                       rows={4}
-                      style={{ ...formElementStyle, resize: "vertical" }}
+                      className="admissao-form-container"
                     />
                   </div>
                 </div>
@@ -592,14 +554,7 @@ const PacienteEditar: React.FC = () => {
                 <hr />
 
                 <div style={{ marginBottom: "16px" }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      marginBottom: "12px",
-                    }}
-                  >
+                  <div className="admissao-gestacao-header">
                     <label className="admissao-form-label">
                       Histórico de Gestações
                     </label>
@@ -614,14 +569,7 @@ const PacienteEditar: React.FC = () => {
 
                   {formData.gestacoes_anteriores.map((gestacao, index) => (
                     <div key={index} className="admissao-gestacao-card">
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          marginBottom: "12px",
-                        }}
-                      >
+                      <div className="admissao-gestacao-card-header">
                         <h4 className="admissao-gestacao-title">
                           Gestação {index + 1}
                         </h4>
@@ -634,22 +582,9 @@ const PacienteEditar: React.FC = () => {
                         </button>
                       </div>
 
-                      <div
-                        style={{
-                          display: "flex",
-                          gap: "16px",
-                          flexWrap: "wrap",
-                        }}
-                      >
-                        <div style={{ flex: "1", minWidth: "120px" }}>
-                          <label
-                            style={{
-                              display: "block",
-                              marginBottom: "4px",
-                              fontSize: "13px",
-                              fontWeight: "500",
-                            }}
-                          >
+                      <div className="admissao-flex-row">
+                        <div className="admissao-gestacao-field">
+                          <label className="admissao-gestacao-label">
                             Ano do Parto
                           </label>
                           <input
@@ -659,25 +594,12 @@ const PacienteEditar: React.FC = () => {
                               updateGestacao(index, "ano_parto", e.target.value)
                             }
                             placeholder="Ex: 2020"
-                            style={{
-                              width: "95%",
-                              padding: "16px",
-                              border: "1px solid #ccc",
-                              borderRadius: "4px",
-                              fontSize: "13px",
-                            }}
+                            className="admissao-gestacao-input"
                           />
                         </div>
 
-                        <div style={{ flex: "1", minWidth: "150px" }}>
-                          <label
-                            style={{
-                              display: "block",
-                              marginBottom: "4px",
-                              fontSize: "13px",
-                              fontWeight: "500",
-                            }}
-                          >
+                        <div className="admissao-gestacao-field-medium">
+                          <label className="admissao-gestacao-label">
                             Tipo de Parto
                           </label>
                           <select
@@ -689,13 +611,7 @@ const PacienteEditar: React.FC = () => {
                                 e.target.value
                               )
                             }
-                            style={{
-                              width: "95%",
-                              padding: "16px",
-                              border: "1px solid #ccc",
-                              borderRadius: "4px",
-                              fontSize: "13px",
-                            }}
+                            className="admissao-gestacao-input"
                           >
                             <option value="">Selecione...</option>
                             <option value="Normal">Normal</option>
@@ -706,21 +622,8 @@ const PacienteEditar: React.FC = () => {
                         </div>
                       </div>
 
-                      <div
-                        style={{
-                          flex: "1",
-                          minWidth: "300px",
-                          marginTop: "16px",
-                        }}
-                      >
-                        <label
-                          style={{
-                            display: "block",
-                            marginBottom: "4px",
-                            fontSize: "13px",
-                            fontWeight: "600",
-                          }}
-                        >
+                      <div className="admissao-gestacao-field-large" style={{ marginTop: "16px" }}>
+                        <label className="admissao-gestacao-label" style={{ fontWeight: "600" }}>
                           Observações
                         </label>
                         <textarea
@@ -729,30 +632,14 @@ const PacienteEditar: React.FC = () => {
                             updateGestacao(index, "observacoes", e.target.value)
                           }
                           rows={2}
-                          style={{
-                            width: "95%",
-                            padding: "12px",
-                            border: "1px solid #ccc",
-                            borderRadius: "4px",
-                            fontSize: "14px",
-                            resize: "vertical",
-                          }}
+                          className="admissao-gestacao-textarea"
                         />
                       </div>
                     </div>
                   ))}
 
                   {formData.gestacoes_anteriores.length === 0 && (
-                    <div
-                      style={{
-                        textAlign: "center",
-                        padding: "20px",
-                        color: "#666",
-                        fontStyle: "italic",
-                        border: "2px dashed #ddd",
-                        borderRadius: "8px",
-                      }}
-                    >
+                    <div className="admissao-empty-state">
                       Nenhuma gestação anterior cadastrada. Clique em "Adicionar
                       Gestação" para incluir o histórico.
                     </div>
@@ -778,8 +665,9 @@ const PacienteEditar: React.FC = () => {
                 </div>
               </form>
             </div>
-          </div>
-        )}
+            </>
+          )}
+        </div>
       </Container>
     </AppLayout>
   );

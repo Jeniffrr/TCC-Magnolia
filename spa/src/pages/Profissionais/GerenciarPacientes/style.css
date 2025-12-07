@@ -618,3 +618,12 @@
   color: #212529;
   flex: 1;
 }
+
+/* Utility Classes */
+.button-text {
+  margin-left: 8px;
+}
+
+.section-icon {
+  margin-right: 8px;
+}

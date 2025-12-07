@@ -8,6 +8,7 @@ import Loading from '../../components/Loading/Loading';
 import DarAlta from './PacientesAtendimento/components/DarAlta';
 import RegistrarDesfecho from './PacientesAtendimento/components/RegistrarDesfecho';
 import './PacientesAtendimento/style.css';
+import './style.css';
 
 interface Leito {
   id: number;
@@ -142,58 +143,47 @@ const ProfissionaisHome: React.FC = () => {
       <Container fluid>
         <div style={pageStyles.containerPadding}>
           {/* Legenda de Classificação de Risco */}
-          <div style={{ marginBottom: '24px', padding: '16px', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-            <h3 style={{ margin: '0 0 12px 0', fontSize: '16px', fontWeight: '600', color: '#1f2937' }}>
-              <i className="fas fa-info-circle" style={{ marginRight: '8px' }}></i>
+          <div className="risk-legend">
+            <h3 className="risk-legend-title">
+              <i className="fas fa-info-circle"></i>
               Classificação de Risco
             </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '12px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{ width: '20px', height: '20px', borderRadius: '50%', backgroundColor: '#28a745', border: '2px solid rgba(0,0,0,0.1)' }}></div>
+            <div className="risk-legend-grid">
+              <div className="risk-legend-item">
+                <div className="risk-legend-dot" style={{ backgroundColor: '#28a745' }}></div>
                 <div>
-                  <strong style={{ fontSize: '14px', color: '#1f2937' }}>Normal</strong>
-                  <p style={{ margin: 0, fontSize: '12px', color: '#6b7280' }}>Paciente sem riscos aparentes</p>
+                  <strong className="risk-legend-label">Normal</strong>
+                  <p className="risk-legend-description">Paciente sem riscos aparentes</p>
                 </div>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{ width: '20px', height: '20px', borderRadius: '50%', backgroundColor: '#ffc107', border: '2px solid rgba(0,0,0,0.1)' }}></div>
+              <div className="risk-legend-item">
+                <div className="risk-legend-dot" style={{ backgroundColor: '#ffc107' }}></div>
                 <div>
-                  <strong style={{ fontSize: '14px', color: '#1f2937' }}>Médio</strong>
-                  <p style={{ margin: 0, fontSize: '12px', color: '#6b7280' }}>Requer atenção e monitoramento</p>
+                  <strong className="risk-legend-label">Médio</strong>
+                  <p className="risk-legend-description">Requer atenção e monitoramento</p>
                 </div>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{ width: '20px', height: '20px', borderRadius: '50%', backgroundColor: '#dc3545', border: '2px solid rgba(0,0,0,0.1)' }}></div>
+              <div className="risk-legend-item">
+                <div className="risk-legend-dot" style={{ backgroundColor: '#dc3545' }}></div>
                 <div>
-                  <strong style={{ fontSize: '14px', color: '#1f2937' }}>Alto</strong>
-                  <p style={{ margin: 0, fontSize: '12px', color: '#6b7280' }}>Risco elevado para mãe e/ou feto</p>
+                  <strong className="risk-legend-label">Alto</strong>
+                  <p className="risk-legend-description">Risco elevado para mãe e/ou feto</p>
                 </div>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{ width: '20px', height: '20px', borderRadius: '50%', backgroundColor: '#6c757d', border: '2px solid rgba(0,0,0,0.1)' }}></div>
+              <div className="risk-legend-item">
+                <div className="risk-legend-dot" style={{ backgroundColor: '#6c757d' }}></div>
                 <div>
-                  <strong style={{ fontSize: '14px', color: '#1f2937' }}>Aborto</strong>
-                  <p style={{ margin: 0, fontSize: '12px', color: '#6b7280' }}>Internação devido a processo de abortamento</p>
+                  <strong className="risk-legend-label">Aborto</strong>
+                  <p className="risk-legend-description">Internação devido a processo de abortamento</p>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Tabs dos Leitos */}
-          <div style={{ marginBottom: '0' }}>
+          <div className="tabs-container">
             <button 
-              style={{
-                padding: '12px 20px',
-                background: activeTab === 'todos' ? '#F6DFF8' : '#f8f9fa',
-                color: activeTab === 'todos' ? '#000000' : '#6c757d',
-                border: '1px solid #dee2e6',
-                borderBottom: 'none',
-                borderRadius: '8px 8px 0 0',
-                cursor: 'pointer',
-                marginRight: '2px',
-                fontWeight: 'normal',
-                fontSize: '14px'
-              }}
+              className={`tab-button ${activeTab === 'todos' ? 'active' : 'inactive'}`}
               onClick={() => setActiveTab('todos')}
             >
               Todos
@@ -201,18 +191,7 @@ const ProfissionaisHome: React.FC = () => {
             {leitos.map(leito => (
               <button
                 key={leito.id}
-                style={{
-                  padding: '12px 20px',
-                  background: activeTab === leito.id ? '#F6DFF8' : '#f8f9fa',
-                  color: activeTab === leito.id ? '#000000' : '#6c757d',
-                  border: '1px solid #dee2e6',
-                  borderBottom: 'none',
-                  borderRadius: '8px 8px 0 0',
-                  cursor: 'pointer',
-                  marginRight: '2px',
-                  fontWeight: 'normal',
-                  fontSize: '14px'
-                }}
+                className={`tab-button ${activeTab === leito.id ? 'active' : 'inactive'}`}
                 onClick={() => setActiveTab(leito.id)}
               >
                 {leito.numero}
@@ -240,18 +219,14 @@ const ProfissionaisHome: React.FC = () => {
                   </tr>
                 ) : filteredPacientes.length === 0 ? (
                   <tr>
-                    <td colSpan={5} style={{ textAlign: 'center', padding: '40px', color: '#6c757d', fontStyle: 'italic' }}>
+                    <td colSpan={5} className="empty-state-row">
                       Nenhum paciente internado encontrado
                     </td>
                   </tr>
                 ) : filteredPacientes.map(paciente => (
                   <React.Fragment key={paciente.id}>
                     <tr 
-                      className="table-row"
-                      style={{
-                        cursor: 'pointer',
-                        backgroundColor: expandedPatient === paciente.id ? '#fef6ff' : 'transparent'
-                      }}
+                      className={`table-row ${expandedPatient === paciente.id ? 'expanded-row' : ''}`}
                       onClick={() => setExpandedPatient(expandedPatient === paciente.id ? null : paciente.id)}
                     >
                       <td className="table-cell">
@@ -259,14 +234,8 @@ const ProfissionaisHome: React.FC = () => {
                       </td>
                       <td className="table-cell">
                         <div 
-                          style={{
-                            width: '20px',
-                            height: '20px',
-                            borderRadius: '50%',
-                            backgroundColor: getRiskColor(paciente.ultimo_atendimento?.categoria_risco),
-                            border: '2px solid rgba(0,0,0,0.1)',
-                            display: 'inline-block'
-                          }}
+                          className="risk-indicator"
+                          style={{ backgroundColor: getRiskColor(paciente.ultimo_atendimento?.categoria_risco) }}
                           title={`${paciente.ultimo_atendimento?.categoria_risco?.nome || 'Sem categoria'} - ${paciente.ultimo_atendimento?.categoria_risco?.descricao || ''}`}
                         />
                       </td>
@@ -315,34 +284,34 @@ const ProfissionaisHome: React.FC = () => {
                     </tr>
 
                     {expandedPatient === paciente.id && (
-                      <tr style={{ backgroundColor: '#fef6ff' }}>
-                        <td colSpan={5} style={{ padding: '20px', borderBottom: '1px solid #dee2e6' }}>
-                          <div style={{ borderLeft: '4px solid #711E6C', paddingLeft: '16px' }}>
-                            <h4 style={{ margin: '0 0 16px 0', color: '#711E6C', fontSize: '16px' }}>Resumo Clínico - {paciente.nome_completo}</h4>
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '12px' }}>
-                              <div style={{ background: 'white', padding: '12px', borderRadius: '6px', border: '1px solid #e9ecef' }}>
-                                <strong style={{ color: '#495057', display: 'block', marginBottom: '4px' }}>Pressão Arterial:</strong>
-                                <span style={{ color: '#6c757d' }}>{paciente.ultimo_atendimento ? `${paciente.ultimo_atendimento.pressao_sistolica || '--'}/${paciente.ultimo_atendimento.pressao_diastolica || '--'} mmHg` : '--'}</span>
+                      <tr className="patient-summary">
+                        <td colSpan={5}>
+                          <div className="patient-summary-container">
+                            <h4 className="patient-summary-title">Resumo Clínico - {paciente.nome_completo}</h4>
+                            <div className="patient-summary-grid">
+                              <div className="patient-summary-card">
+                                <strong className="patient-summary-label">Pressão Arterial:</strong>
+                                <span className="patient-summary-value">{paciente.ultimo_atendimento ? `${paciente.ultimo_atendimento.pressao_sistolica || '--'}/${paciente.ultimo_atendimento.pressao_diastolica || '--'} mmHg` : '--'}</span>
                               </div>
-                              <div style={{ background: 'white', padding: '12px', borderRadius: '6px', border: '1px solid #e9ecef' }}>
-                                <strong style={{ color: '#495057', display: 'block', marginBottom: '4px' }}>Frequência Cardíaca:</strong>
-                                <span style={{ color: '#6c757d' }}>{paciente.ultimo_atendimento?.frequencia_cardiaca || '--'} bpm</span>
+                              <div className="patient-summary-card">
+                                <strong className="patient-summary-label">Frequência Cardíaca:</strong>
+                                <span className="patient-summary-value">{paciente.ultimo_atendimento?.frequencia_cardiaca || '--'} bpm</span>
                               </div>
-                              <div style={{ background: 'white', padding: '12px', borderRadius: '6px', border: '1px solid #e9ecef' }}>
-                                <strong style={{ color: '#495057', display: 'block', marginBottom: '4px' }}>Temperatura:</strong>
-                                <span style={{ color: '#6c757d' }}>{paciente.ultimo_atendimento?.temperatura || '--'}°C</span>
+                              <div className="patient-summary-card">
+                                <strong className="patient-summary-label">Temperatura:</strong>
+                                <span className="patient-summary-value">{paciente.ultimo_atendimento?.temperatura || '--'}°C</span>
                               </div>
-                              <div style={{ background: 'white', padding: '12px', borderRadius: '6px', border: '1px solid #e9ecef' }}>
-                                <strong style={{ color: '#495057', display: 'block', marginBottom: '4px' }}>Último Atendimento:</strong>
-                                <span style={{ color: '#6c757d' }}>{paciente.ultimo_atendimento ? new Date(paciente.ultimo_atendimento.data_hora).toLocaleString('pt-BR') : 'Nenhum'}</span>
+                              <div className="patient-summary-card">
+                                <strong className="patient-summary-label">Último Atendimento:</strong>
+                                <span className="patient-summary-value">{paciente.ultimo_atendimento ? new Date(paciente.ultimo_atendimento.data_hora).toLocaleString('pt-BR') : 'Nenhum'}</span>
                               </div>
-                              <div style={{ background: 'white', padding: '12px', borderRadius: '6px', border: '1px solid #e9ecef', gridColumn: 'span 2' }}>
-                                <strong style={{ color: '#495057', display: 'block', marginBottom: '4px' }}>Evolução:</strong>
-                                <span style={{ color: '#6c757d', lineHeight: '1.4' }}>{paciente.ultimo_atendimento?.evolucao_maternidade || 'Sem evolução registrada'}</span>
+                              <div className="patient-summary-card full-width">
+                                <strong className="patient-summary-label">Evolução:</strong>
+                                <span className="patient-summary-value">{paciente.ultimo_atendimento?.evolucao_maternidade || 'Sem evolução registrada'}</span>
                               </div>
-                              <div style={{ background: 'white', padding: '12px', borderRadius: '6px', border: '1px solid #e9ecef', gridColumn: 'span 2' }}>
-                                <strong style={{ color: '#495057', display: 'block', marginBottom: '4px' }}>Avaliação Fetal:</strong>
-                                <span style={{ color: '#6c757d', lineHeight: '1.4' }}>{paciente.ultimo_atendimento?.avaliacao_fetal || 'Sem avaliação registrada'}</span>
+                              <div className="patient-summary-card full-width">
+                                <strong className="patient-summary-label">Avaliação Fetal:</strong>
+                                <span className="patient-summary-value">{paciente.ultimo_atendimento?.avaliacao_fetal || 'Sem avaliação registrada'}</span>
                               </div>
                             </div>
                           </div>

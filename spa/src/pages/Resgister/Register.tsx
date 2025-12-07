@@ -9,7 +9,7 @@ import { useRegisterForm } from '../../hooks/Register.hooks';
 import { BREADCRUMB_ITEMS, API_ENDPOINTS, INITIAL_FORM_DATA } from './components/Register.constants';
 import type { ApiErrorResponse } from '../../types/Register.types';
 import { handleApiErrors } from '../../utils/Register.utils';
-import "./Register.css";
+import "./style.css";
 import AppLayout from "../../components/Layout/AppLayout";
 import { pageStyles, getFieldStatus, getFeedbackText } from "../../assets/style/pageStyles";
 
@@ -67,9 +67,10 @@ export const Register: React.FC = () => {
             });
           }
         }
-      } catch (error) {
+      } catch (err: unknown) {
+        const error = err as { message?: string };
         console.error('Erro na requisição:', error);
-        setErrors({ general: 'Erro de conexão. Verifique sua internet.' });
+        setErrors({ general: error.message || 'Erro de conexão. Verifique sua internet e tente novamente.' });
       }
     }
 

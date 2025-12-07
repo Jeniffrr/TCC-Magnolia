@@ -6,6 +6,7 @@ import AppLayout from "../../../../components/Layout/AppLayout";
 import api from "../../../../api/axios";
 import type { PacienteResumo } from "../../../../types/paciente";
 import { Loading } from '../../../../components/Loading/Loading';
+import { performanceMonitor } from '../../../../utils/logger';
 import "../style.css";
 
 interface PacienteListaProps {
@@ -34,12 +35,21 @@ const PacienteLista: React.FC<PacienteListaProps> = ({
     const fetchPacientes = async () => {
       setIsLoading(true);
       try {
+        performanceMonitor.start('listarPacientes');
         const response = await api.get(`/api/pacientes?page=${currentPage}`);
+        performanceMonitor.end('listarPacientes', 'PacienteList');
         setPacientes(response.data.data || []);
         setCurrentPage(response.data.current_page || 1);
         setLastPage(response.data.last_page || 1);
-      } catch {
-        setError("Falha ao carregar lista de pacientes.");
+      } catch (err: unknown) {
+        const error = err as { response?: { status?: number; data?: { message?: string } } };
+        if (error.response?.status === 401) {
+          setError("Sessão expirada. Faça login novamente");
+        } else if (error.response?.status === 403) {
+          setError("Você não tem permissão para acessar esta página");
+        } else {
+          setError(error.response?.data?.message || "Erro ao carregar pacientes. Tente novamente");
+        }
       } finally {
         setIsLoading(false);
       }
@@ -81,7 +91,7 @@ const PacienteLista: React.FC<PacienteListaProps> = ({
             style={pageStyles.primaryButton}
             icon="fas fa-user-plus"
           >
-            <span style={{ marginLeft: "8px" }}>Nova Admissão</span>
+            <span className="button-text">Nova Admissão</span>
           </BrButton>
 
           <div className="table-container">
@@ -98,7 +108,7 @@ const PacienteLista: React.FC<PacienteListaProps> = ({
               <tbody>
                 {isLoading ? (
                   <tr>
-                    <td colSpan={5} style={{ textAlign: "center", padding: "40px" }}>
+                    <td colSpan={5} className="loading-container">
                       <Loading message="Carregando pacientes..." />
                     </td>
                   </tr>

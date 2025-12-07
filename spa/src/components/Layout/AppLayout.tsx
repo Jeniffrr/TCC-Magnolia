@@ -35,7 +35,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
     if (isAuthenticated && user?.tipo_usuario === 'administrador') {
       return [
         ...defaultLinks,
-        { label: 'Pagina Incial', href: '/admin' },
+        { label: 'Pagina Inicial', href: '/admin' },
         { label: 'Gerenciar Usuários', href: '/admin/usuarios' },
         { label: 'Gerenciar Leitos', href: '/admin/leitos' },
       ];

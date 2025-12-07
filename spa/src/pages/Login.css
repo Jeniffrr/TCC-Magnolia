@@ -1,0 +1,243 @@
+/* Login Page */
+.login-container {
+  min-height: calc(100vh - 200px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.login-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e5e7eb;
+  max-width: 480px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.login-header {
+  background: #711E6C;
+  padding: 32px 24px;
+  text-align: center;
+  color: white;
+}
+
+.login-header h2 {
+  margin: 0 0 8px 0;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.login-header p {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.login-body {
+  padding: 32px 24px;
+}
+
+.login-alert {
+  padding: 16px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  border: 1px solid;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.login-alert i {
+  margin-top: 2px;
+  font-size: 18px;
+}
+
+.login-alert-error {
+  background-color: #fee2e2;
+  border-color: #fecaca;
+  color: #991b1b;
+}
+
+.login-alert-warning {
+  background-color: #fff3cd;
+  border-color: #ffc107;
+  color: #856404;
+}
+
+.login-alert-info {
+  background-color: #e3f2fd;
+  border-color: #2196f3;
+  color: #1976d2;
+}
+
+.login-2fa-setup {
+  background-color: #fff3cd;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  border: 1px solid #ffc107;
+}
+
+.login-2fa-setup h3 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #856404;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.login-2fa-steps {
+  color: #856404;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.login-2fa-steps p {
+  margin: 0 0 12px 0;
+}
+
+.login-qr-container {
+  text-align: center;
+  margin: 16px 0;
+}
+
+.login-qr-image {
+  max-width: 200px;
+  border: 2px solid #ffc107;
+  border-radius: 8px;
+  padding: 8px;
+  background: white;
+}
+
+.login-secret-box {
+  background-color: white;
+  padding: 12px;
+  border-radius: 6px;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  text-align: center;
+  margin: 12px 0;
+  word-break: break-all;
+  border: 1px solid #ffc107;
+}
+
+.login-form-group {
+  margin-bottom: 20px;
+}
+
+.login-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #374151;
+  font-size: 14px;
+}
+
+.login-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 15px;
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+.login-input:focus {
+  outline: none;
+  border-color: #711E6C;
+  box-shadow: 0 0 0 3px rgba(113, 30, 108, 0.1);
+}
+
+.login-input:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.login-input-2fa {
+  text-align: center;
+  letter-spacing: 8px;
+  font-size: 20px;
+  font-weight: 600;
+  border-color: #2196f3;
+}
+
+.login-input-2fa:focus {
+  border-color: #1976d2;
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+}
+
+.login-back-button {
+  margin-top: 12px;
+  padding: 8px 16px;
+  background-color: transparent;
+  color: #666;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.login-back-button:hover {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.login-submit-button {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #711E6C 0%, #9d4edd 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(113, 30, 108, 0.2);
+}
+
+.login-submit-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(113, 30, 108, 0.3);
+}
+
+.login-submit-button:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+@media (max-width: 576px) {
+  .login-container {
+    padding: 20px 12px;
+  }
+  
+  .login-card {
+    border-radius: 12px;
+  }
+  
+  .login-header {
+    padding: 24px 20px;
+  }
+  
+  .login-header h2 {
+    font-size: 24px;
+  }
+  
+  .login-body {
+    padding: 24px 20px;
+  }
+  
+  .login-qr-image {
+    max-width: 180px;
+  }
+}

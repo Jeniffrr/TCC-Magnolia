@@ -5,8 +5,10 @@ import AppLayout from '../../../../components/Layout/AppLayout';
 import Breadcrumb from '../../../../components/Breadcrumbs/Breadcrumbs';
 import BrInputIcon from '../../../../components/BrInputIcon/BrInputIcon';
 import { pageStyles, getFieldStatus, getFeedbackText } from '../../../../assets/style/pageStyles';
+import { Loading } from '../../../../components/Loading/Loading';
 import api from '../../../../api/axios';
 import { atendimentosService } from '../../../../services/atendimentoService';
+import { logger, performanceMonitor } from '../../../../utils/logger';
 import '../../GerenciarPacientes/style.css';
 
 interface Paciente {
@@ -30,6 +32,7 @@ interface MedicamentoAdministrado {
 interface ProcedimentoRealizado {
   nome_procedimento: string;
   descricao: string;
+  data_procedimento: string;
 }
 
 interface OcorrenciaClinica {
@@ -68,10 +71,25 @@ const NovoAtendimento: React.FC = () => {
 
   const fetchData = async () => {
     try {
+      logger.info('Carregando dados para novo atendimento', 'NovoAtendimento', { pacienteId });
+      performanceMonitor.start('carregarPaciente');
+      
       const pacienteRes = await api.get(`/api/pacientes/${pacienteId}`);
       setPaciente(pacienteRes.data);
-    } catch {
-      // Erro ao carregar dados
+      
+      performanceMonitor.end('carregarPaciente', 'NovoAtendimento');
+      logger.info('Dados carregados', 'NovoAtendimento', { pacienteNome: pacienteRes.data.nome_completo });
+    } catch (err: unknown) {
+      const error = err as { response?: { status?: number; data?: { message?: string } } };
+      logger.error('Erro ao carregar dados do paciente', err, 'NovoAtendimento');
+      
+      if (error.response?.status === 404) {
+        setApiError('Paciente não encontrado');
+      } else if (error.response?.status === 401) {
+        setApiError('Sessão expirada. Faça login novamente');
+      } else {
+        setApiError(error.response?.data?.message || 'Erro ao carregar dados do paciente');
+      }
     }
   };
 
@@ -137,7 +155,7 @@ const NovoAtendimento: React.FC = () => {
   const addProcedimento = () => {
     setFormData(prev => ({
       ...prev,
-      procedimentos_realizados: [...prev.procedimentos_realizados, { nome_procedimento: '', descricao: '' }]
+      procedimentos_realizados: [...prev.procedimentos_realizados, { nome_procedimento: '', descricao: '', data_procedimento: new Date().toISOString().split('T')[0] }]
     }));
   };
 
@@ -186,6 +204,17 @@ const NovoAtendimento: React.FC = () => {
     setApiError(null);
     setValidationErrors({});
 
+    const errors: Record<string, string> = {};
+    if (!formData.evolucao_maternidade?.trim()) errors.evolucao_maternidade = 'Campo obrigatório';
+    if (!formData.avaliacao_fetal?.trim()) errors.avaliacao_fetal = 'Campo obrigatório';
+    
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      setApiError('Preencha os campos obrigatórios');
+      setLoading(false);
+      return;
+    }
+
     try {
       const internacoesRes = await api.get(`/api/internacoes?status=ativa&paciente_id=${pacienteId}`);
       const internacao = internacoesRes.data[0];
@@ -209,7 +238,14 @@ const NovoAtendimento: React.FC = () => {
         medicamentos_administrados: formData.medicamentos_administrados.filter(m => m.nome_medicacao.trim()),
         procedimentos_realizados: formData.procedimentos_realizados.filter(p => p.nome_procedimento.trim())
       };
+      performanceMonitor.start('salvarAtendimento');
       await atendimentosService.createForInternacao(internacao.id, atendimentoData);
+      performanceMonitor.end('salvarAtendimento', 'NovoAtendimento');
+      
+      logger.info('Atendimento registrado com sucesso', 'NovoAtendimento', { 
+        pacienteId, 
+        internacaoId: internacao.id 
+      });
       
       setShowSuccess(true);
       setTimeout(() => navigate('/profissionais/'), 2000);
@@ -236,18 +272,6 @@ const NovoAtendimento: React.FC = () => {
     { label: "Novo Atendimento", active: true },
   ];
 
-  if (!paciente) {
-    return (
-      <AppLayout>
-        <Container fluid>
-          <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-            <div className="loading">Carregando dados da paciente...</div>
-          </div>
-        </Container>
-      </AppLayout>
-    );
-  }
-
   return (
     <AppLayout>
       <Container fluid>
@@ -260,10 +284,14 @@ const NovoAtendimento: React.FC = () => {
         </div>
         
         <h1 style={pageStyles.title}>
-          Novo Atendimento - {paciente.nome_completo}
+          Novo Atendimento{paciente ? ` - ${paciente.nome_completo}` : ''}
         </h1>
         
         <div style={pageStyles.containerPadding}>
+          {!paciente ? (
+            <Loading message="Carregando dados da paciente..." />
+          ) : (
+          <>
           {showSuccess && (
             <div className="alert-card success">
               <i className="fas fa-check-circle"></i>
@@ -284,8 +312,8 @@ const NovoAtendimento: React.FC = () => {
               <h3 style={pageStyles.sectionTitle}>Sinais Vitais</h3>
               <hr />
 
-              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                <div style={{ flex: '1', minWidth: '150px', position: 'relative' }}>
+              <div className="vitals-grid">
+                <div className="vital-field">
                   <BrInputIcon
                     label="Pressão Sistólica"
                     name="pressao_sistolica"
@@ -296,9 +324,9 @@ const NovoAtendimento: React.FC = () => {
                     status={getFieldStatus(validationErrors.pressao_sistolica)}
                     feedbackText={getFeedbackText(validationErrors.pressao_sistolica)}
                   />
-                  <span style={{ position: 'absolute', right: '12px', top: '38px', fontSize: '14px', color: '#666', pointerEvents: 'none', backgroundColor: 'white', padding: '0 4px' }}>mmHg</span>
+                  <span className="unit-label">mmHg</span>
                 </div>
-                <div style={{ flex: '1', minWidth: '150px', position: 'relative' }}>
+                <div className="vital-field">
                   <BrInputIcon
                     label="Pressão Diastólica"
                     name="pressao_diastolica"
@@ -309,9 +337,9 @@ const NovoAtendimento: React.FC = () => {
                     status={getFieldStatus(validationErrors.pressao_diastolica)}
                     feedbackText={getFeedbackText(validationErrors.pressao_diastolica)}
                   />
-                  <span style={{ position: 'absolute', right: '12px', top: '38px', fontSize: '14px', color: '#666', pointerEvents: 'none', backgroundColor: 'white', padding: '0 4px' }}>mmHg</span>
+                  <span className="unit-label">mmHg</span>
                 </div>
-                <div style={{ flex: '1', minWidth: '150px', position: 'relative' }}>
+                <div className="vital-field">
                   <BrInputIcon
                     label="Frequência Cardíaca"
                     name="frequencia_cardiaca"
@@ -322,12 +350,12 @@ const NovoAtendimento: React.FC = () => {
                     status={getFieldStatus(validationErrors.frequencia_cardiaca)}
                     feedbackText={getFeedbackText(validationErrors.frequencia_cardiaca)}
                   />
-                  <span style={{ position: 'absolute', right: '12px', top: '38px', fontSize: '14px', color: '#666', pointerEvents: 'none', backgroundColor: 'white', padding: '0 4px' }}>bpm</span>
+                  <span className="unit-label">bpm</span>
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                <div style={{ flex: '1', minWidth: '200px', position: 'relative' }}>
+              <div className="vitals-grid">
+                <div className="vital-field-wide">
                   <BrInputIcon
                     label="Temperatura"
                     name="temperatura"
@@ -338,9 +366,9 @@ const NovoAtendimento: React.FC = () => {
                     status={getFieldStatus(validationErrors.temperatura)}
                     feedbackText={getFeedbackText(validationErrors.temperatura)}
                   />
-                  <span style={{ position: 'absolute', right: '12px', top: '38px', fontSize: '14px', color: '#666', pointerEvents: 'none', backgroundColor: 'white', padding: '0 4px' }}>°C</span>
+                  <span className="unit-label">°C</span>
                 </div>
-                <div style={{ flex: '1', minWidth: '150px', position: 'relative' }}>
+                <div className="vital-field">
                   <BrInputIcon
                     label="Frequência Respiratória"
                     name="frequencia_respiratoria"
@@ -351,7 +379,7 @@ const NovoAtendimento: React.FC = () => {
                     status={getFieldStatus(validationErrors.frequencia_respiratoria)}
                     feedbackText={getFeedbackText(validationErrors.frequencia_respiratoria)}
                   />
-                  <span style={{ position: 'absolute', right: '12px', top: '38px', fontSize: '14px', color: '#666', pointerEvents: 'none', backgroundColor: 'white', padding: '0 4px' }}>rpm</span>
+                  <span className="unit-label">rpm</span>
                 </div>
               </div>
 
@@ -359,8 +387,8 @@ const NovoAtendimento: React.FC = () => {
               <h3 style={pageStyles.userSectionTitle}>Avaliação Obstétrica</h3>
               <hr />
               
-              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '16px' }}>
-                <div style={{ flex: '1', minWidth: '150px', position: 'relative' }}>
+              <div className="vitals-grid" style={{ marginBottom: '16px' }}>
+                <div className="vital-field">
                   <BrInputIcon
                     label="BCF"
                     name="bcf"
@@ -371,9 +399,9 @@ const NovoAtendimento: React.FC = () => {
                     status={getFieldStatus(validationErrors.bcf)}
                     feedbackText={getFeedbackText(validationErrors.bcf)}
                   />
-                  <span style={{ position: 'absolute', right: '12px', top: '38px', fontSize: '14px', color: '#666', pointerEvents: 'none', backgroundColor: 'white', padding: '0 4px' }}>bpm</span>
+                  <span className="unit-label">bpm</span>
                 </div>
-                <div style={{ flex: '1', minWidth: '150px', position: 'relative' }}>
+                <div className="vital-field">
                   <BrInputIcon
                     label="Altura Uterina"
                     name="altura_uterina"
@@ -384,20 +412,20 @@ const NovoAtendimento: React.FC = () => {
                     status={getFieldStatus(validationErrors.altura_uterina)}
                     feedbackText={getFeedbackText(validationErrors.altura_uterina)}
                   />
-                  <span style={{ position: 'absolute', right: '12px', top: '38px', fontSize: '14px', color: '#666', pointerEvents: 'none', backgroundColor: 'white', padding: '0 4px' }}>cm</span>
+                  <span className="unit-label">cm</span>
                 </div>
               </div>
 
-              <div style={{ flex: '1', minWidth: '200px', paddingBottom: '12px' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
+              <div className="checkbox-field">
+                <label className="checkbox-label">
                   <input
                     type="checkbox"
                     name="movimentos_fetais_presentes"
                     checked={formData.movimentos_fetais_presentes}
                     onChange={(e) => setFormData(prev => ({ ...prev, movimentos_fetais_presentes: e.target.checked }))}
-                    style={{ width: '18px', height: '18px', accentColor: '#711E6C' }}
+                    className="checkbox-input"
                   />
-                  <span style={{ fontSize: '15px', fontWeight: '600' }}>Movimentos Fetais Presentes</span>
+                  <span className="checkbox-text">Movimentos Fetais Presentes</span>
                 </label>
               </div>
 
@@ -405,31 +433,41 @@ const NovoAtendimento: React.FC = () => {
               <h3 style={pageStyles.userSectionTitle}>Evolução Clínica</h3>
               <hr />
 
-              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '16px' }}>
-                <div style={{ flex: '1', minWidth: '300px' }}>
-                  <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600' }}>Evolução Maternidade</label>
+              <div className="vitals-grid" style={{ marginBottom: '16px' }}>
+                <div className="textarea-field">
+                  <label className="textarea-label">Evolução Maternidade*</label>
                   <textarea
                     name="evolucao_maternidade"
                     value={formData.evolucao_maternidade}
                     onChange={handleInputChange}
                     rows={4}
-                    style={{ width: '98%', padding: '12px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '14px', resize: 'vertical' }}
+                    className="textarea-input"
                     placeholder="Descreva a evolução clínica da paciente..."
                   />
+                  {validationErrors.evolucao_maternidade && (
+                    <div style={{ color: '#dc2626', fontSize: '14px', marginTop: '4px' }}>
+                      {validationErrors.evolucao_maternidade}
+                    </div>
+                  )}
                 </div>
               </div>
               
-              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '16px' }}>
-                <div style={{ flex: '1', minWidth: '300px' }}>
-                  <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600' }}>Avaliação Fetal</label>
+              <div className="vitals-grid" style={{ marginBottom: '16px' }}>
+                <div className="textarea-field">
+                  <label className="textarea-label">Avaliação Fetal*</label>
                   <textarea
                     name="avaliacao_fetal"
                     value={formData.avaliacao_fetal}
                     onChange={handleInputChange}
                     rows={3}
-                    style={{ width: '98%', padding: '12px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '14px', resize: 'vertical' }}
+                    className="textarea-input"
                     placeholder="Descreva a avaliação fetal..."
                   />
+                  {validationErrors.avaliacao_fetal && (
+                    <div style={{ color: '#dc2626', fontSize: '14px', marginTop: '4px' }}>
+                      {validationErrors.avaliacao_fetal}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -438,46 +476,43 @@ const NovoAtendimento: React.FC = () => {
               <hr />
 
               <div style={{ marginBottom: '16px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                <div className="section-actions">
                   <label className="admissao-form-label">Exames Realizados</label>
                   <BrButton type="button" onClick={addExame} style={pageStyles.primaryButton}>Adicionar Exame</BrButton>
                 </div>
 
                 {formData.exames_laboratoriais.map((exame, index) => (
                   <div key={index} className="admissao-gestacao-card">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                    <div className="card-header">
                       <h4 className="admissao-gestacao-title">Exame {index + 1}</h4>
                       <button type="button" onClick={() => removeExame(index)} className="admissao-remove-button">Remover</button>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                      <div style={{ flex: '1', minWidth: '200px' }}>
-                        <label style={{ display: 'block', marginBottom: '4px', fontSize: '13px', fontWeight: '500' }}>Nome do Exame</label>
+                    <div className="card-fields">
+                      <div className="card-field-wide">
+                        <label>Nome do Exame</label>
                         <input
                           type="text"
                           value={exame.nome}
                           onChange={(e) => updateExame(index, 'nome', e.target.value)}
                           placeholder="Ex: Hemograma, Glicemia"
-                          style={{ width: '95%', padding: '16px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px' }}
                         />
                       </div>
-                      <div style={{ flex: '1', minWidth: '200px' }}>
-                        <label style={{ display: 'block', marginBottom: '4px', fontSize: '13px', fontWeight: '500' }}>Resultado</label>
+                      <div className="card-field-wide">
+                        <label>Resultado</label>
                         <input
                           type="text"
                           value={exame.resultado}
                           onChange={(e) => updateExame(index, 'resultado', e.target.value)}
                           placeholder="Ex: Normal, Alterado"
-                          style={{ width: '95%', padding: '16px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px' }}
                         />
                       </div>
-                      <div style={{ flex: '1', minWidth: '150px' }}>
-                        <label style={{ display: 'block', marginBottom: '4px', fontSize: '13px', fontWeight: '500' }}>Data do Exame</label>
+                      <div className="card-field">
+                        <label>Data do Exame</label>
                         <input
                           type="date"
                           value={exame.data_exame}
                           onChange={(e) => updateExame(index, 'data_exame', e.target.value)}
-                          style={{ width: '95%', padding: '16px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px' }}
                         />
                       </div>
                     </div>
@@ -485,7 +520,7 @@ const NovoAtendimento: React.FC = () => {
                 ))}
 
                 {formData.exames_laboratoriais.length === 0 && (
-                  <div style={{ textAlign: 'center', padding: '20px', color: '#666', fontStyle: 'italic', border: '2px dashed #ddd', borderRadius: '8px' }}>
+                  <div className="empty-state">
                     Nenhum exame laboratorial cadastrado. Clique em "Adicionar Exame" para incluir.
                   </div>
                 )}
@@ -496,47 +531,44 @@ const NovoAtendimento: React.FC = () => {
               <hr />
 
               <div style={{ marginBottom: '16px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                <div className="section-actions">
                   <label className="admissao-form-label">Medicações Aplicadas</label>
                   <BrButton type="button" onClick={addMedicamento} style={pageStyles.primaryButton}>Adicionar Medicamento</BrButton>
                 </div>
 
                 {formData.medicamentos_administrados.map((medicamento, index) => (
                   <div key={index} className="admissao-gestacao-card">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                    <div className="card-header">
                       <h4 className="admissao-gestacao-title">Medicamento {index + 1}</h4>
                       <button type="button" onClick={() => removeMedicamento(index)} className="admissao-remove-button">Remover</button>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                      <div style={{ flex: '1', minWidth: '200px' }}>
-                        <label style={{ display: 'block', marginBottom: '4px', fontSize: '13px', fontWeight: '500' }}>Nome da Medicação</label>
+                    <div className="card-fields">
+                      <div className="card-field-wide">
+                        <label>Nome da Medicação</label>
                         <input
                           type="text"
                           value={medicamento.nome_medicacao}
                           onChange={(e) => updateMedicamento(index, 'nome_medicacao', e.target.value)}
                           placeholder="Ex: Dipirona, Paracetamol"
-                          style={{ width: '95%', padding: '16px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px' }}
                         />
                       </div>
-                      <div style={{ flex: '1', minWidth: '150px' }}>
-                        <label style={{ display: 'block', marginBottom: '4px', fontSize: '13px', fontWeight: '500' }}>Dosagem</label>
+                      <div className="card-field">
+                        <label>Dosagem</label>
                         <input
                           type="text"
                           value={medicamento.dosagem}
                           onChange={(e) => updateMedicamento(index, 'dosagem', e.target.value)}
                           placeholder="Ex: 500mg, 1ml"
-                          style={{ width: '95%', padding: '16px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px' }}
                         />
                       </div>
-                      <div style={{ flex: '1', minWidth: '150px' }}>
-                        <label style={{ display: 'block', marginBottom: '4px', fontSize: '13px', fontWeight: '500' }}>Frequência</label>
+                      <div className="card-field">
+                        <label>Frequência</label>
                         <input
                           type="text"
                           value={medicamento.frequencia}
                           onChange={(e) => updateMedicamento(index, 'frequencia', e.target.value)}
                           placeholder="Ex: 8/8h, 12/12h"
-                          style={{ width: '95%', padding: '16px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px' }}
                         />
                       </div>
                     </div>
@@ -544,7 +576,7 @@ const NovoAtendimento: React.FC = () => {
                 ))}
 
                 {formData.medicamentos_administrados.length === 0 && (
-                  <div style={{ textAlign: 'center', padding: '20px', color: '#666', fontStyle: 'italic', border: '2px dashed #ddd', borderRadius: '8px' }}>
+                  <div className="empty-state">
                     Nenhum medicamento cadastrado. Clique em "Adicionar Medicamento" para incluir.
                   </div>
                 )}
@@ -555,37 +587,43 @@ const NovoAtendimento: React.FC = () => {
               <hr />
 
               <div style={{ marginBottom: '16px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                <div className="section-actions">
                   <label className="admissao-form-label">Procedimentos Executados</label>
                   <BrButton type="button" onClick={addProcedimento} style={pageStyles.primaryButton}>Adicionar Procedimento</BrButton>
                 </div>
 
                 {formData.procedimentos_realizados.map((procedimento, index) => (
                   <div key={index} className="admissao-gestacao-card">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                    <div className="card-header">
                       <h4 className="admissao-gestacao-title">Procedimento {index + 1}</h4>
                       <button type="button" onClick={() => removeProcedimento(index)} className="admissao-remove-button">Remover</button>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                      <div style={{ flex: '1', minWidth: '200px' }}>
-                        <label style={{ display: 'block', marginBottom: '4px', fontSize: '13px', fontWeight: '500' }}>Nome do Procedimento</label>
+                    <div className="card-fields">
+                      <div className="card-field-wide">
+                        <label>Nome do Procedimento</label>
                         <input
                           type="text"
                           value={procedimento.nome_procedimento}
                           onChange={(e) => updateProcedimento(index, 'nome_procedimento', e.target.value)}
                           placeholder="Ex: Episiotomia, Curetagem"
-                          style={{ width: '95%', padding: '16px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px' }}
                         />
                       </div>
-                      <div style={{ flex: '1', minWidth: '200px' }}>
-                        <label style={{ display: 'block', marginBottom: '4px', fontSize: '13px', fontWeight: '500' }}>Descrição</label>
+                      <div className="card-field-wide">
+                        <label>Descrição</label>
                         <input
                           type="text"
                           value={procedimento.descricao}
                           onChange={(e) => updateProcedimento(index, 'descricao', e.target.value)}
                           placeholder="Descrição do procedimento"
-                          style={{ width: '95%', padding: '16px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px' }}
+                        />
+                      </div>
+                      <div className="card-field">
+                        <label>Data do Procedimento</label>
+                        <input
+                          type="date"
+                          value={procedimento.data_procedimento}
+                          onChange={(e) => updateProcedimento(index, 'data_procedimento', e.target.value)}
                         />
                       </div>
                     </div>
@@ -593,7 +631,7 @@ const NovoAtendimento: React.FC = () => {
                 ))}
 
                 {formData.procedimentos_realizados.length === 0 && (
-                  <div style={{ textAlign: 'center', padding: '20px', color: '#666', fontStyle: 'italic', border: '2px dashed #ddd', borderRadius: '8px' }}>
+                  <div className="empty-state">
                     Nenhum procedimento cadastrado. Clique em "Adicionar Procedimento" para incluir.
                   </div>
                 )}
@@ -604,36 +642,34 @@ const NovoAtendimento: React.FC = () => {
               <hr />
 
               <div style={{ marginBottom: '16px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                <div className="section-actions">
                   <label className="admissao-form-label">Eventos e Intercorrências</label>
                   <BrButton type="button" onClick={addOcorrencia} style={pageStyles.primaryButton}>Adicionar Ocorrência</BrButton>
                 </div>
 
                 {formData.ocorrencias_clinicas.map((ocorrencia, index) => (
                   <div key={index} className="admissao-gestacao-card">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                    <div className="card-header">
                       <h4 className="admissao-gestacao-title">Ocorrência {index + 1}</h4>
                       <button type="button" onClick={() => removeOcorrencia(index)} className="admissao-remove-button">Remover</button>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                      <div style={{ flex: '2', minWidth: '300px' }}>
-                        <label style={{ display: 'block', marginBottom: '4px', fontSize: '13px', fontWeight: '500' }}>Descrição da Ocorrência</label>
+                    <div className="card-fields">
+                      <div className="card-field-full">
+                        <label>Descrição da Ocorrência</label>
                         <textarea
                           value={ocorrencia.descricao}
                           onChange={(e) => updateOcorrencia(index, 'descricao', e.target.value)}
                           placeholder="Ex: Sangramento vaginal, Contrações irregulares, Alteração na pressão arterial..."
                           rows={3}
-                          style={{ width: '95%', padding: '12px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px', resize: 'vertical' }}
                         />
                       </div>
-                      <div style={{ flex: '1', minWidth: '150px' }}>
-                        <label style={{ display: 'block', marginBottom: '4px', fontSize: '13px', fontWeight: '500' }}>Data/Hora da Ocorrência</label>
+                      <div className="card-field">
+                        <label>Data/Hora da Ocorrência</label>
                         <input
                           type="datetime-local"
                           value={ocorrencia.data_ocorrencia}
                           onChange={(e) => updateOcorrencia(index, 'data_ocorrencia', e.target.value)}
-                          style={{ width: '95%', padding: '16px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px' }}
                         />
                       </div>
                     </div>
@@ -641,7 +677,7 @@ const NovoAtendimento: React.FC = () => {
                 ))}
 
                 {formData.ocorrencias_clinicas.length === 0 && (
-                  <div style={{ textAlign: 'center', padding: '20px', color: '#666', fontStyle: 'italic', border: '2px dashed #ddd', borderRadius: '8px' }}>
+                  <div className="empty-state">
                     Nenhuma ocorrência clínica registrada. Clique em "Adicionar Ocorrência" para incluir eventos importantes.
                   </div>
                 )}
@@ -651,7 +687,7 @@ const NovoAtendimento: React.FC = () => {
               <div style={pageStyles.buttonContainer}>
                 <BrButton
                   type="button"
-                  className="clear-button"
+                  style={pageStyles.secundaryButton}
                   onClick={() => navigate('/profissionais/')}
                   disabled={loading}
                 >
@@ -659,7 +695,7 @@ const NovoAtendimento: React.FC = () => {
                 </BrButton>
                 <BrButton
                   type="submit"
-                  className="register-button"
+                  style={pageStyles.primaryButton}
                   disabled={loading}
                 >
                   {loading ? 'Salvando...' : 'Salvar Atendimento'}
@@ -667,6 +703,8 @@ const NovoAtendimento: React.FC = () => {
               </div>
             </form>
           </div>
+          </>
+          )}
         </div>
       </Container>
     </AppLayout>
