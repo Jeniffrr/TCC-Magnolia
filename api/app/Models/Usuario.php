@@ -13,7 +13,6 @@ class Usuario extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, TwoFactorAuthenticatable;
     
-    // Tipos de usuário
     public const TIPO_ADMINISTRADOR = 'administrador';
     public const TIPO_MEDICO = 'medico';
     public const TIPO_ENFERMEIRO = 'enfermeiro';
@@ -35,8 +34,6 @@ class Usuario extends Authenticatable
         'numero_registro',
         'uf_registro',
         'is_active',
-        'aceitou_termos',
-        'consentimento_em',
         'consentimento_lgpd_aceito',
         'data_consentimento_lgpd',
         'hospital_id',
@@ -52,64 +49,41 @@ class Usuario extends Authenticatable
 
      protected $casts = [
         'email_verified_at' => 'datetime',
-        'consentimento_em' => 'datetime',
+        'data_consentimento_lgpd' => 'datetime',
         'two_factor_confirmed_at' => 'datetime',
-        'aceitou_termos' => 'boolean',
+        'consentimento_lgpd_aceito' => 'boolean',
     ];
 
-    /**
-     * Aplica o escopo global do hospital ao modelo.
-     * No caso do usuário, ele é usado para identificar a qual hospital ele pertence.
-     */
-    
     protected static function booted()
     {
         static::addGlobalScope(new HospitalScope);
     }
 
-    /**
-     * Get the password for the user.
-     */
     public function getAuthPassword()
     {
         return $this->senha;
     }
 
-    /**
-     * Get the name of the password field.
-     */
     public function getAuthPasswordName()
     {
         return 'senha';
     }
 
-    /**
-     * Override the password attribute to use 'senha'
-     */
     public function getPasswordAttribute()
     {
         return $this->senha;
     }
 
-    /**
-     * Get the name of the unique identifier for the user.
-     */
     public function getAuthIdentifierName()
     {
         return 'id';
     }
 
-    /**
-     * Get the unique identifier for the user.
-     */
     public function getAuthIdentifier()
     {
         return $this->id;
     }
     
-    /**
-     * Get the name of the field used for authentication (login)
-     */
     public function username()
     {
         return 'email';

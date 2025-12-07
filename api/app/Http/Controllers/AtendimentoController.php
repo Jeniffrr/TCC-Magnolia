@@ -185,6 +185,7 @@ class AtendimentoController extends Controller
                         $atendimento->procedimentosRealizados()->create([
                             'nome_procedimento' => $procedimento['nome_procedimento'],
                             'observacoes' => $procedimento['descricao'] ?? '',
+                            'data_procedimento' => $procedimento['data_procedimento'] ?? now()->format('Y-m-d'),
                         ]);
                     }
                 }

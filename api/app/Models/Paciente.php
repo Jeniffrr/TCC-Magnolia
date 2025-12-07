@@ -15,9 +15,8 @@ class Paciente extends Model
     protected $fillable = [
         'usuario_id', 'hospital_id', 'nome_completo', 'cpf', 'nome_mae',
         'data_nascimento', 'telefone', 'rua', 'numero', 'bairro', 'cidade',
-        'estado', 'cep', 'alergias', 'ocorrencias_clinicas',
-        'medicamentos_continuos', 'consentimento_lgpd_aceito',
-        'data_consentimento_lgpd',
+        'estado', 'cep', 'alergias', 'medicamentos_continuos',
+        'consentimento_lgpd_aceito', 'data_consentimento_lgpd',
     ];
 
     // Uma paciente TEM MUITAS internações

@@ -34,7 +34,6 @@ return new class extends Migration
 
             // Histórico Médico Geral
             $table->text('alergias')->nullable();
-            $table->text('ocorrencias_clinicas')->nullable();
             $table->text('medicamentos_continuos')->nullable();
 
             // Termos e Condições

@@ -17,6 +17,7 @@ class Internacao extends Model
 
     protected $fillable = [
         'paciente_id',
+        'usuario_id',
         'leito_id',
         'data_entrada',
         'data_alta',
@@ -24,28 +25,28 @@ class Internacao extends Model
         'status',
     ];
 
-    // Uma internação PERTENCE A UMA paciente
     public function paciente(): BelongsTo
     {
         return $this->belongsTo(Paciente::class);
     }
 
-    // Uma internação PERTENCE A UM leito
+    public function usuario(): BelongsTo
+    {
+        return $this->belongsTo(Usuario::class);
+    }
+
     public function leito(): BelongsTo
     {
         return $this->belongsTo(Leito::class);
     }
 
-    // Uma internação TEM MUITOS atendimentos
     public function atendimentos(): HasMany
     {
         return $this->hasMany(Atendimento::class);
     }
 
-    // Uma internação TEM UM evento de parto/desfecho
     public function desfecho(): HasOne
     {
-        // Uma internação tem um desfecho
         return $this->hasOne(DesfechoInternacao::class);
     }
 
@@ -53,6 +54,4 @@ class Internacao extends Model
     {
         return $this->hasOne(Alta::class);
     }
-    // HospitalScope removido - internacoes não tem hospital_id
-    // O filtro por hospital é feito através da relação com paciente
 }
