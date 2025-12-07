@@ -89,9 +89,6 @@ const PacienteEditar: React.FC = () => {
   >({});
   const [apiError, setApiError] = useState<string | null>(null);
 
-  // --- MUDANÇA #1 ---
-  // useEffect otimizado para buscar paciente por ID e dados de dropdown
-  // de forma paralela, com tratamento de erro.
   useEffect(() => {
     if (!id) return;
 
@@ -99,20 +96,17 @@ const PacienteEditar: React.FC = () => {
       setIsLoading(true);
       setApiError(null);
       try {
-        // Busca o paciente específico e as condições em paralelo
         const [pacienteRes, condicoesRes] = await Promise.all([
           api.get(`/api/pacientes/${id}`),
           api.get("/api/condicoes-patologicas"),
         ]);
 
-        // A API show retorna o paciente diretamente
         const pacienteData = pacienteRes.data;
 
         if (!pacienteData) {
           throw new Error("Paciente não encontrado");
         }
 
-        // Popula o formulário com os dados do paciente
         setFormData({
           nome_completo: pacienteData.nome_completo || "",
           cpf: applyCpfMask(pacienteData.cpf || ""),
@@ -145,7 +139,6 @@ const PacienteEditar: React.FC = () => {
             : [],
         });
 
-        // Popula os dropdowns
         setCondicoes(condicoesRes.data || []);
       } catch (err: unknown) {
         const error = err as { response?: { status?: number; data?: { message?: string } }; message?: string };
@@ -230,9 +223,6 @@ const PacienteEditar: React.FC = () => {
     setApiError(null);
     setValidationErrors({});
 
-    // --- MUDANÇA #3 ---
-    // Payload corrigido para incluir TODOS os campos do formulário
-    // que devem ser atualizados.
     const payload = {
       // Dados Pessoais
       nome_completo: formData.nome_completo,

@@ -63,7 +63,6 @@ const Login: React.FC = () => {
     e.preventDefault();
     setError(null);
 
-    // Validações iniciais
     if (!email || !password) {
       setError("Preencha todos os campos");
       return;
@@ -87,7 +86,6 @@ const Login: React.FC = () => {
       
       await api.get("/sanctum/csrf-cookie");
       
-      // Se já requer 2FA, envia o código
       if (requires2FA && userId) {
         const response = await api.post<LoginResponse>("/api/two-factor-challenge", {
           user_id: userId,
@@ -117,7 +115,6 @@ const Login: React.FC = () => {
         return;
       }
       
-      // Primeiro passo: email e senha
       const response = await api.post<LoginResponse>("/api/login", {
         email: email.trim(),
         password,
@@ -127,7 +124,6 @@ const Login: React.FC = () => {
 
       const { user_id, qr_code_url, secret, first_time } = response.data;
 
-      // 2FA é SEMPRE obrigatório - não há login sem 2FA
       if (!user_id) {
         throw new Error("Erro no sistema de autenticação");
       }

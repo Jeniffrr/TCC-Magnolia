@@ -68,7 +68,7 @@ const PacienteVer: React.FC = () => {
         console.log('Resposta da API:', response.data);
         
         const pacientesList = response.data.data || [];
-        const pacienteEncontrado = pacientesList.find((p: any) => p.id === parseInt(id || '0'));
+        const pacienteEncontrado = pacientesList.find((p: Paciente) => p.id === parseInt(id || '0'));
         
         console.log('Paciente encontrado:', pacienteEncontrado);
         

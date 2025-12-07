@@ -1,5 +1,3 @@
-/* Gerenciar Usuários - Estilos */
-
 .table-container {
     background-color: white;
     border-radius: 12px;
@@ -157,7 +155,6 @@
     transform: scale(1.1);
 }
 
-/* Estilos para visualização */
 .view-container {
     background: white;
     border-radius: 12px;
@@ -309,7 +306,6 @@
     }
 }
 
-/* Estilos do formulário */
 .register-container {
     background: transparent;
     border-radius: 0;
@@ -385,7 +381,6 @@
     transform: translateY(-1px);
 }
 
-/* Estilos para selects */
 .register-container select {
     width: 100%;
     padding: 12px;
@@ -411,13 +406,11 @@
     font-size: 14px;
 }
 
-/* Animação do spinner */
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
 
-/* Responsividade */
 @media (max-width: 768px) {
     .table-container {
         overflow-x: auto;
