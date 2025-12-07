@@ -7,7 +7,7 @@ use App\Http\Controllers\PrimeiroAcessoController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\LeitoController;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\TwoFactorController;
+use App\Http\Controllers\TwoFactorController;
 use App\Http\Controllers\PacienteController;
 use App\Http\Controllers\AtendimentoController;
 use App\Http\Controllers\InternacaoController;
@@ -32,7 +32,7 @@ use App\Models\Usuario;
 
 Route::post('/primeiro-acesso/registrar', [PrimeiroAcessoController::class, 'registrar']); // Rota para o registro inicial (não precisa de autenticação)
 Route::post('/login', [LoginController::class, 'login']); // Rota para o login principal (email + senha)
-// Route::post('/login/two-factor', [TwoFactorController::class, 'verify']); // Rota para verificar o código 2FA
+Route::post('/two-factor-challenge', [LoginController::class, 'twoFactorChallenge']); // Rota para verificar o código 2FA (sem autenticação)
 
 Route::get('/tipos-registro', function () {
     return response()->json([
@@ -156,4 +156,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Rotas compartilhadas (acessíveis por admin e não admin)
     Route::get('/leitos', [LeitoController::class, 'index'])->name('leitos.index'); // Listar leitos (todos podem ver)
+    
+    // Rotas de 2FA
+    Route::post('/two-factor/enable', [TwoFactorController::class, 'enable']);
+    Route::post('/two-factor/confirm', [TwoFactorController::class, 'confirm']);
+    Route::post('/two-factor/disable', [TwoFactorController::class, 'disable']);
+    Route::get('/two-factor/status', [TwoFactorController::class, 'status']);
 });

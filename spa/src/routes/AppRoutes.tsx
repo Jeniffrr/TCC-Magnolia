@@ -6,6 +6,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import Login from "../pages/Login";
+import TwoFactorSettings from "../pages/TwoFactorSettings";
 import { Register } from "../pages/Resgister/Register";
 import ProfissionaisHome from "../pages/Profissionais/Home";
 import AdminHome from "../pages/Admin/Home";
@@ -82,6 +83,14 @@ export const AppRoutes: React.FC = () => {
           element={
             <ProtectedRoute>
               <HistoricoCompleto />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profissionais/seguranca"
+          element={
+            <ProtectedRoute>
+              <TwoFactorSettings />
             </ProtectedRoute>
           }
         />
