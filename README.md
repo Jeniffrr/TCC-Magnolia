@@ -44,7 +44,7 @@ Sistema completo para gerenciamento de pacientes em maternidade, com controle de
 ### 1. Clonar o Repositório
 
 ```bash
-git clone <url-do-repositorio>
+git clone https://github.com/Jeniffrr/TCC-Magnolia.git
 cd tcc
 ```
 
@@ -126,8 +126,8 @@ O frontend estará rodando em `http://localhost:5173`
 
 Após executar os seeders, você terá um usuário administrador:
 
-- **Email**: `admin@hospital.com`
-- **Senha**: `senha123`
+- **Email**: `j@gmail.com`
+- **Senha**: `12345678`
 - **Tipo**: Administrador
 
 ### Configuração do 2FA
@@ -181,7 +181,6 @@ No primeiro login, o sistema solicitará a configuração do 2FA:
 2. **Visualizar Pacientes:**
    - Acesse "Gerenciar Pacientes"
    - Veja a lista de pacientes internadas
-   - Use a busca para filtrar por nome ou CPF
    - Clique no ícone de olho para ver detalhes
 
 3. **Editar Paciente:**
@@ -192,7 +191,7 @@ No primeiro login, o sistema solicitará a configuração do 2FA:
 **Atendimentos:**
 
 1. **Registrar Novo Atendimento:**
-   - Acesse "Pacientes em Atendimento"
+   - Acesse "Pagina Inicial"
    - Selecione a paciente
    - Clique em "Novo Atendimento"
    - Preencha sinais vitais
@@ -206,7 +205,13 @@ No primeiro login, o sistema solicitará a configuração do 2FA:
    - Clique em "Ver Histórico Completo"
    - Visualize todos os atendimentos anteriores
 
-3. **Dar Alta:**
+3. **Registrar desfecho clínico:**
+   - Selecione a paciente
+   - Clique em "Registrar Desfecho"
+   - Preencha detalhes do desfecho
+   - Salve o desfecho
+
+4. **Dar Alta:**
    - Selecione a paciente
    - Clique em "Dar Alta"
    - Preencha o motivo da alta
@@ -220,7 +225,7 @@ No primeiro login, o sistema solicitará a configuração do 2FA:
 - ✅ Autenticação 2FA obrigatória
 - ✅ Geração de QR Code para 2FA
 - ✅ Controle de sessão
-- ✅ Logout seguro
+- ✅ Logout
 
 ### Módulo de Usuários (Admin)
 - ✅ Cadastro de profissionais
@@ -239,13 +244,11 @@ No primeiro login, o sistema solicitará a configuração do 2FA:
 
 ### Módulo de Pacientes
 - ✅ Cadastro completo de pacientes
-- ✅ Validação de CPF único
 - ✅ Histórico médico completo
 - ✅ Gestações anteriores
 - ✅ Condições patológicas
 - ✅ Edição de dados
 - ✅ Visualização detalhada
-- ✅ Busca por nome ou CPF
 - ✅ Consentimento LGPD
 
 ### Módulo de Internações
@@ -364,6 +367,14 @@ tcc/
 
 Este projeto foi desenvolvido como Trabalho de Conclusão de Curso (TCC).
 
+## 👥 Autores
+
+**Desenvolvido por:** [Jeniffer Santana]  
+**Orientador:** [Mario Lemes]  
+**Instituição:** [Instituto Federal de Goias]  
+**Ano:** 2024/2025
+
+
 ## 👥 Suporte
 
-Para dúvidas ou problemas, entre em contato com a equipe de desenvolvimento.
+Para dúvidas ou problemas, entre em contato.
