@@ -640,7 +640,7 @@ const PacienteEditar: React.FC = () => {
                   <BrButton
                     type="button"
                     onClick={() => navigate("/profissionais/pacientes")}
-                    className="back-button"
+                    style={pageStyles.secundaryButton}
                     disabled={isSaving}
                   >
                     Cancelar

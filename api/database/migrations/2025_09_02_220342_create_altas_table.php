@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('altas', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('internacao_id')->constrained('pacientes')->onDelete('cascade');
+            $table->foreignId('internacao_id')->constrained('internacoes')->onDelete('cascade');
             $table->foreignId('usuario_id')->constrained('usuarios');
             $table->dateTime('data_hora');
             $table->text('resumo_alta')->nullable();

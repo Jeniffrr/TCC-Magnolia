@@ -29,4 +29,9 @@ class Leito extends Model
     {
         static::addGlobalScope(new HospitalScope);
     }
+
+    public function internacoes()
+    {
+        return $this->hasMany(Internacao::class);
+    }
 }

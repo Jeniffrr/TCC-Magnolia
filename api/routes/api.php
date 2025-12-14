@@ -63,22 +63,25 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
 
+    // Rotas compartilhadas (acessíveis por admin e não admin) - DEVEM VIR ANTES DAS ROTAS COM PARÂMETROS
+    Route::get('/leitos', [LeitoController::class, 'index'])->name('leitos.index');
+    Route::get('/leitos/disponiveis', [LeitoController::class, 'disponiveis'])->name('leitos.disponiveis');
+
     // Rotas protegidas apenas para administradores
     Route::middleware(AdminMiddleware::class)->group(function () {
-        // Rotas de administrador
         // CRUD Completo de Usuários
-        Route::post('/usuarios/cadastrar', [UsuarioController::class, 'cadastrar']); // Cadastrar novo usuário
-        Route::get('/usuarios', [UsuarioController::class, 'index']); // Visualizar todos
-        Route::get('/usuarios/{id}', [UsuarioController::class, 'show']); // Visualizar um específico
-        Route::put('/usuarios/{id}', [UsuarioController::class, 'update']); // Editar
-        Route::delete('/usuarios/{id}', [UsuarioController::class, 'destroy']); // Apagar
-        Route::patch('/usuarios/{id}/status', [UsuarioController::class, 'toggleStatus']); // Desativar/Ativar
+        Route::post('/usuarios/cadastrar', [UsuarioController::class, 'cadastrar']);
+        Route::get('/usuarios', [UsuarioController::class, 'index']);
+        Route::get('/usuarios/{id}', [UsuarioController::class, 'show']);
+        Route::put('/usuarios/{id}', [UsuarioController::class, 'update']);
+        Route::delete('/usuarios/{id}', [UsuarioController::class, 'destroy']);
+        Route::patch('/usuarios/{id}/status', [UsuarioController::class, 'toggleStatus']);
 
-        // CRUD Completo de Leitos (exceto index que está disponível para todos)
-        Route::post('/leitos', [LeitoController::class, 'store']); // Cadastrar novo leito
-        Route::get('/leitos/{id}', [LeitoController::class, 'show']); // Visualizar um específico
-        Route::put('/leitos/{id}', [LeitoController::class, 'update']); // Editar
-        Route::delete('/leitos/{id}', [LeitoController::class, 'destroy']); // Apagar
+        // CRUD Completo de Leitos
+        Route::post('/leitos', [LeitoController::class, 'store']);
+        Route::get('/leitos/{id}', [LeitoController::class, 'show']);
+        Route::put('/leitos/{id}', [LeitoController::class, 'update']);
+        Route::delete('/leitos/{id}', [LeitoController::class, 'destroy']);
         
         // Dashboard administrativo
         Route::get('/dashboard/estatisticas', [DashboardController::class, 'estatisticas']);
@@ -154,9 +157,6 @@ Route::middleware('auth:sanctum')->group(function () {
             ->name('atendimentos.ocorrencias.destroy');
     });
 
-    // Rotas compartilhadas (acessíveis por admin e não admin)
-    Route::get('/leitos', [LeitoController::class, 'index'])->name('leitos.index'); // Listar leitos (todos podem ver)
-    
     // Rotas de 2FA
     Route::post('/two-factor/enable', [TwoFactorController::class, 'enable']);
     Route::post('/two-factor/confirm', [TwoFactorController::class, 'confirm']);

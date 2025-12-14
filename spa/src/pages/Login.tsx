@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
-import AppLayout from "../components/Layout/AppLayout";
+import PublicLayout from "../components/Layout/PublicLayout";
 import Breadcrumb from "../components/Breadcrumbs/Breadcrumbs";
 import { logger, performanceMonitor } from "../utils/logger";
+import { Container } from "@govbr-ds/react-components";
 import "./Login.css";
 
 type UserType =
@@ -151,7 +152,8 @@ const Login: React.FC = () => {
   };
 
   return (
-    <AppLayout>
+    <PublicLayout>
+      <Container style={{ maxWidth: '1400px', margin: '0 auto' }}>
       <div className="mb-3 mt-3">
         <Breadcrumb
           items={BREADCRUMB_ITEMS}
@@ -171,10 +173,10 @@ const Login: React.FC = () => {
               <div className="login-2fa-setup">
                 <h3>
                   <i className="fas fa-shield-alt"></i>
-                  Configure seu 2FA (Primeira vez)
+                  Configure sua chave de segundo fator de autenticação
                 </h3>
                 <div className="login-2fa-steps">
-                  <p>1. Instale um app autenticador (Google Authenticator, Authy, etc.)</p>
+                  <p>1. Instale um app autenticador (Google Authenticator, Authy ou  Microsoft Authenticator )</p>
                   <p>2. Escaneie o QR Code:</p>
                   {qrCodeUrl && (
                     <div className="login-qr-container">
@@ -235,7 +237,7 @@ const Login: React.FC = () => {
 
               {requires2FA && (
                 <div className="login-form-group">
-                  <label className="login-label">Código 2FA:</label>
+                  <label className="login-label">Código de segundo fator:</label>
                   <input
                     type="text"
                     value={code}
@@ -280,7 +282,8 @@ const Login: React.FC = () => {
           </div>
         </div>
       </div>
-    </AppLayout>
+      </Container>
+    </PublicLayout>
   );
 };
 

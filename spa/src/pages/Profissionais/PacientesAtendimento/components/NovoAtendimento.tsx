@@ -483,36 +483,39 @@ const NovoAtendimento: React.FC = () => {
 
                 {formData.exames_laboratoriais.map((exame, index) => (
                   <div key={index} className="admissao-gestacao-card">
-                    <div className="card-header">
+                    <div className="admissao-gestacao-card-header">
                       <h4 className="admissao-gestacao-title">Exame {index + 1}</h4>
                       <button type="button" onClick={() => removeExame(index)} className="admissao-remove-button">Remover</button>
                     </div>
 
-                    <div className="card-fields">
-                      <div className="card-field-wide">
-                        <label>Nome do Exame</label>
+                    <div className="admissao-flex-row">
+                      <div className="admissao-gestacao-field-large">
+                        <label className="admissao-gestacao-label">Nome do Exame</label>
                         <input
                           type="text"
                           value={exame.nome}
                           onChange={(e) => updateExame(index, 'nome', e.target.value)}
                           placeholder="Ex: Hemograma, Glicemia"
+                          className="admissao-gestacao-input"
                         />
                       </div>
-                      <div className="card-field-wide">
-                        <label>Resultado</label>
+                      <div className="admissao-gestacao-field-large">
+                        <label className="admissao-gestacao-label">Resultado</label>
                         <input
                           type="text"
                           value={exame.resultado}
                           onChange={(e) => updateExame(index, 'resultado', e.target.value)}
                           placeholder="Ex: Normal, Alterado"
+                          className="admissao-gestacao-input"
                         />
                       </div>
-                      <div className="card-field">
-                        <label>Data do Exame</label>
+                      <div className="admissao-gestacao-field-medium">
+                        <label className="admissao-gestacao-label">Data do Exame</label>
                         <input
                           type="date"
                           value={exame.data_exame}
                           onChange={(e) => updateExame(index, 'data_exame', e.target.value)}
+                          className="admissao-gestacao-input"
                         />
                       </div>
                     </div>
@@ -520,7 +523,7 @@ const NovoAtendimento: React.FC = () => {
                 ))}
 
                 {formData.exames_laboratoriais.length === 0 && (
-                  <div className="empty-state">
+                  <div className="admissao-empty-state">
                     Nenhum exame laboratorial cadastrado. Clique em "Adicionar Exame" para incluir.
                   </div>
                 )}
@@ -538,37 +541,40 @@ const NovoAtendimento: React.FC = () => {
 
                 {formData.medicamentos_administrados.map((medicamento, index) => (
                   <div key={index} className="admissao-gestacao-card">
-                    <div className="card-header">
+                    <div className="admissao-gestacao-card-header">
                       <h4 className="admissao-gestacao-title">Medicamento {index + 1}</h4>
                       <button type="button" onClick={() => removeMedicamento(index)} className="admissao-remove-button">Remover</button>
                     </div>
 
-                    <div className="card-fields">
-                      <div className="card-field-wide">
-                        <label>Nome da Medicação</label>
+                    <div className="admissao-flex-row">
+                      <div className="admissao-gestacao-field-large">
+                        <label className="admissao-gestacao-label">Nome da Medicação</label>
                         <input
                           type="text"
                           value={medicamento.nome_medicacao}
                           onChange={(e) => updateMedicamento(index, 'nome_medicacao', e.target.value)}
                           placeholder="Ex: Dipirona, Paracetamol"
+                          className="admissao-gestacao-input"
                         />
                       </div>
-                      <div className="card-field">
-                        <label>Dosagem</label>
+                      <div className="admissao-gestacao-field-medium">
+                        <label className="admissao-gestacao-label">Dosagem</label>
                         <input
                           type="text"
                           value={medicamento.dosagem}
                           onChange={(e) => updateMedicamento(index, 'dosagem', e.target.value)}
                           placeholder="Ex: 500mg, 1ml"
+                          className="admissao-gestacao-input"
                         />
                       </div>
-                      <div className="card-field">
-                        <label>Frequência</label>
+                      <div className="admissao-gestacao-field-medium">
+                        <label className="admissao-gestacao-label">Frequência</label>
                         <input
                           type="text"
                           value={medicamento.frequencia}
                           onChange={(e) => updateMedicamento(index, 'frequencia', e.target.value)}
                           placeholder="Ex: 8/8h, 12/12h"
+                          className="admissao-gestacao-input"
                         />
                       </div>
                     </div>
@@ -576,7 +582,7 @@ const NovoAtendimento: React.FC = () => {
                 ))}
 
                 {formData.medicamentos_administrados.length === 0 && (
-                  <div className="empty-state">
+                  <div className="admissao-empty-state">
                     Nenhum medicamento cadastrado. Clique em "Adicionar Medicamento" para incluir.
                   </div>
                 )}
@@ -594,36 +600,39 @@ const NovoAtendimento: React.FC = () => {
 
                 {formData.procedimentos_realizados.map((procedimento, index) => (
                   <div key={index} className="admissao-gestacao-card">
-                    <div className="card-header">
+                    <div className="admissao-gestacao-card-header">
                       <h4 className="admissao-gestacao-title">Procedimento {index + 1}</h4>
                       <button type="button" onClick={() => removeProcedimento(index)} className="admissao-remove-button">Remover</button>
                     </div>
 
-                    <div className="card-fields">
-                      <div className="card-field-wide">
-                        <label>Nome do Procedimento</label>
+                    <div className="admissao-flex-row">
+                      <div className="admissao-gestacao-field-large">
+                        <label className="admissao-gestacao-label">Nome do Procedimento</label>
                         <input
                           type="text"
                           value={procedimento.nome_procedimento}
                           onChange={(e) => updateProcedimento(index, 'nome_procedimento', e.target.value)}
                           placeholder="Ex: Episiotomia, Curetagem"
+                          className="admissao-gestacao-input"
                         />
                       </div>
-                      <div className="card-field-wide">
-                        <label>Descrição</label>
+                      <div className="admissao-gestacao-field-large">
+                        <label className="admissao-gestacao-label">Descrição</label>
                         <input
                           type="text"
                           value={procedimento.descricao}
                           onChange={(e) => updateProcedimento(index, 'descricao', e.target.value)}
                           placeholder="Descrição do procedimento"
+                          className="admissao-gestacao-input"
                         />
                       </div>
-                      <div className="card-field">
-                        <label>Data do Procedimento</label>
+                      <div className="admissao-gestacao-field-medium">
+                        <label className="admissao-gestacao-label">Data do Procedimento</label>
                         <input
                           type="date"
                           value={procedimento.data_procedimento}
                           onChange={(e) => updateProcedimento(index, 'data_procedimento', e.target.value)}
+                          className="admissao-gestacao-input"
                         />
                       </div>
                     </div>
@@ -631,7 +640,7 @@ const NovoAtendimento: React.FC = () => {
                 ))}
 
                 {formData.procedimentos_realizados.length === 0 && (
-                  <div className="empty-state">
+                  <div className="admissao-empty-state">
                     Nenhum procedimento cadastrado. Clique em "Adicionar Procedimento" para incluir.
                   </div>
                 )}
@@ -649,27 +658,29 @@ const NovoAtendimento: React.FC = () => {
 
                 {formData.ocorrencias_clinicas.map((ocorrencia, index) => (
                   <div key={index} className="admissao-gestacao-card">
-                    <div className="card-header">
+                    <div className="admissao-gestacao-card-header">
                       <h4 className="admissao-gestacao-title">Ocorrência {index + 1}</h4>
                       <button type="button" onClick={() => removeOcorrencia(index)} className="admissao-remove-button">Remover</button>
                     </div>
 
-                    <div className="card-fields">
-                      <div className="card-field-full">
-                        <label>Descrição da Ocorrência</label>
+                    <div className="admissao-flex-row">
+                      <div className="admissao-gestacao-field-large">
+                        <label className="admissao-gestacao-label">Descrição da Ocorrência</label>
                         <textarea
                           value={ocorrencia.descricao}
                           onChange={(e) => updateOcorrencia(index, 'descricao', e.target.value)}
                           placeholder="Ex: Sangramento vaginal, Contrações irregulares, Alteração na pressão arterial..."
                           rows={3}
+                          className="admissao-gestacao-textarea"
                         />
                       </div>
-                      <div className="card-field">
-                        <label>Data/Hora da Ocorrência</label>
+                      <div className="admissao-gestacao-field-medium">
+                        <label className="admissao-gestacao-label">Data/Hora da Ocorrência</label>
                         <input
                           type="datetime-local"
                           value={ocorrencia.data_ocorrencia}
                           onChange={(e) => updateOcorrencia(index, 'data_ocorrencia', e.target.value)}
+                          className="admissao-gestacao-input"
                         />
                       </div>
                     </div>
@@ -677,7 +688,7 @@ const NovoAtendimento: React.FC = () => {
                 ))}
 
                 {formData.ocorrencias_clinicas.length === 0 && (
-                  <div className="empty-state">
+                  <div className="admissao-empty-state">
                     Nenhuma ocorrência clínica registrada. Clique em "Adicionar Ocorrência" para incluir eventos importantes.
                   </div>
                 )}

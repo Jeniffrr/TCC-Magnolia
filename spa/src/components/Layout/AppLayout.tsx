@@ -64,7 +64,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
           navLinks={getNavLinks()}
         />
       )}
-      <Container fluid style={{ maxWidth: '1400px', margin: '0 auto' }}>
+      <Container fluid style={{ maxWidth: '1400px', margin: '0 auto', marginBottom: '20px' }}>
         {children}
       </Container>
       <Footer />

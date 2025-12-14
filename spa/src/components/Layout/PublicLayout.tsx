@@ -27,7 +27,7 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({
           showLoginButton={showLoginButton}
         />
       )}
-      <Container fluid>
+      <Container fluid >
         {children}
       </Container>
       <Footer />

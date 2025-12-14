@@ -57,7 +57,10 @@ const UserView: React.FC<UserViewProps> = ({ user, onBack }) => {
             </div>
           </div>
           <div className="view-actions">
-            <BrButton onClick={onBack} className="back-button">
+            <BrButton 
+              onClick={onBack} 
+              style={pageStyles.secundaryButton}
+            >
               Voltar
             </BrButton>
           </div>

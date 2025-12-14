@@ -319,8 +319,9 @@
 /* Layout geral */
 .admissao-flex-row {
   display: flex;
-  gap: 16px;
+  gap: 20px;
   flex-wrap: wrap;
+  align-items: flex-start;
 }
 
 .admissao-flex-row-margin {
@@ -461,23 +462,164 @@
 .admissao-gestacao-card {
   border: 1px solid #e0e0e0;
   border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 16px;
+  padding: 24px;
+  margin-bottom: 20px;
   background-color: #ffffff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.card-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.card-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-field label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.card-field input,
+.card-field textarea {
+  width: 100%;
+  padding: 12px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.card-field input:focus,
+.card-field textarea:focus {
+  outline: none;
+  border-color: #711E6C;
+  box-shadow: 0 0 0 2px rgba(113, 30, 108, 0.1);
+}
+
+.card-field-wide {
+  grid-column: span 2;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-field-wide label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.card-field-wide input,
+.card-field-wide textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.card-field-wide input:focus,
+.card-field-wide textarea:focus {
+  outline: none;
+  border-color: #711E6C;
+  box-shadow: 0 0 0 2px rgba(113, 30, 108, 0.1);
+}
+
+.card-field-full {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-field-full label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.card-field-full textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  resize: vertical;
+  transition: all 0.2s ease;
+}
+
+.card-field-full textarea:focus {
+  outline: none;
+  border-color: #711E6C;
+  box-shadow: 0 0 0 2px rgba(113, 30, 108, 0.1);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 24px;
+  color: #6b7280;
+  font-style: italic;
+  border: 2px dashed #e5e7eb;
+  border-radius: 8px;
+  background-color: #f9fafb;
+  margin-top: 12px;
+}
+
+.section-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 768px) {
+  .card-fields {
+    grid-template-columns: 1fr;
+  }
+  
+  .card-field-wide {
+    grid-column: span 1;
+  }
+  
+  .admissao-gestacao-field,
+  .admissao-gestacao-field-medium,
+  .admissao-gestacao-field-large {
+    flex: 1 1 100%;
+    min-width: 100%;
+  }
 }
 
 .admissao-gestacao-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .admissao-gestacao-title {
   margin: 0;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
+  color: #1f2937;
 }
 
 .admissao-remove-button {
@@ -491,42 +633,62 @@
 }
 
 .admissao-gestacao-field {
-  flex: 1;
-  min-width: 120px;
+  flex: 1 1 200px;
+  min-width: 200px;
+  max-width: 100%;
 }
 
 .admissao-gestacao-field-medium {
-  flex: 1;
-  min-width: 150px;
+  flex: 1 1 250px;
+  min-width: 250px;
+  max-width: 100%;
 }
 
 .admissao-gestacao-field-large {
-  flex: 2;
-  min-width: 200px;
+  flex: 2 1 350px;
+  min-width: 350px;
+  max-width: 100%;
 }
 
 .admissao-gestacao-label {
   display: block;
-  margin-bottom: 4px;
-  font-size: 13px;
+  margin-bottom: 6px;
+  font-size: 14px;
   font-weight: 500;
+  color: #374151;
 }
 
 .admissao-gestacao-input {
   width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 13px;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.admissao-gestacao-input:focus {
+  outline: none;
+  border-color: #711E6C;
+  box-shadow: 0 0 0 2px rgba(113, 30, 108, 0.1);
 }
 
 .admissao-gestacao-textarea {
   width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 13px;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
   resize: vertical;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.admissao-gestacao-textarea:focus {
+  outline: none;
+  border-color: #711E6C;
+  box-shadow: 0 0 0 2px rgba(113, 30, 108, 0.1);
 }
 
 .admissao-empty-state {

@@ -99,8 +99,18 @@ class LeitoController extends Controller
         ], 200);
     }
 
-    public function internacaoAtiva(): \Illuminate\Database\Eloquent\Relations\HasOne
-        {
-            return $this->hasOne(Internacao::class)->where('status', 'ativa');
-        }
+    public function disponiveis(): JsonResponse
+    {
+        $leitos = Leito::select('id', 'numero', 'tipo', 'capacidade_maxima')
+            ->withCount(['internacoes as ocupacao_atual' => function($query) {
+                $query->where('status', 'ativa');
+            }])
+            ->get()
+            ->filter(function($leito) {
+                return $leito->ocupacao_atual < $leito->capacidade_maxima;
+            })
+            ->values();
+
+        return response()->json($leitos, 200);
+    }
 }

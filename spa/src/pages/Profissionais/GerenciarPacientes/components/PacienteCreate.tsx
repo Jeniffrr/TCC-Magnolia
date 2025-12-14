@@ -111,10 +111,10 @@ const PacienteAdmissao: React.FC = () => {
       setIsLoading(true);
       try {
         const [leitosRes, condicoesRes] = await Promise.all([
-          api.get("/api/leitos"),
+          api.get("/api/leitos/disponiveis"),
           api.get("/api/condicoes-patologicas")
         ]);
-        setLeitos(leitosRes.data.data || leitosRes.data || []);
+        setLeitos(leitosRes.data || []);
         setCondicoes(condicoesRes.data || []);
       } catch {
         setApiError("Falha ao carregar dados do formulário.");
@@ -135,10 +135,10 @@ const PacienteAdmissao: React.FC = () => {
 
     if (name === "cpf") {
       maskedValue = applyCpfMask(value);
-      if (maskedValue.replace(/\D/g, "").length === 11 && !validateCpf(maskedValue)) {
-        setValidationErrors(prev => ({ ...prev, cpf: "CPF inválido" }));
-      } else {
-        setValidationErrors(prev => ({ ...prev, cpf: "" }));
+      // Remove erro de CPF ao digitar
+      if (validationErrors.cpf) {
+        const { cpf, ...rest } = validationErrors;
+        setValidationErrors(rest);
       }
     } else if (name === "telefone") {
       maskedValue = applyPhoneMask(value);
@@ -923,7 +923,7 @@ const PacienteAdmissao: React.FC = () => {
               <div style={pageStyles.buttonContainer}>
                 <BrButton
                   type="button"
-                  className="clear-button"
+                  style={pageStyles.secundaryButton}
                   onClick={handleClear}
                   disabled={isLoading}
                 >

@@ -62,6 +62,8 @@ class PacienteController extends Controller
             'gestacoes_anteriores.*.ano_parto' => 'nullable|integer',
             'gestacoes_anteriores.*.tipo_parto' => 'nullable|string',
             'gestacoes_anteriores.*.observacoes' => 'nullable|string'
+        ], [
+            'cpf.unique' => 'Este CPF já está cadastrado no sistema.',
         ]);
 
         $categoriaRiscoId = $this->calcularCategoriaRisco($validatedData);
@@ -138,7 +140,7 @@ class PacienteController extends Controller
                 'data' => $result
             ], 201);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json(['message' => 'Dados inválidos.', 'errors' => $e->errors()], 422);
+            return response()->json(['message' => 'Formulário contém erros. Verifique os campos.', 'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Ocorreu um erro no servidor ao processar a admissão.',

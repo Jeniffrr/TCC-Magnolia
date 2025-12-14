@@ -254,7 +254,7 @@ const PacienteVer: React.FC = () => {
             <BrButton
               type="button"
               onClick={handleBack}
-              className="back-button"
+              style={pageStyles.secundaryButton}
             >
               Voltar
             </BrButton>

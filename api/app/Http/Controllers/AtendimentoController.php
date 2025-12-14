@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use app\Http\Traits\CalculaRiscoTrait;
+use App\Http\Traits\CalculaRiscoTrait;
 use App\Http\Traits\AuditoriaTrait;
 
 class AtendimentoController extends Controller
@@ -136,7 +136,19 @@ class AtendimentoController extends Controller
             
             // Calcular categoria de risco preservando Aborto se já definido
             $categoriaAtual = $internacao->categoria_risco_id;
-            $novaCategoria = $this->calcularCategoriaRisco($validatedData, $categoriaAtual);
+            
+            // Buscar dados do paciente para cálculo de risco
+            $paciente = $internacao->paciente;
+            $dadosParaCalculo = array_merge($validatedData, [
+                'data_nascimento' => $paciente->data_nascimento,
+                'condicoes_patologicas' => $paciente->condicoes_patologicas ? $paciente->condicoes_patologicas->pluck('id')->toArray() : [],
+                'alergias' => $paciente->alergias,
+                'medicamentos_continuos' => $paciente->medicamentos_continuos,
+                'gestacoes_anteriores' => $paciente->gestacoes_anteriores ? $paciente->gestacoes_anteriores->toArray() : [],
+                'motivo_internacao' => $internacao->motivo_internacao
+            ]);
+            
+            $novaCategoria = $this->calcularCategoriaRisco($dadosParaCalculo, $categoriaAtual);
             
             $atendimento = $internacao->atendimentos()->create([
                 'usuario_id' => $usuario->id,

@@ -429,7 +429,7 @@ const HistoricoCompleto: React.FC = () => {
               <BrButton
                 type="button"
                 onClick={() => navigate('/profissionais/')}
-                className="back-button"
+                style={pageStyles.secundaryButton}
               >
                 Voltar
               </BrButton>

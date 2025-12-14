@@ -34,6 +34,7 @@ const RegistrarDesfecho: React.FC<RegistrarDesfechoProps> = ({ internacaoId, pac
     tipo_parto: '',
     observacoes: '',
     recem_nascidos: [{
+      nome_provisorio: '',
       sexo: '',
       peso: '',
       altura: '',
@@ -173,6 +174,16 @@ const RegistrarDesfecho: React.FC<RegistrarDesfechoProps> = ({ internacaoId, pac
                   
                   <div className="desfecho-rn-fields">
                     <div className="desfecho-field">
+                      <label>Nome Provisório:</label>
+                      <input 
+                        type="text"
+                        value={formData.recem_nascidos[0].nome_provisorio}
+                        onChange={(e) => setFormData({...formData, recem_nascidos: [{...formData.recem_nascidos[0], nome_provisorio: e.target.value}]})}
+                        placeholder="Ex: RN de Maria Silva"
+                      />
+                    </div>
+
+                    <div className="desfecho-field">
                       <label>Sexo:</label>
                       <select 
                         value={formData.recem_nascidos[0].sexo}
@@ -262,7 +273,10 @@ const RegistrarDesfecho: React.FC<RegistrarDesfechoProps> = ({ internacaoId, pac
             </div>
 
             <div className="modal-footer desfecho-footer">
-              <BrButton onClick={onClose} style={pageStyles.secundaryButton} type="button">
+              <BrButton 
+              onClick={onClose} 
+              style={pageStyles.secundaryButton} 
+              type="button">
                 Cancelar
               </BrButton>
               <BrButton style={pageStyles.primaryButton} disabled={loading} type="submit">

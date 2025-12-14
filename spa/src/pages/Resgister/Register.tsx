@@ -3,6 +3,7 @@ import {
   BrButton,
   Container,
 } from "@govbr-ds/react-components";
+import { useNavigate } from "react-router-dom";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumbs";
 import BrInputIcon from "../../components/BrInputIcon/BrInputIcon";
 import { useRegisterForm } from '../../hooks/Register.hooks';
@@ -10,10 +11,11 @@ import { BREADCRUMB_ITEMS, API_ENDPOINTS, INITIAL_FORM_DATA } from './components
 import type { ApiErrorResponse } from '../../types/Register.types';
 import { handleApiErrors } from '../../utils/Register.utils';
 import "./style.css";
-import AppLayout from "../../components/Layout/AppLayout";
+import PublicLayout from "../../components/Layout/PublicLayout";
 import { pageStyles, getFieldStatus, getFeedbackText } from "../../assets/style/pageStyles";
 
 export const Register: React.FC = () => {
+  const navigate = useNavigate();
   const {
     formData,
     errors,
@@ -57,6 +59,11 @@ export const Register: React.FC = () => {
           setShowSuccess(true);
           setFormData(INITIAL_FORM_DATA);
           setErrors({});
+          
+          // Redireciona para login após 2 segundos
+          setTimeout(() => {
+            navigate('/login');
+          }, 2000);
         } else {
           const apiErrors = handleApiErrors(responseData);
           if (Object.keys(apiErrors).length > 0) {
@@ -78,8 +85,8 @@ export const Register: React.FC = () => {
   };
 
   return (
-    <AppLayout>
-    <Container fluid>
+    <PublicLayout>
+    <Container style={{ maxWidth: '1400px', margin: '0 auto' }}>
       <div className="mb-3 mt-3">
         <Breadcrumb
           items={BREADCRUMB_ITEMS}
@@ -133,7 +140,6 @@ export const Register: React.FC = () => {
                   type="text"
                   value={formData.cnpj}
                   onChange={handleInputMask}
-                  onBlur={handleBlur}
                   placeholder="00.000.000/0000-00"
                   icon="fas fa-building"
                   status={getFieldStatus(errors.cnpj)}
@@ -212,7 +218,6 @@ export const Register: React.FC = () => {
                   type="text"
                   value={formData.usuario_cpf}
                   onChange={handleInputMask}
-                  onBlur={handleBlur}
                   placeholder="000.000.000-00"
                   icon="fas fa-id-badge"
                   status={getFieldStatus(errors.usuario_cpf)}
@@ -306,7 +311,7 @@ export const Register: React.FC = () => {
         </div>
       </div>
     </Container>
-     </AppLayout>
+     </PublicLayout>
   );
 };
 export default Register;
