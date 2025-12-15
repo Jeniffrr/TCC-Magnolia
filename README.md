@@ -243,13 +243,9 @@ No primeiro login, o sistema solicitará a configuração do 2FA:
 - ✅ Listagem paginada
 
 ### Módulo de Pacientes
-- ✅ Cadastro completo de pacientes
-- ✅ Histórico médico completo
-- ✅ Gestações anteriores
-- ✅ Condições patológicas
+- ✅ Cadastro de pacientes com primeiro atendimento embutido
 - ✅ Edição de dados
 - ✅ Visualização detalhada
-- ✅ Consentimento LGPD
 
 ### Módulo de Internações
 - ✅ Registro de internação
@@ -258,28 +254,22 @@ No primeiro login, o sistema solicitará a configuração do 2FA:
 - ✅ Status (ativa/finalizada)
 - ✅ Data de entrada e saída
 
-### Módulo de Atendimentos
-- ✅ Registro de atendimentos
-- ✅ Sinais vitais completos
-- ✅ Evolução da maternidade
-- ✅ Avaliação fetal (BCF, movimentos, altura uterina)
-- ✅ Cálculo automático de categoria de risco
-- ✅ Histórico completo de atendimentos
-- ✅ Exames laboratoriais
-- ✅ Medicações administradas
-- ✅ Procedimentos realizados
-- ✅ Ocorrências clínicas
+### Módulo de Classificação de risco
+- ✅ Resgistro das classificações
+- ✅ calculo baseado nas informações clínicas
+- ✅ Atribuição de Classificação (Normal/Medio/Alto/Aborto)
 
-### Módulo de Alta
-- ✅ Registro de desfecho da internação
-- ✅ Motivo da alta
-- ✅ Observações
-- ✅ Data e hora da alta
-- ✅ Liberação do leito
+### Módulo de Atendimentos
+- ✅ listagem de pacientes
+- ✅ Novo atendimento, com novos campos de procedimetos realizado e medicações
+- ✅ Cálculo automático de categoria de risco
+- ✅ Internação automática
+- ✅ Histórico completo de atendimentos
+- ✅ Visualização rápida de dados clínicos
+- ✅ Desfecho clínico
+- ✅ Registro da alta
 
 ### Sistema de Auditoria
-- ✅ Log de visualizações
-- ✅ Log de edições
 - ✅ Rastreamento de ações
 - ✅ Identificação do usuário responsável
 
@@ -319,7 +309,8 @@ tcc/
 
 ### Principais Tabelas
 
-- **usuarios**: Profissionais do hospital
+- **hopital**: Hospitais
+- **usuarios**: Administradores e Profissionais da saúde do hospital
 - **pacientes**: Dados das pacientes
 - **leitos**: Leitos disponíveis
 - **internacoes**: Internações ativas e finalizadas
@@ -331,7 +322,8 @@ tcc/
 - **medicacoes_administradas**: Medicações aplicadas
 - **procedimentos_realizados**: Procedimentos executados
 - **ocorrencias_clinicas**: Ocorrências durante internação
-- **desfechos_internacao**: Registro de altas
+- **desfechos_internacao**: Registro de procedimento para alta
+- **alta** : Registro de alta hospital
 - **logs_auditoria**: Auditoria de ações
 
 ## 🔒 Segurança
