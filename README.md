@@ -366,10 +366,10 @@ Este projeto foi desenvolvido como Trabalho de Conclusão de Curso (TCC).
 
 ## 👥 Autores
 
-**Desenvolvido por:** Jeniffer Santana 
-**Orientador:** Mario Lemes 
-**Instituição:** Instituto Federal de Goias 
-**Ano:** 2024/2025
+- **Desenvolvido por:** Jeniffer Santana 
+- **Orientador:** Mario Lemes 
+- **Instituição:** Instituto Federal de Goias 
+- **Ano:** 2024/2025
 
 
 ## 👥 Suporte
