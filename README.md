@@ -199,19 +199,24 @@ No primeiro login, o sistema solicitará a configuração do 2FA:
    - Registre avaliação fetal
    - Adicione exames, medicações e procedimentos (se necessário)
    - Salve o atendimento
+   
+2. **Visualização rápida:**
+   - Na "Pagina Inicial", visualize dados clínicos rápidos
+   - Clique sobre dados de uma paciente
+   - Veja sinais vitais, evolução e avaliação fetal
 
-2. **Visualizar Histórico:**
+3. **Visualizar Histórico:**
    - Selecione a paciente
    - Clique em "Ver Histórico Completo"
    - Visualize todos os atendimentos anteriores
 
-3. **Registrar desfecho clínico:**
+4. **Registrar desfecho clínico:**
    - Selecione a paciente
    - Clique em "Registrar Desfecho"
    - Preencha detalhes do desfecho
    - Salve o desfecho
 
-4. **Dar Alta:**
+5. **Dar Alta:**
    - Selecione a paciente
    - Clique em "Dar Alta"
    - Preencha o motivo da alta
@@ -361,9 +366,9 @@ Este projeto foi desenvolvido como Trabalho de Conclusão de Curso (TCC).
 
 ## 👥 Autores
 
-**Desenvolvido por:** [Jeniffer Santana]  
-**Orientador:** [Mario Lemes]  
-**Instituição:** [Instituto Federal de Goias]  
+**Desenvolvido por:** Jeniffer Santana 
+**Orientador:** Mario Lemes 
+**Instituição:** Instituto Federal de Goias 
 **Ano:** 2024/2025
 
 
