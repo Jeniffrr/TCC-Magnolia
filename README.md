@@ -60,6 +60,9 @@ cd tcc
 ```bash
 cd api
 
+#Instale o laravel
+composer global require laravel/installer
+
 # Instalar dependências do Composer
 composer install
 

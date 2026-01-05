@@ -4,117 +4,147 @@ namespace App\Http\Traits;
 
 use App\Models\CategoriaRisco;
 use App\Models\CondicaoPatologica;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
-use Carbon\Carbon;
 
 trait CalculaRiscoTrait
 {
-    /**
-     * Calcula o ID da categoria de risco com base nos dados clínicos.
-     *
-     * @param array $dadosValidados Os dados validados do request.
-     * @param int|null $categoriaAtual Categoria atual da internação (se existir)
-     * @return int O ID da CategoriaRisco
-     */
-    protected function calcularCategoriaRisco(array $dadosValidados, ?int $categoriaAtual = null): int
+   protected function calcularCategoriaRisco(array $dadosValidados, ?int $categoriaAtual = null): int
     {
-        // 1. Busca os IDs das categorias
+        // 1. Busca os IDs das categorias (com cache)
         $categorias = Cache::remember('categorias_risco_v2', 60, function () {
             return CategoriaRisco::pluck('id', 'nome');
         });
 
-        // Os fallbacks (?? 4) são um risco se os IDs do DB mudarem, 
-        // mas é uma decisão de design aceitável para garantir que sempre haja um ID.
         $idAborto = $categorias['Aborto'] ?? 4;
         $idAlto = $categorias['Alto'] ?? 3;
         $idMedio = $categorias['Médio'] ?? 2;
         $idNormal = $categorias['Normal'] ?? 1;
 
-        // 2. Coleta e processa os dados de entrada
+        // 2. Coleta e processa os dados
         $nomesCondicoes = $this->getNomesCondicoes($dadosValidados['condicoes_patologicas'] ?? []);
         $motivo = strtolower($dadosValidados['motivo_internacao'] ?? '');
         $avaliacaoFetalTexto = strtolower($dadosValidados['avaliacao_fetal'] ?? '');
         $idade = Carbon::parse($dadosValidados['data_nascimento'])->age;
         
-        // --- CORREÇÃO DE SEGURANÇA ---
-        // Sinais Vitais: O padrão DEVE ser 'null' (não avaliado), e não um valor "normal".
+        // Sinais Vitais
         $sistolica = $dadosValidados['pressao_sistolica'] ?? null;
         $diastolica = $dadosValidados['pressao_diastolica'] ?? null;
         $temperatura = $dadosValidados['temperatura'] ?? null;
-        $bcf = $dadosValidados['bcf'] ?? null; // Isto já estava correto
-        $movFetal = $dadosValidados['movimentos_fetais_presentes'] ?? null; // 'null' = não avaliado
+        $bcf = $dadosValidados['bcf'] ?? null;
+        $movFetal = $dadosValidados['movimentos_fetais_presentes'] ?? null;
+        $fc = $dadosValidados['frequencia_cardiaca'] ?? null;
+        $fr = $dadosValidados['frequencia_respiratoria'] ?? null;
+        $au = $dadosValidados['altura_uterina'] ?? null;
+        $semanasGestacao = $dadosValidados['semanas_gestacao'] ?? null;
 
-        // --- INÍCIO DA LÓGICA DE DECISÃO (HIERÁRQUICA) ---
+        // --- REGRA NÍVEL 1: Aborto / Óbito Fetal ---
 
-        // REGRA ESPECIAL: Se já está classificada como Aborto, mantém
-        if ($categoriaAtual === $idAborto) {
-            return $idAborto;
-        }
+        $ehAmeaca = str_contains($motivo, 'ameaça') || str_contains($motivo, 'ameaca');
+        
+        if ($categoriaAtual === $idAborto) return $idAborto;
 
-        // REGRA NÍVEL 1: Aborto / Óbito Fetal
         if (
-            str_contains($motivo, 'aborto') ||
-            (isset($bcf) && $bcf == 0) || // BCF explicitamente 0 (correto)
+            // Só classifica como Aborto se NÃO for apenas uma ameaça
+            (!$ehAmeaca && str_contains($motivo, 'aborto')) ||
+            
+            (isset($bcf) && $bcf == 0) || // BCF 0 confirma óbito
             str_contains($avaliacaoFetalTexto, 'sem bcf') ||
-            str_contains($avaliacaoFetalTexto, 'óbito fetal') ||
+            str_contains($avaliacaoFetalTexto, 'óbito') ||
             str_contains($avaliacaoFetalTexto, 'inviável')
         ) {
             return $idAborto;
         }
 
-        // REGRA NÍVEL 2: Alto Risco
-        // --- CORREÇÃO DE SEGURANÇA ---
-        // Adicionada checagem '!== null' para evitar falsos negativos
+        // --- REGRA NÍVEL 2: Alto Risco ---
         if (
-            ($sistolica !== null && $sistolica >= 160) || ($diastolica !== null && $diastolica >= 100) || // Hipertensão Grave
-            ($temperatura !== null && $temperatura >= 38.5) || // Febre Alta
-            $idade > 35 || // Idade materna avançada
-            (isset($bcf) && ($bcf < 110 || $bcf > 160)) || // Bradicardia ou Taquicardia Fetal (correto)
-            ($movFetal !== null && $movFetal === false) || // Ausência de movimento fetal (explícito 'false')
+            // 1. Fatores de Pressão Arterial Críticos
+            ($sistolica !== null && $sistolica >= 140) || // Estágio 2
+            ($diastolica !== null && $diastolica >= 90) || // Estágio 2
+            ($sistolica !== null && $sistolica < 90) ||   // Hipotensão
+            ($diastolica !== null && $diastolica < 60) ||  // Hipotensão
+
+            // 2. Condições Patológicas Graves
+            $ehAmeaca ||
             in_array('pré-eclâmpsia', $nomesCondicoes) ||
             in_array('diabetes mellitus tipo 1', $nomesCondicoes) ||
-            in_array('hipertensão crônica grave', $nomesCondicoes)
+            in_array('hipertensão crônica grave', $nomesCondicoes) ||
+
+            // 3. Fatores Maternos e Fetais Críticos
+            $idade > 35 || // Idade avançada (retornado para Alto Risco)
+            $idade < 18 || // Adolescência (retornado para Alto Risco)
+            ($temperatura !== null && $temperatura >= 38.5) ||
+            (isset($bcf) && ($bcf < 110 || $bcf > 160)) || 
+            ($movFetal !== null && $movFetal === false)
         ) {
             return $idAlto;
         }
 
-        // REGRA NÍVEL 3: Médio Risco
-        $temCesareaAnterior = $this->checarCesareaAnterior($dadosValidados['gestacoes_anteriores'] ?? []);
+        // --- REGRA NÍVEL 3: Médio Risco ---
         
-        // --- CORREÇÃO DE SEGURANÇA ---
-        // Adicionada checagem '!== null'
+        // Validação da Altura Uterina (+- 2cm entre 20 e 36 semanas)
+        $auAnormal = false;
+        if ($au !== null && $semanasGestacao !== null && $semanasGestacao >= 20 && $semanasGestacao <= 36) {
+            if (abs($semanasGestacao - $au) > 2) {
+                $auAnormal = true;
+            }
+        }
+
+        // Definição dinâmica do limite respiratório baseada na idade
+        // Padrão: 12-20. Adolescentes (13-18): 12-16. Adultos >40: 16-25.
+        $limiteMinFr = 12;
+        $limiteMaxFr = 20;
+
+        if ($idade >= 13 && $idade <= 18) {
+            $limiteMaxFr = 16; 
+        } elseif ($idade > 40) {
+            $limiteMaxFr = 25;
+            $limiteMinFr = 16;
+        }
+
+        $frAnormal = false;
+        if ($fr !== null) {
+            if ($fr < $limiteMinFr || $fr > $limiteMaxFr) {
+                $frAnormal = true;
+            }
+        }
+
+        $temCesareaAnterior = $this->checarCesareaAnterior($dadosValidados['gestacoes_anteriores'] ?? []);
+
         if (
-            (($sistolica !== null && $sistolica >= 140) || ($diastolica !== null && $diastolica >= 90)) || // Hipertensão Leve
-            $idade < 18 || // Paciente adolescente
-            $temCesareaAnterior || // Cesárea anterior
+            // Hipertensão Estágio 1 (>= 130/80)
+            ($sistolica !== null && $sistolica >= 130) || 
+            ($diastolica !== null && $diastolica > 80) ||
+            
+            // Sinais Vitais Alterados (Moderados)
+            ($fc !== null && ($fc < 60 || $fc > 100)) ||
+            $frAnormal || // Usa a lógica dinâmica de idade
+            $auAnormal ||
+
+           
+            $temCesareaAnterior ||
             in_array('diabetes gestacional', $nomesCondicoes) ||
-            !empty($dadosValidados['alergias']) || // Qualquer alergia
-            !empty($dadosValidados['medicamentos_continuos']) // Qualquer medicamento contínuo
+            !empty($dadosValidados['alergias']) || 
+            !empty($dadosValidados['medicamentos_continuos'])
         ) {
             return $idMedio;
         }
 
-        // REGRA NÍVEL 4: Risco Normal
+        // --- REGRA NÍVEL 4: Risco Normal ---
         return $idNormal;
     }
-
-    /**
-     * Função auxiliar para consultar o nome das condições.
-     */
+    
     private function getNomesCondicoes(array $condicoesIDs): array
     {
         if (empty($condicoesIDs)) {
             return [];
         }
         return CondicaoPatologica::whereIn('id', $condicoesIDs)
-                                    ->pluck('nome')
-                                    ->map(fn($nome) => strtolower($nome))
-                                    ->toArray();
+                                ->pluck('nome')
+                                ->map(fn($nome) => strtolower($nome))
+                                ->toArray();
     }
 
-    /**
-     * Função auxiliar para checar histórico de cesárea.
-     */
     private function checarCesareaAnterior(array $gestacoes): bool
     {
         foreach ($gestacoes as $gest) {

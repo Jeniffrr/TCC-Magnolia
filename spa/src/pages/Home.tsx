@@ -13,7 +13,7 @@ export default function Home() {
         <div style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'center' }}>
           <div>
             <img src={Logo} alt="Magnolia Logo" style={{ width: '300px', marginBottom: '10px' }} />
-            <h1 style={{ fontSize: '48px', fontWeight: 'bold', color: '#711E6C', margin: '0 0 16px 0', lineHeight: '1.2' }}>Magnolia</h1>
+            <h1 style={{ fontSize: '48px', fontWeight: 'bold', color: '#711E6C', margin: '0 0 16px 0', lineHeight: '1.2' }}>Magnólia</h1>
             <h2 style={{ fontSize: '28px', color: '#5a1856', margin: '0 0 24px 0', fontWeight: '500' }}>Apoio Clínico Simples e Seguro</h2>
             <p style={{ fontSize: '20px', color: '#711E6C', marginBottom: '40px', fontWeight: '500', lineHeight: '1.6' }}>
               Transformando dados em decisões rápidas para quem cuida de vidas.
@@ -42,7 +42,7 @@ export default function Home() {
       {/* Features Section */}
       <div style={{ padding: '80px 20px', background: 'white' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <h2 style={{ fontSize: '36px', fontWeight: 'bold', color: '#711E6C', textAlign: 'center', marginBottom: '60px' }}>Por que escolher o Magnolia?</h2>
+          <h2 style={{ fontSize: '36px', fontWeight: 'bold', color: '#711E6C', textAlign: 'center', marginBottom: '60px' }}>Por que escolher o Magnólia?</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '40px' }}>
             <div style={{ textAlign: 'center', padding: '30px', background: '#fef6ff', borderRadius: '16px', boxShadow: '0 4px 12px rgba(113, 30, 108, 0.1)' }}>
               <i className="fas fa-tachometer-alt" style={{ fontSize: '60px', color: '#711E6C', marginBottom: '20px' }}></i>
